@@ -1,22 +1,23 @@
 import { useState } from "react";
+import { translations } from "../translations";
 import { db } from "../firebase/config";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-const eventTypes = [
-  { id: "wedding", emoji: "💍", title: "Wedding", description: "Plan your perfect day from venue to vows", color: "#c084fc", glow: "rgba(192,132,252,0.15)" },
-  { id: "birthday", emoji: "🎂", title: "Birthday", description: "Create an unforgettable birthday celebration", color: "#fb923c", glow: "rgba(251,146,60,0.15)" },
-  { id: "corporate", emoji: "🏢", title: "Corporate Event", description: "Conferences, team events & company parties", color: "#38bdf8", glow: "rgba(56,189,248,0.15)" },
-  { id: "bar_mitzvah", emoji: "✡️", title: "Bar / Bat Mitzvah", description: "A meaningful celebration of this milestone", color: "#4ade80", glow: "rgba(74,222,128,0.15)" },
+const getEventTypes = (tr) => [
+  { id: "wedding", emoji: "💍", title: tr.wedding, description: tr.weddingDesc, color: "#c084fc", glow: "rgba(192,132,252,0.15)" },
+  { id: "birthday", emoji: "🎂", title: tr.birthday, description: tr.birthdayDesc, color: "#fb923c", glow: "rgba(251,146,60,0.15)" },
+  { id: "corporate", emoji: "🏢", title: tr.corporate, description: tr.corporateDesc, color: "#38bdf8", glow: "rgba(56,189,248,0.15)" },
+  { id: "bar_mitzvah", emoji: "✡️", title: tr.barMitzvah, description: tr.barMitzvahDesc, color: "#4ade80", glow: "rgba(74,222,128,0.15)" },
 ];
 
-const regions = [
-  { id: "tel_aviv", label: "Tel Aviv & Center" },
-  { id: "jerusalem", label: "Jerusalem & Surroundings" },
-  { id: "haifa", label: "Haifa & North" },
-  { id: "sharon", label: "Sharon & Hasharon" },
-  { id: "south", label: "South & Negev" },
-  { id: "eilat", label: "Eilat" },
-  { id: "nationwide", label: "Anywhere in Israel" },
+const getRegions = (tr) => [
+  { id: "tel_aviv", label: tr.telAviv },
+  { id: "jerusalem", label: tr.jerusalem },
+  { id: "haifa", label: tr.haifa },
+  { id: "sharon", label: tr.sharon },
+  { id: "south", label: tr.south },
+  { id: "eilat", label: tr.eilat },
+  { id: "nationwide", label: tr.nationwide },
 ];
 
 const s = {
@@ -122,7 +123,11 @@ const s = {
   loadingText: { fontSize: "18px", color: "rgba(255,255,255,0.6)", fontFamily: "'Georgia', serif" },
 };
 
-function EventPicker({ user, onEventCreated, onLogout }) {
+function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel }) {
+  const tr = translations[language];
+  const isRTL = language === "he";
+  const eventTypes = getEventTypes(tr);
+  const regions = getRegions(tr);
   const [hoveredId, setHoveredId] = useState(null);
   const [selectedType, setSelectedType] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -180,29 +185,31 @@ function EventPicker({ user, onEventCreated, onLogout }) {
   return (
     <>
       <div style={s.logoutBar}>
-        <button style={s.logoutBtn} onClick={onLogout}>Sign out</button>
+        {onCancel && (
+          <button style={{ ...s.logoutBtn, marginLeft: "8px" }} onClick={onCancel}>
+            {tr.cancel}
+          </button>
+        )}
+        <button style={s.logoutBtn} onClick={onLogout}>{tr.signOut}</button>
       </div>
 
       {loading && (
         <div style={s.loadingOverlay}>
           <span style={s.loadingEmoji}>{selectedType?.emoji}</span>
-          <p style={s.loadingText}>Setting up {eventName.trim() || `My ${selectedType?.title}`}...</p>
+          <p style={s.loadingText}>{tr.settingUp} {eventName.trim() || selectedType?.title}...</p>
         </div>
       )}
 
       {selectedType && !loading && (
         <div style={s.overlay} onClick={() => setSelectedType(null)}>
-          <div style={s.popup} onClick={(e) => e.stopPropagation()}>
+          <div style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr" }} onClick={(e) => e.stopPropagation()}>
             <span style={s.popupEmoji}>{selectedType.emoji}</span>
-            <h2 style={s.popupTitle}>Let's set up your {selectedType.title}</h2>
-            <p style={s.popupSub}>
-              Tell us a bit more so your AI producer can hit the ground running.
-              You can always update these later.
-            </p>
+            <h2 style={s.popupTitle}>{tr.letsSetUp} {selectedType.title}</h2>
+            <p style={s.popupSub}>{tr.popupSub}</p>
 
             {/* Event name */}
             <div style={s.fieldGroup}>
-              <label style={s.label}>Event Name</label>
+              <label style={s.label}>{tr.eventName}</label>
               <input
                 style={s.input}
                 placeholder={`e.g. "Sarah & Tom's Wedding"`}
@@ -214,7 +221,7 @@ function EventPicker({ user, onEventCreated, onLogout }) {
 
             {/* Date */}
             <div style={s.fieldGroup}>
-              <label style={s.label}>Event Date</label>
+              <label style={s.label}>{tr.eventDate}</label>
               <input
                 style={s.input}
                 type="date"
@@ -225,7 +232,7 @@ function EventPicker({ user, onEventCreated, onLogout }) {
 
             {/* Guest count */}
             <div style={s.fieldGroup}>
-              <label style={s.label}>Estimated Guest Count</label>
+              <label style={s.label}>{tr.guestCount}</label>
               <input
                 style={s.input}
                 type="number"
@@ -239,9 +246,9 @@ function EventPicker({ user, onEventCreated, onLogout }) {
 
             {/* Region */}
             <div style={s.fieldGroup}>
-              <label style={s.label}>Preferred Event Region</label>
+              <label style={s.label}>{tr.preferredRegion}</label>
               <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)", margin: "0 0 12px" }}>
-                Where should vendors be located? You can choose any region regardless of where you live.
+                {tr.regionNote}
               </p>
               <div style={s.regionGrid}>
                 {regions.map((r) => (
@@ -256,14 +263,13 @@ function EventPicker({ user, onEventCreated, onLogout }) {
               </div>
             </div>
 
-            <p style={s.skipNote}>All fields are optional — you can fill them in later</p>
-
+            <p style={s.skipNote}>{tr.skipNote}</p>
             <div style={s.popupActions}>
               <button style={s.popupConfirm(selectedType.color)} onClick={handleConfirm}>
-                Create event ✨
+                {tr.createEvent}
               </button>
               <button style={s.popupCancel} onClick={() => setSelectedType(null)}>
-                Cancel
+                {tr.cancel}
               </button>
             </div>
           </div>
@@ -275,9 +281,9 @@ function EventPicker({ user, onEventCreated, onLogout }) {
         <div style={s.bgCircle2} />
 
         <div style={s.header}>
-          <p style={s.greeting}>Welcome, {user.displayName || user.email}</p>
-          <h1 style={s.title}>What are you planning? 🎊</h1>
-          <p style={s.subtitle}>Choose your event type to get started</p>
+          <p style={s.greeting}>{tr.welcome}, {user.displayName || user.email}</p>
+          <h1 style={s.title}>{tr.whatPlanning} 🎊</h1>
+          <p style={s.subtitle}>{tr.chooseEvent}</p>
         </div>
 
         <div style={s.grid}>

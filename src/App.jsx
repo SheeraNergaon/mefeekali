@@ -119,6 +119,7 @@ const eventEmojis = {
 function App() {
   const [user, setUser] = useState(null);
   const [googleToken, setGoogleToken] = useState(null);
+  const [language, setLanguage] = useState("he");
   const [events, setEvents] = useState([]);
   const [currentEventId, setCurrentEventId] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
@@ -192,7 +193,9 @@ if (showPicker) {
       user={user}
       onEventCreated={handleEventCreated}
       onLogout={handleLogout}
-    />
+      language={language}
+      onCancel={() => setShowPicker(false)}
+  />
   );
 }
 
@@ -202,7 +205,8 @@ if (events.length === 0 && !loadingEvents) {
       user={user}
       onEventCreated={handleEventCreated}
       onLogout={handleLogout}
-    />
+      language={language}
+  />
   );
 }
 
@@ -238,13 +242,21 @@ if (events.length === 0 && !loadingEvents) {
         </button>
         <div style={styles.sidebarBottom}>
           <p style={styles.userInfo}>{user.email}</p>
-          <button style={styles.signOutBtn} onClick={handleLogout}>Sign out</button>
+          <button
+            style={{ ...styles.signOutBtn, marginBottom: "8px" }}
+            onClick={() => setLanguage(language === "he" ? "en" : "he")}
+          >
+            {language === "he" ? "🇺🇸 English" : "🇮🇱 עברית"}
+          </button>
+          <button style={styles.signOutBtn} onClick={handleLogout}>
+            {language === "he" ? "התנתק" : "Sign out"}
+          </button>
         </div>
       </div>
 
       <div style={styles.main}>
         {currentEvent ? (
-          <Dashboard user={user} event={currentEvent} onLogout={handleLogout} googleToken={googleToken} />
+          <Dashboard user={user} event={currentEvent} onLogout={handleLogout} googleToken={googleToken} language={language} />
         ) : (
           <div style={{ color: "white", padding: "40px" }}>
             Select an event from the sidebar
