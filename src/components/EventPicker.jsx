@@ -212,7 +212,12 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
               <label style={s.label}>{tr.eventName}</label>
               <input
                 style={s.input}
-                placeholder={`e.g. "Sarah & Tom's Wedding"`}
+                placeholder={
+                  selectedType.id === "wedding" ? (language === "he" ? 'למשל: "החתונה של שרה ותום"' : 'e.g. "Sarah & Tom\'s Wedding"') :
+                  selectedType.id === "birthday" ? (language === "he" ? 'למשל: "יום הולדת 30 של דנה"' : 'e.g. "Dana\'s 30th Birthday"') :
+                  selectedType.id === "corporate" ? (language === "he" ? 'למשל: "כנס שנתי 2026"' : 'e.g. "Annual Conference 2026"') :
+                  language === "he" ? 'למשל: "בר מצווה של יוסי"' : 'e.g. "Yossi\'s Bar Mitzvah"'
+                }
                 value={eventName}
                 onChange={(e) => setEventName(e.target.value)}
                 autoFocus

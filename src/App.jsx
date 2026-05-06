@@ -124,6 +124,7 @@ function App() {
   const [currentEventId, setCurrentEventId] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
   const [loadingEvents, setLoadingEvents] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Load events from Firestore whenever user logs in
   useEffect(() => {
@@ -212,31 +213,31 @@ if (events.length === 0 && !loadingEvents) {
 
   return (
     <div style={styles.layout}>
-      <div style={styles.sidebar}>
+      <div style={{ ...styles.sidebar, width: sidebarOpen ? "260px" : "0px", overflow: "hidden", transition: "width 0.3s ease", padding: sidebarOpen ? "24px 16px" : "0" }}>
         <h1 style={styles.sidebarLogo}>🎊 MefeeKali</h1>
         <p style={styles.sidebarSection}>My Events</p>
         {events.map((event) => (
-  <div key={event.id} style={{ position: "relative", display: "flex", alignItems: "center" }}>
-    <button
-      style={styles.eventBtn(event.id === currentEventId)}
-      onClick={() => setCurrentEventId(event.id)}
-    >
-      <span>{eventEmojis[event.type] || "🎉"}</span>
-      <span style={{ flex: 1 }}>{event.title}</span>
-    </button>
-    <button
-      onClick={() => handleDeleteEvent(event.id)}
-      style={{
-        position: "absolute", right: "8px",
-        background: "none", border: "none",
-        color: "rgba(255,255,255,0.2)", cursor: "pointer",
-        fontSize: "16px", padding: "4px", lineHeight: 1,
-        transition: "color 0.2s",
-      }}
-      title="Delete event"
-    >×</button>
-  </div>
-))}
+    <div key={event.id} style={{ position: "relative", display: "flex", alignItems: "center" }}>
+      <button
+        style={styles.eventBtn(event.id === currentEventId)}
+        onClick={() => setCurrentEventId(event.id)}
+      >
+        <span>{eventEmojis[event.type] || "🎉"}</span>
+        <span style={{ flex: 1 }}>{event.title}</span>
+      </button>
+      <button
+        onClick={() => handleDeleteEvent(event.id)}
+        style={{
+          position: "absolute", right: "8px",
+          background: "none", border: "none",
+          color: "rgba(255,255,255,0.2)", cursor: "pointer",
+          fontSize: "16px", padding: "4px", lineHeight: 1,
+          transition: "color 0.2s",
+        }}
+        title="Delete event"
+      >×</button>
+    </div>
+  ))}
         <button style={styles.newEventBtn} onClick={() => setShowPicker(true)}>
           ＋ New event
         </button>
@@ -254,7 +255,20 @@ if (events.length === 0 && !loadingEvents) {
         </div>
       </div>
 
-      <div style={styles.main}>
+      <div style={{ ...styles.main, position: "relative" }}>
+      <button
+        onClick={() => setSidebarOpen(o => !o)}
+        style={{
+          position: "absolute", top: "20px", left: "-12px",
+          zIndex: 100, background: "rgba(139,92,246,0.3)",
+          border: "1px solid rgba(139,92,246,0.5)", borderRadius: "50%",
+          color: "#c084fc", cursor: "pointer", fontSize: "10px",
+          padding: "6px 8px", transition: "left 0.3s ease",
+          fontFamily: "'Georgia', serif",
+        }}
+      >
+        {sidebarOpen ? "◀" : "▶"}
+      </button>
         {currentEvent ? (
           <Dashboard user={user} event={currentEvent} onLogout={handleLogout} googleToken={googleToken} language={language} />
         ) : (
