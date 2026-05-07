@@ -55,17 +55,17 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
 
   const thStyle = {
     padding: "12px 16px", textAlign: "right",
-    fontSize: "12px", fontWeight: "600", color: "rgba(255,255,255,0.5)",
+    fontSize: "12px", fontWeight: "600", color: "#7A6060",
     letterSpacing: "0.8px", textTransform: "uppercase",
-    borderBottom: "2px solid rgba(139,92,246,0.3)",
-    background: "rgba(139,92,246,0.05)",
+    borderBottom: "2px solid #DFC5EE",
+    background: "rgba(193,123,123,0.05)",
     whiteSpace: "nowrap", userSelect: "none", cursor: "pointer",
   };
 
   const tdStyle = {
     padding: "12px 16px", textAlign: "right",
-    fontSize: "14px", color: "rgba(255,255,255,0.8)",
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
+    fontSize: "14px", color: "#3d2c2c",
+    borderBottom: "1px solid #F5EDE8",
     verticalAlign: "middle",
   };
 
@@ -76,54 +76,54 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
   );
 
   const statusLabel = (item) => {
-    if (item.paymentStatus === "paid") return { text: isHe ? "שולם" : "Paid", color: "#4ade80", bg: "rgba(74,222,128,0.15)" };
+    if (item.paymentStatus === "paid") return { text: isHe ? "שולם" : "Paid", color: "#5A9E6F", bg: "rgba(74,222,128,0.15)" };
     if (item.paymentStatus === "deposit") return { text: isHe ? "מקדמה" : "Deposit", color: "#fb923c", bg: "rgba(251,146,60,0.15)" };
     return { text: isHe ? "לא שולם" : "Unpaid", color: "#f87171", bg: "rgba(248,113,113,0.15)" };
   };
 
   return (
     <div style={{
-      position: "fixed", inset: 0, background: "#0d0d0f",
+      position: "fixed", inset: 0, background: "#FAF7F2",
       zIndex: 9999, display: "flex", flexDirection: "column",
-      fontFamily: "'Georgia', serif", direction: isHe ? "rtl" : "ltr",
+      fontFamily: "'Heebo', sans-serif", direction: isHe ? "rtl" : "ltr",
     }}>
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "20px 32px", borderBottom: "1px solid rgba(255,255,255,0.08)",
-        background: "rgba(139,92,246,0.05)",
+        padding: "20px 32px", borderBottom: "1px solid #E8DDD5",
+        background: "rgba(193,123,123,0.05)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <h1 style={{ margin: 0, fontSize: "22px", fontWeight: "700", color: "#ffffff" }}>
+          <h1 style={{ margin: 0, fontSize: "22px", fontWeight: "700", color: "#3d2c2c" }}>
             💰 {isHe ? "פירוט תקציב" : "Budget Details"}
           </h1>
         </div>
 
         {/* Stats */}
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <div style={{ textAlign: "center", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px", padding: "8px 16px" }}>
-            <div style={{ fontSize: "18px", fontWeight: "700", color: "#ffffff" }}>₪{totalAgreed.toLocaleString()}</div>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{isHe ? "סה״כ הוזמן" : "Total Ordered"}</div>
+          <div style={{ textAlign: "center", background: "#F5EDE8", border: "1px solid #E0D5CC", borderRadius: "10px", padding: "8px 16px" }}>
+            <div style={{ fontSize: "18px", fontWeight: "700", color: "#3d2c2c" }}>₪{totalAgreed.toLocaleString()}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{isHe ? "סה״כ הוזמן" : "Total Ordered"}</div>
           </div>
-          <div style={{ textAlign: "center", background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
-            <div style={{ fontSize: "18px", fontWeight: "700", color: "#4ade80" }}>₪{totalPaid.toLocaleString()}</div>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{isHe ? "שולם" : "Paid"}</div>
+          <div style={{ textAlign: "center", background: "rgba(90,158,111,0.1)", border: "1px solid rgba(90,158,111,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
+            <div style={{ fontSize: "18px", fontWeight: "700", color: "#5A9E6F" }}>₪{totalPaid.toLocaleString()}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{isHe ? "שולם" : "Paid"}</div>
           </div>
           <div style={{ textAlign: "center", background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
             <div style={{ fontSize: "18px", fontWeight: "700", color: "#f87171" }}>₪{totalRemaining.toLocaleString()}</div>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{isHe ? "נותר לשלם לאחר האירוע" : "Remaining After Event"}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{isHe ? "נותר לשלם לאחר האירוע" : "Remaining After Event"}</div>
           </div>
           <div style={{ textAlign: "center", background: budgetRemaining >= 0 ? "rgba(251,146,60,0.1)" : "rgba(248,113,113,0.1)", border: `1px solid ${budgetRemaining >= 0 ? "rgba(251,146,60,0.2)" : "rgba(248,113,113,0.2)"}`, borderRadius: "10px", padding: "8px 16px" }}>
             <div style={{ fontSize: "18px", fontWeight: "700", color: budgetRemaining >= 0 ? "#fb923c" : "#f87171" }}>
               ₪{budgetRemaining.toLocaleString()}
             </div>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{isHe ? "נותר מהתקציב" : "Budget Remaining"}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{isHe ? "נותר מהתקציב" : "Budget Remaining"}</div>
           </div>
           <button onClick={onClose} style={{
-            padding: "10px 20px", background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px",
-            color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: "14px",
-            fontFamily: "'Georgia', serif",
+            padding: "10px 20px", background: "#F2EBE1",
+            border: "1px solid #E0D5CC", borderRadius: "10px",
+            color: "#5A4040", cursor: "pointer", fontSize: "14px",
+            fontFamily: "'Heebo', sans-serif",
           }}>
             ✕ {isHe ? "סגור" : "Close"}
           </button>
@@ -131,7 +131,7 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
       </div>
 
       {/* Filters + Sort */}
-      <div style={{ display: "flex", gap: "8px", padding: "16px 32px", borderBottom: "1px solid rgba(255,255,255,0.05)", alignItems: "center", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "8px", padding: "16px 32px", borderBottom: "1px solid #F5EDE8", alignItems: "center", flexWrap: "wrap" }}>
         {[
           { key: "all", label: isHe ? "הכל" : "All" },
           { key: "paid", label: isHe ? "שולם" : "Paid" },
@@ -140,17 +140,17 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
         ].map(f => (
           <button key={f.key} onClick={() => setFilterBy(f.key)} style={{
             padding: "7px 16px", borderRadius: "20px", cursor: "pointer",
-            fontSize: "13px", fontFamily: "'Georgia', serif",
-            background: filterBy === f.key ? "rgba(139,92,246,0.3)" : "rgba(255,255,255,0.04)",
-            border: `1px solid ${filterBy === f.key ? "rgba(139,92,246,0.6)" : "rgba(255,255,255,0.08)"}`,
-            color: filterBy === f.key ? "#c084fc" : "rgba(255,255,255,0.5)",
+            fontSize: "13px", fontFamily: "'Heebo', sans-serif",
+            background: filterBy === f.key ? "#DFC5EE" : "#F5EDE8",
+            border: `1px solid ${filterBy === f.key ? "#B890D0" : "#E8DDD5"}`,
+            color: filterBy === f.key ? "#8B5A8B" : "#7A6060",
           }}>
             {f.label}
           </button>
         ))}
 
         <div style={{ marginRight: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
-          <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)" }}>
+          <span style={{ fontSize: "12px", color: "#A89080" }}>
             {isHe ? "מיין לפי:" : "Sort by:"}
           </span>
           {[
@@ -160,10 +160,10 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
           ].map(s => (
             <button key={s.key} onClick={() => handleSort(s.key)} style={{
               padding: "7px 14px", borderRadius: "20px", cursor: "pointer",
-              fontSize: "13px", fontFamily: "'Georgia', serif",
-              background: sortBy === s.key ? "rgba(56,189,248,0.2)" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${sortBy === s.key ? "rgba(56,189,248,0.4)" : "rgba(255,255,255,0.08)"}`,
-              color: sortBy === s.key ? "#38bdf8" : "rgba(255,255,255,0.5)",
+              fontSize: "13px", fontFamily: "'Heebo', sans-serif",
+              background: sortBy === s.key ? "rgba(56,189,248,0.2)" : "#F5EDE8",
+              border: `1px solid ${sortBy === s.key ? "rgba(56,189,248,0.4)" : "#E8DDD5"}`,
+              color: sortBy === s.key ? "#38bdf8" : "#7A6060",
             }}>
               {s.label} {sortBy === s.key ? (sortDir === "asc" ? "↑" : "↓") : ""}
             </button>
@@ -196,12 +196,12 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
                 <tr key={item.id || i} style={{ background: i % 2 === 0 ? "rgba(255,255,255,0.01)" : "transparent" }}>
                   <td style={tdStyle}>
                     <div style={{ fontWeight: "600" }}>{item.name}</div>
-                    {item.note && <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", marginTop: "2px" }}>{item.note}</div>}
+                    {item.note && <div style={{ fontSize: "11px", color: "#A89080", marginTop: "2px" }}>{item.note}</div>}
                   </td>
                   <td style={tdStyle}>
                     {item.isProvider
                       ? <span style={{ color: "#38bdf8", fontSize: "12px" }}>{item.serviceType || "—"}</span>
-                      : <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px" }}>{isHe ? "הוצאה" : "Expense"}</span>
+                      : <span style={{ color: "#8B7060", fontSize: "12px" }}>{isHe ? "הוצאה" : "Expense"}</span>
                     }
                   </td>
                   <td style={tdStyle}>₪{item.agreedPrice.toLocaleString()}</td>
@@ -223,9 +223,9 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
                         }
                       }}
                       style={{
-                        background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                        borderRadius: "8px", color: "#4ade80", padding: "6px 10px",
-                        fontFamily: "'Georgia', serif", fontSize: "14px", width: "100px",
+                        background: "#F2EBE1", border: "1px solid #E0D5CC",
+                        borderRadius: "8px", color: "#5A9E6F", padding: "6px 10px",
+                        fontFamily: "'Heebo', sans-serif", fontSize: "14px", width: "100px",
                       }}
                     />
                   </td>

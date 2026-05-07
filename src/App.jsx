@@ -11,14 +11,14 @@ const styles = {
   layout: {
     display: "flex",
     minHeight: "100vh",
-    background: "#0d0d0f",
-    fontFamily: "'Georgia', serif",
+    background: "#FAF7F2",
+    fontFamily: "'Heebo', sans-serif",
   },
   sidebar: {
     width: "260px",
     flexShrink: 0,
-    background: "rgba(255,255,255,0.02)",
-    borderRight: "1px solid rgba(255,255,255,0.07)",
+    background: "#FDF0EC",
+    borderRight: "1px solid #E8DDD5",
     display: "flex",
     flexDirection: "column",
     padding: "24px 16px",
@@ -27,7 +27,7 @@ const styles = {
   sidebarLogo: {
     fontSize: "20px",
     fontWeight: "700",
-    color: "#ffffff",
+    color: "#3d2c2c",
     margin: "0 0 24px 8px",
   },
   sidebarSection: {
@@ -45,9 +45,9 @@ const styles = {
     borderRadius: "10px",
     border: "none",
     background: active ? "rgba(139,92,246,0.2)" : "transparent",
-    color: active ? "#c084fc" : "rgba(255,255,255,0.5)",
+    color: active ? "#8B5A8B" : "#7a6060",
     cursor: "pointer",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
     fontSize: "14px",
     textAlign: "left",
     width: "100%",
@@ -62,9 +62,9 @@ const styles = {
     borderRadius: "10px",
     border: "1px dashed rgba(255,255,255,0.15)",
     background: "transparent",
-    color: "rgba(255,255,255,0.35)",
+    color: "#8B7060",
     cursor: "pointer",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
     fontSize: "14px",
     width: "100%",
     marginTop: "8px",
@@ -77,7 +77,7 @@ const styles = {
   },
   userInfo: {
     fontSize: "12px",
-    color: "rgba(255,255,255,0.3)",
+    color: "#A89080",
     marginBottom: "8px",
     padding: "0 8px",
     wordBreak: "break-all",
@@ -88,10 +88,10 @@ const styles = {
     background: "rgba(255,255,255,0.04)",
     border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: "10px",
-    color: "rgba(255,255,255,0.35)",
+    color: "#7a6060",
     fontSize: "13px",
     cursor: "pointer",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
   },
   main: {
     flex: 1,
@@ -102,9 +102,9 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    background: "#0d0d0f",
+    background: "#FAF7F2",
     color: "rgba(255,255,255,0.3)",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
     fontSize: "16px",
   },
 };
@@ -260,11 +260,11 @@ if (events.length === 0 && !loadingEvents) {
         onClick={() => setSidebarOpen(o => !o)}
         style={{
           position: "absolute", top: "20px", left: "-12px",
-          zIndex: 100, background: "rgba(139,92,246,0.3)",
-          border: "1px solid rgba(139,92,246,0.5)", borderRadius: "50%",
-          color: "#c084fc", cursor: "pointer", fontSize: "10px",
+          zIndex: 100, background: "#E8D5F2",
+          border: "11px solid #C9A8E0", borderRadius: "50%",
+          color: "#8B5A8B", cursor: "pointer", fontSize: "10px",
           padding: "6px 8px", transition: "left 0.3s ease",
-          fontFamily: "'Georgia', serif",
+          fontFamily: "'Heebo', sans-serif",
         }}
       >
         {sidebarOpen ? "◀" : "▶"}

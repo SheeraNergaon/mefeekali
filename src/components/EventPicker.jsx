@@ -4,7 +4,7 @@ import { db } from "../firebase/config";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const getEventTypes = (tr) => [
-  { id: "wedding", emoji: "💍", title: tr.wedding, description: tr.weddingDesc, color: "#c084fc", glow: "rgba(192,132,252,0.15)" },
+  { id: "wedding", emoji: "💍", title: tr.wedding, description: tr.weddingDesc, color: "#8B5A8B", glow: "rgba(192,132,252,0.15)" },
   { id: "birthday", emoji: "🎂", title: tr.birthday, description: tr.birthdayDesc, color: "#fb923c", glow: "rgba(251,146,60,0.15)" },
   { id: "corporate", emoji: "🏢", title: tr.corporate, description: tr.corporateDesc, color: "#38bdf8", glow: "rgba(56,189,248,0.15)" },
   { id: "bar_mitzvah", emoji: "✡️", title: tr.barMitzvah, description: tr.barMitzvahDesc, color: "#4ade80", glow: "rgba(74,222,128,0.15)" },
@@ -22,8 +22,8 @@ const getRegions = (tr) => [
 
 const s = {
   page: {
-    minHeight: "100vh", background: "#0d0d0f", display: "flex", flexDirection: "column",
-    alignItems: "center", justifyContent: "center", fontFamily: "'Georgia', serif",
+    minHeight: "100vh", background: "#FAF7F2", display: "flex", flexDirection: "column",
+    alignItems: "center", justifyContent: "center", fontFamily: "'Heebo', sans-serif",
     padding: "40px 20px", position: "relative", overflow: "hidden",
   },
   bgCircle1: {
@@ -37,16 +37,16 @@ const s = {
     bottom: "-100px", left: "-100px", pointerEvents: "none",
   },
   header: { textAlign: "center", marginBottom: "48px", position: "relative", zIndex: 1 },
-  greeting: { fontSize: "14px", color: "rgba(255,255,255,0.35)", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: "12px" },
-  title: { fontSize: "36px", fontWeight: "700", color: "#ffffff", margin: "0 0 12px", letterSpacing: "-0.5px" },
-  subtitle: { fontSize: "16px", color: "rgba(255,255,255,0.4)", margin: 0 },
+  greeting: { fontSize: "14px", color: "#8B7060", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: "12px" },
+  title: { fontSize: "36px", fontWeight: "700", color: "#3d2c2c", margin: "0 0 12px", letterSpacing: "-0.5px" },
+  subtitle: { fontSize: "16px", color: "#8B7060", margin: 0 },
   grid: {
     display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px",
     maxWidth: "680px", width: "100%", position: "relative", zIndex: 1,
   },
   card: (color, glow, hovered) => ({
-    background: hovered ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.03)",
-    border: `1px solid ${hovered ? color : "rgba(255,255,255,0.08)"}`,
+    background: hovered ? "#E8DDD5" : "#FDF9F5",
+    border: `1px solid ${hovered ? color : "#E8DDD5"}`,
     borderRadius: "20px", padding: "32px 24px", cursor: "pointer",
     transition: "all 0.25s ease", textAlign: "left",
     boxShadow: hovered ? `0 0 40px ${glow}` : "none",
@@ -54,50 +54,50 @@ const s = {
   }),
   cardEmoji: { fontSize: "40px", display: "block", marginBottom: "16px" },
   cardTitle: (color) => ({ fontSize: "20px", fontWeight: "600", color, margin: "0 0 8px" }),
-  cardDesc: { fontSize: "14px", color: "rgba(255,255,255,0.4)", margin: 0, lineHeight: "1.6" },
+  cardDesc: { fontSize: "14px", color: "#8B7060", margin: 0, lineHeight: "1.6" },
   logoutBar: { position: "fixed", top: "20px", right: "24px", zIndex: 10 },
   logoutBtn: {
-    padding: "8px 18px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: "10px", color: "rgba(255,255,255,0.4)", fontSize: "13px",
-    cursor: "pointer", fontFamily: "'Georgia', serif",
+    padding: "8px 18px", background: "rgba(193,123,123,0.08)", border: "1px solid #E0D5CC",
+    borderRadius: "10px", color: "#8B7060", fontSize: "13px",
+    cursor: "pointer", fontFamily: "'Heebo', sans-serif",
   },
   overlay: {
-    position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)",
+    position: "fixed", inset: 0, background: "rgba(61,44,44,0.5)",
     display: "flex", alignItems: "center", justifyContent: "center",
-    zIndex: 100, backdropFilter: "blur(6px)",
+    zIndex: 100, backdropFilter: "blur(4px)",
   },
   popup: {
-    background: "#1a1a1f", border: "1px solid rgba(255,255,255,0.12)",
+    background: "#FDF9F5", border: "1px solid rgba(193,123,123,0.12)",
     borderRadius: "24px", padding: "40px 36px", width: "100%", maxWidth: "460px",
-    fontFamily: "'Georgia', serif", maxHeight: "90vh", overflowY: "auto",
+    fontFamily: "'Heebo', sans-serif", maxHeight: "90vh", overflowY: "auto",
   },
   popupEmoji: { fontSize: "44px", display: "block", marginBottom: "12px" },
-  popupTitle: { fontSize: "22px", fontWeight: "700", color: "#ffffff", margin: "0 0 6px" },
-  popupSub: { fontSize: "14px", color: "rgba(255,255,255,0.35)", margin: "0 0 28px", lineHeight: "1.6" },
+  popupTitle: { fontSize: "22px", fontWeight: "700", color: "#3d2c2c", margin: "0 0 6px" },
+  popupSub: { fontSize: "14px", color: "#8B7060", margin: "0 0 28px", lineHeight: "1.6" },
   fieldGroup: { marginBottom: "16px" },
   label: {
-    display: "block", fontSize: "11px", color: "rgba(255,255,255,0.4)",
+    display: "block", fontSize: "11px", color: "#8B7060",
     letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "8px",
   },
   input: {
     width: "100%", padding: "12px 14px", boxSizing: "border-box",
-    background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: "12px", color: "#ffffff", fontSize: "14px",
-    fontFamily: "'Georgia', serif", outline: "none",
+    background: "#F2EBE1", border: "1px solid #E0D5CC",
+    borderRadius: "12px", color: "#3d2c2c", fontSize: "14px",
+    fontFamily: "'Heebo', sans-serif", outline: "none",
   },
   regionGrid: {
     display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px",
   },
   regionBtn: (selected) => ({
     padding: "10px 12px", borderRadius: "10px", cursor: "pointer",
-    fontSize: "13px", fontFamily: "'Georgia', serif", textAlign: "center",
+    fontSize: "13px", fontFamily: "'Heebo', sans-serif", textAlign: "center",
     transition: "all 0.2s ease",
-    background: selected ? "rgba(139,92,246,0.3)" : "rgba(255,255,255,0.04)",
-    border: `1px solid ${selected ? "rgba(139,92,246,0.6)" : "rgba(255,255,255,0.08)"}`,
-    color: selected ? "#c084fc" : "rgba(255,255,255,0.5)",
+    background: selected ? "#DFC5EE" : "#F5EDE8",
+    border: `1px solid ${selected ? "#B890D0" : "#E8DDD5"}`,
+    color: selected ? "#8B5A8B" : "#7A6060",
   }),
   divider: {
-    height: "1px", background: "rgba(255,255,255,0.06)", margin: "20px 0",
+    height: "1px", background: "#F2EBE1", margin: "20px 0",
   },
   skipNote: {
     fontSize: "12px", color: "rgba(255,255,255,0.2)", textAlign: "center", margin: "0 0 20px",
@@ -105,15 +105,15 @@ const s = {
   popupActions: { display: "flex", gap: "10px", marginTop: "24px" },
   popupConfirm: (color) => ({
     flex: 1, padding: "13px", background: color ? `${color}44` : "rgba(139,92,246,0.4)",
-    border: `1px solid ${color || "#c084fc"}66`, borderRadius: "12px",
-    color: "#ffffff", fontSize: "15px", fontWeight: "600",
-    cursor: "pointer", fontFamily: "'Georgia', serif",
+    border: `1px solid ${color || "#8B5A8B"}66`, borderRadius: "12px",
+    color: "#3d2c2c", fontSize: "15px", fontWeight: "600",
+    cursor: "pointer", fontFamily: "'Heebo', sans-serif",
   }),
   popupCancel: {
-    padding: "13px 20px", background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px",
-    color: "rgba(255,255,255,0.4)", fontSize: "15px",
-    cursor: "pointer", fontFamily: "'Georgia', serif",
+    padding: "13px 20px", background: "rgba(193,123,123,0.08)",
+    border: "1px solid #E0D5CC", borderRadius: "12px",
+    color: "#8B7060", fontSize: "15px",
+    cursor: "pointer", fontFamily: "'Heebo', sans-serif",
   },
   loadingOverlay: {
     position: "fixed", inset: 0, background: "rgba(13,13,15,0.9)",
@@ -252,7 +252,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
             {/* Region */}
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.preferredRegion}</label>
-              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)", margin: "0 0 12px" }}>
+              <p style={{ fontSize: "12px", color: "#B0A090", margin: "0 0 12px" }}>
                 {tr.regionNote}
               </p>
               <div style={s.regionGrid}>

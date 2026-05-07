@@ -43,37 +43,37 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
 
   const thStyle = (field) => ({
     padding: "12px 16px", textAlign: "right", cursor: "pointer",
-    fontSize: "12px", fontWeight: "600", color: "rgba(255,255,255,0.5)",
+    fontSize: "12px", fontWeight: "600", color: "#7A6060",
     letterSpacing: "0.8px", textTransform: "uppercase",
-    borderBottom: "2px solid rgba(139,92,246,0.3)",
-    background: "rgba(139,92,246,0.05)",
+    borderBottom: "2px solid #DFC5EE",
+    background: "rgba(193,123,123,0.05)",
     whiteSpace: "nowrap", userSelect: "none",
   });
 
   const tdStyle = {
     padding: "12px 16px", textAlign: "right",
-    fontSize: "14px", color: "rgba(255,255,255,0.8)",
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
+    fontSize: "14px", color: "#3d2c2c",
+    borderBottom: "1px solid #F5EDE8",
     verticalAlign: "middle",
   };
 
   return (
     <div style={{
-      position: "fixed", inset: 0, background: "#0d0d0f",
+      position: "fixed", inset: 0, background: "#FAF7F2",
       zIndex: 9999, display: "flex", flexDirection: "column",
-      fontFamily: "'Georgia', serif", direction: language === "he" ? "rtl" : "ltr",
+      fontFamily: "'Heebo', sans-serif", direction: language === "he" ? "rtl" : "ltr",
     }}>
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "20px 32px", borderBottom: "1px solid rgba(255,255,255,0.08)",
-        background: "rgba(139,92,246,0.05)",
+        padding: "20px 32px", borderBottom: "1px solid #E8DDD5",
+        background: "rgba(193,123,123,0.05)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <h1 style={{ margin: 0, fontSize: "22px", fontWeight: "700", color: "#ffffff" }}>
+          <h1 style={{ margin: 0, fontSize: "22px", fontWeight: "700", color: "#3d2c2c" }}>
             👥 {language === "he" ? "רשימת מוזמנים" : "Guest List"}
           </h1>
-          <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.4)" }}>
+          <span style={{ fontSize: "13px", color: "#8B7060" }}>
             {language === "he" ? `סה״כ ${totalGuests} מוזמנים` : `Total ${totalGuests} guests`}
           </span>
         </div>
@@ -82,28 +82,28 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <div style={{ textAlign: "center", background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
             <div style={{ fontSize: "18px", fontWeight: "700", color: "#4ade80" }}>{totalConfirmed}</div>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{language === "he" ? "אישרו" : "Confirmed"}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{language === "he" ? "אישרו" : "Confirmed"}</div>
           </div>
           <div style={{ textAlign: "center", background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
             <div style={{ fontSize: "18px", fontWeight: "700", color: "#38bdf8" }}>{totalInvited}</div>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{ language === "he" ? "נשלחו הזמנות" : "Invites Sent"}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{ language === "he" ? "נשלחו הזמנות" : "Invites Sent"}</div>
           </div>
           <div style={{ textAlign: "center", background: "rgba(251,146,60,0.1)", border: "1px solid rgba(251,146,60,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
             <div style={{ fontSize: "18px", fontWeight: "700", color: "#fb923c" }}>{guests.length - totalInvited}</div>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{ language === "he" ? "לא נשלחו הזמנות" : "Invites Not Sent"}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{ language === "he" ? "לא נשלחו הזמנות" : "Invites Not Sent"}</div>
           </div>
           <button onClick={onClose} style={{
             padding: "10px 20px", background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px",
-            color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: "14px",
-            fontFamily: "'Georgia', serif",
+            border: "1px solid #E0D5CC", borderRadius: "10px",
+            color: "#5A4040", cursor: "pointer", fontSize: "14px",
+            fontFamily: "'Heebo', sans-serif",
           }}>
             ✕ {language === "he" ? "סגור" : "Close"}
           </button>
         </div>
       </div>
 
-        <div style={{ display: "flex", gap: "8px", padding: "16px 32px", borderBottom: "1px solid rgba(255,255,255,0.05)", alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "8px", padding: "16px 32px", borderBottom: "1px solid #F5EDE8", alignItems: "center", flexWrap: "wrap" }}>
             {/* filters */}
             {[
                 { key: "all", label: language === "he" ? "הכל" : "All" },
@@ -112,10 +112,10 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
             ].map(f => (
                 <button key={f.key} onClick={() => setFilterBy(f.key)} style={{
                     padding: "7px 16px", borderRadius: "20px", cursor: "pointer",
-                    fontSize: "13px", fontFamily: "'Georgia', serif",
-                    background: filterBy === f.key ? "rgba(139,92,246,0.3)" : "rgba(255,255,255,0.04)",
-                    border: `1px solid ${filterBy === f.key ? "rgba(139,92,246,0.6)" : "rgba(255,255,255,0.08)"}`,
-                    color: filterBy === f.key ? "#c084fc" : "rgba(255,255,255,0.5)",
+                    fontSize: "13px", fontFamily: "'Heebo', sans-serif",
+                    background: filterBy === f.key ? "#DFC5EE" : "#F5EDE8",
+                    border: `1px solid ${filterBy === f.key ? "#B890D0" : "#E8DDD5"}`,
+                    color: filterBy === f.key ? "#8B5A8B" : "#7A6060",
                 }}>
                     {f.label}
                 </button>
@@ -123,7 +123,7 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
 
             {/* sort */}
             <div style={{ marginRight: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
-                <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)" }}>
+                <span style={{ fontSize: "12px", color: "#A89080" }}>
                     {language === "he" ? "מיין לפי:" : "Sort by:"}
                 </span>
                 {[
@@ -134,10 +134,10 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                 ].map(s => (
                     <button key={s.key} onClick={() => handleSort(s.key)} style={{
                         padding: "7px 14px", borderRadius: "20px", cursor: "pointer",
-                        fontSize: "13px", fontFamily: "'Georgia', serif",
-                        background: sortBy === s.key ? "rgba(56,189,248,0.2)" : "rgba(255,255,255,0.04)",
-                        border: `1px solid ${sortBy === s.key ? "rgba(56,189,248,0.4)" : "rgba(255,255,255,0.08)"}`,
-                        color: sortBy === s.key ? "#38bdf8" : "rgba(255,255,255,0.5)",
+                        fontSize: "13px", fontFamily: "'Heebo', sans-serif",
+                        background: sortBy === s.key ? "rgba(56,189,248,0.2)" : "#F5EDE8",
+                        border: `1px solid ${sortBy === s.key ? "rgba(56,189,248,0.4)" : "#E8DDD5"}`,
+                        color: sortBy === s.key ? "#38bdf8" : "#7A6060",
                     }}>
                         {s.label} {sortBy === s.key ? (sortDir === "asc" ? "↑" : "↓") : ""}
                     </button>
@@ -178,14 +178,14 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
               <tr key={g.id || i} style={{ background: i % 2 === 0 ? "rgba(255,255,255,0.01)" : "transparent" }}>
                 <td style={tdStyle}>
                   <div style={{ fontWeight: "600" }}>{g.name}</div>
-                  {g.note && <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", marginTop: "2px" }}>{g.note}</div>}
+                  {g.note && <div style={{ fontSize: "11px", color: "#A89080", marginTop: "2px" }}>{g.note}</div>}
                 </td>
                 <td style={tdStyle}>
                   {g.invitedBy ? (
                     <span style={{
                       fontSize: "12px", padding: "3px 10px", borderRadius: "12px",
                       background: g.invitedBy === "כלה" ? "rgba(192,132,252,0.15)" : "rgba(56,189,248,0.15)",
-                      color: g.invitedBy === "כלה" ? "#c084fc" : "#38bdf8",
+                      color: g.invitedBy === "כלה" ? "#8B5A8B" : "#38bdf8",
                       border: `1px solid ${g.invitedBy === "כלה" ? "rgba(192,132,252,0.3)" : "rgba(56,189,248,0.3)"}`,
                     }}>
                       {g.invitedBy === "כלה" ? "👰" : "🤵"} {g.invitedBy}
@@ -197,7 +197,7 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                 <td style={{ ...tdStyle, textAlign: "center" }}>
                   <button onClick={() => onUpdateGuest(g.id || i, { invitationSent: !g.invitationSent })} style={{
                     width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", border: "none",
-                    background: g.invitationSent ? "rgba(74,222,128,0.2)" : "rgba(255,255,255,0.05)",
+                    background: g.invitationSent ? "rgba(74,222,128,0.2)" : "#F5EDE8",
                     fontSize: "16px",
                   }}>
                     {g.invitationSent ? "✅" : "⬜"}
@@ -209,9 +209,9 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                         onClick={() => onUpdateGuest(g.id || i, { rsvpStatus: g.rsvpStatus === "confirmed" ? null : "confirmed" })}
                         style={{
                             padding: "4px 10px", borderRadius: "8px", cursor: "pointer", border: "none",
-                            background: g.rsvpStatus === "confirmed" ? "rgba(74,222,128,0.25)" : "rgba(255,255,255,0.05)",
-                            color: g.rsvpStatus === "confirmed" ? "#4ade80" : "rgba(255,255,255,0.4)",
-                            fontSize: "12px", fontFamily: "'Georgia', serif",
+                            background: g.rsvpStatus === "confirmed" ? "rgba(74,222,128,0.25)" : "#F5EDE8",
+                            color: g.rsvpStatus === "confirmed" ? "#4ade80" : "#8B7060",
+                            fontSize: "12px", fontFamily: "'Heebo', sans-serif",
                             outline: g.rsvpStatus === "confirmed" ? "1px solid #4ade80" : "none",
                         }}
                         >
@@ -221,9 +221,9 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                             onClick={() => onUpdateGuest(g.id || i, { rsvpStatus: g.rsvpStatus === "declined" ? null : "declined" })}
                             style={{
                                 padding: "4px 10px", borderRadius: "8px", cursor: "pointer", border: "none",
-                                background: g.rsvpStatus === "declined" ? "rgba(248,113,113,0.25)" : "rgba(255,255,255,0.05)",
-                                color: g.rsvpStatus === "declined" ? "#f87171" : "rgba(255,255,255,0.4)",
-                                fontSize: "12px", fontFamily: "'Georgia', serif",
+                                background: g.rsvpStatus === "declined" ? "rgba(248,113,113,0.25)" : "#F5EDE8",
+                                color: g.rsvpStatus === "declined" ? "#f87171" : "#8B7060",
+                                fontSize: "12px", fontFamily: "'Heebo', sans-serif",
                                 outline: g.rsvpStatus === "declined" ? "1px solid #f87171" : "none",
                             }}
                         >
@@ -233,9 +233,9 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                             onClick={() => onUpdateGuest(g.id || i, { rsvpStatus: g.rsvpStatus === "no_answer" ? null : "no_answer" })}
                             style={{
                                 padding: "4px 10px", borderRadius: "8px", cursor: "pointer", border: "none",
-                                background: g.rsvpStatus === "no_answer" ? "rgba(251,146,60,0.25)" : "rgba(255,255,255,0.05)",
-                                color: g.rsvpStatus === "no_answer" ? "#fb923c" : "rgba(255,255,255,0.4)",
-                                fontSize: "12px", fontFamily: "'Georgia', serif",
+                                background: g.rsvpStatus === "no_answer" ? "rgba(251,146,60,0.25)" : "#F5EDE8",
+                                color: g.rsvpStatus === "no_answer" ? "#fb923c" : "#8B7060",
+                                fontSize: "12px", fontFamily: "'Heebo', sans-serif",
                                 outline: g.rsvpStatus === "no_answer" ? "1px solid #fb923c" : "none",
                             }}
                         >
@@ -249,9 +249,9 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                         value={g.rsvpCount || g.guestCount || 1}
                         onChange={(e) => onUpdateGuest(g.id || i, { rsvpCount: Number(e.target.value) })}
                         style={{
-                            background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                            borderRadius: "8px", color: "#ffffff", padding: "4px 8px",
-                            fontFamily: "'Georgia', serif", fontSize: "14px", cursor: "pointer",
+                            background: "rgba(255,255,255,0.06)", border: "1px solid #E0D5CC",
+                            borderRadius: "8px", color: "#3d2c2c", padding: "4px 8px",
+                            fontFamily: "'Heebo', sans-serif", fontSize: "14px", cursor: "pointer",
                         }}
                     >
                             {[1,2,3,4,5,6,7].map(n => <option key={n} value={n}>{n}</option>)}

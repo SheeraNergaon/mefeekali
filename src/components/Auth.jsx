@@ -15,7 +15,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
     padding: "20px",
     position: "relative",
     overflow: "hidden",
@@ -91,7 +91,7 @@ const styles = {
     transition: "all 0.2s ease",
     background: active ? "rgba(139,92,246,0.85)" : "transparent",
     color: active ? "#ffffff" : "rgba(255,255,255,0.4)",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
   }),
   inputGroup: {
     marginBottom: "16px",
@@ -115,7 +115,7 @@ const styles = {
     fontSize: "15px",
     outline: "none",
     boxSizing: "border-box",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
     transition: "border-color 0.2s ease",
   },
   primaryBtn: {
@@ -128,7 +128,7 @@ const styles = {
     fontSize: "15px",
     fontWeight: "600",
     cursor: "pointer",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
     letterSpacing: "0.3px",
     marginTop: "8px",
     transition: "opacity 0.2s ease",
@@ -159,7 +159,7 @@ const styles = {
     fontSize: "15px",
     fontWeight: "500",
     cursor: "pointer",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -204,7 +204,7 @@ const styles = {
     color: "rgba(255,255,255,0.7)",
     fontSize: "14px",
     cursor: "pointer",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
   },
 };
 

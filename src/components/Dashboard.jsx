@@ -38,8 +38,8 @@ const regionLabels = {
 
 const s = {
   page: {
-    minHeight: "100vh", background: "#0d0d0f",
-    fontFamily: "'Georgia', serif", color: "#ffffff",
+    minHeight: "100vh", background: "#FAF7F2", 
+    fontFamily: "'Heebo', sans-serif", color: "#3d2c2c",
   },
   topBar: {
     display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -47,15 +47,15 @@ const s = {
   },
   eventBadge: {
     fontSize: "12px", padding: "4px 12px", borderRadius: "20px",
-    background: "rgba(139,92,246,0.2)", color: "#c084fc",
+    background: "rgba(139,92,246,0.2)", color: "#8B5A8B",
     border: "1px solid rgba(139,92,246,0.3)",
   },
   eventMeta: {
     display: "flex", gap: "16px", alignItems: "center",
   },
   metaChip: {
-    fontSize: "12px", color: "rgba(255,255,255,0.3)",
-    background: "rgba(255,255,255,0.04)", borderRadius: "8px",
+    fontSize: "12px", color: "#A89080",
+    background: "#F5EDE8", borderRadius: "8px",
     padding: "4px 10px",
   },
   savingDot: (saving) => ({
@@ -67,18 +67,18 @@ const s = {
   pageSubtitle: { fontSize: "14px", color: "rgba(255,255,255,0.35)", margin: "0 0 36px" },
   grid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" },
   card: {
-    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+    background: "#FDF9F5", border: "1px solid #E8DDD5",
     borderRadius: "20px", padding: "28px",
   },
   cardTitle: {
-    fontSize: "15px", fontWeight: "600", color: "rgba(255,255,255,0.7)",
+    fontSize: "15px", fontWeight: "600", color: "#4A3030",
     margin: "0 0 20px", display: "flex", alignItems: "center", gap: "8px",
   },
   budgetNumbers: { display: "flex", justifyContent: "space-between", marginBottom: "16px" },
   budgetItem: { textAlign: "center" },
   budgetValue: (color) => ({ fontSize: "26px", fontWeight: "700", color, display: "block" }),
   budgetLabel: { fontSize: "11px", color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.8px" },
-  progressBar: { height: "6px", background: "rgba(255,255,255,0.08)", borderRadius: "3px", overflow: "hidden", marginBottom: "20px" },
+  progressBar: { height: "6px", background: "#E8DDD5", borderRadius: "3px", overflow: "hidden", marginBottom: "20px" },
   progressFill: (pct) => ({
     height: "100%", width: `${Math.min(pct, 100)}%`,
     background: pct > 90 ? "#f87171" : pct > 70 ? "#fb923c" : "#4ade80",
@@ -87,52 +87,52 @@ const s = {
   inputRow: { display: "flex", gap: "8px", marginBottom: "8px" },
   input: {
     flex: 1, padding: "10px 14px",
-    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: "10px", color: "#ffffff", fontSize: "14px",
-    fontFamily: "'Georgia', serif", outline: "none",
+    background: "rgba(193,123,123,0.08)", border: "1px solid #E8DDD5",
+    borderRadius: "10px", color: "#3d2c2c", fontSize: "14px",
+    fontFamily: "'Heebo', sans-serif", outline: "none",
   },
   addBtn: (color) => ({
     padding: "10px 18px", background: color || "rgba(139,92,246,0.3)",
-    border: "none", borderRadius: "10px", color: "#ffffff",
-    fontSize: "14px", cursor: "pointer", fontFamily: "'Georgia', serif", whiteSpace: "nowrap",
+    border: "none", borderRadius: "10px", color: "#3d2c2c",
+    fontSize: "14px", cursor: "pointer", fontFamily: "'Heebo', sans-serif", whiteSpace: "nowrap",
   }),
   iconBtn: {
     background: "none", border: "none", color: "rgba(255,255,255,0.25)",
     cursor: "pointer", fontSize: "18px", padding: "0", lineHeight: 1,
   },
-  expenseItem: { background: "rgba(255,255,255,0.04)", borderRadius: "12px", padding: "12px 14px", marginBottom: "8px" },
+  expenseItem: { background: "#F5EDE8", borderRadius: "12px", padding: "12px 14px", marginBottom: "8px" },
   expenseTop: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" },
-  expenseName: { fontSize: "14px", fontWeight: "600", color: "#ffffff" },
+  expenseName: { fontSize: "14px", fontWeight: "600", color: "#3d2c2c" },
   expenseAmount: { fontSize: "14px", color: "#f87171", fontWeight: "600" },
   expenseActions: { display: "flex", gap: "8px", alignItems: "center" },
   commentInput: {
     width: "100%", padding: "7px 10px",
-    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)",
-    borderRadius: "8px", color: "rgba(255,255,255,0.6)", fontSize: "12px",
-    fontFamily: "'Georgia', serif", outline: "none", boxSizing: "border-box", marginTop: "6px",
+    background: "#F5EDE8", border: "1px solid rgba(255,255,255,0.07)",
+    borderRadius: "8px", color: "#5A4040", fontSize: "12px",
+    fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginTop: "6px",
   },
   list: { listStyle: "none", padding: 0, margin: "16px 0 0", display: "flex", flexDirection: "column", gap: "8px" },
   listItem: {
     display: "flex", alignItems: "center", justifyContent: "space-between",
-    padding: "10px 14px", background: "rgba(255,255,255,0.04)", borderRadius: "10px", fontSize: "14px",
+    padding: "10px 14px", background: "#F5EDE8", borderRadius: "10px", fontSize: "14px",
   },
   listItemLeft: { display: "flex", alignItems: "center", gap: "10px" },
-  emptyMsg: { fontSize: "13px", color: "rgba(255,255,255,0.2)", textAlign: "center", padding: "20px 0", margin: 0 },
+  emptyMsg: { fontSize: "13px", color: "#C4B0A8", textAlign: "center", padding: "20px 0", margin: 0 },
   checklistItem: {
     display: "flex", alignItems: "center", gap: "10px",
-    padding: "10px 14px", background: "rgba(255,255,255,0.04)", borderRadius: "10px",
+    padding: "10px 14px", background: "#F5EDE8", borderRadius: "10px",
     fontSize: "14px", cursor: "pointer", marginBottom: "8px",
   },
   checkbox: (checked) => ({
     width: "18px", height: "18px", borderRadius: "5px",
-    border: `2px solid ${checked ? "#4ade80" : "rgba(255,255,255,0.2)"}`,
+    border: `2px solid ${checked ? "#4ade80" : "#C4B0A8"}`,
     background: checked ? "#4ade80" : "transparent",
     display: "flex", alignItems: "center", justifyContent: "center",
     flexShrink: 0, transition: "all 0.2s ease",
   }),
   checkedText: (checked) => ({
     textDecoration: checked ? "line-through" : "none",
-    color: checked ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.8)",
+    color: checked ? "#A89080" : "#3d2c2c",
     flex: 1,
   }),
   popupOverlay: {
@@ -141,36 +141,36 @@ const s = {
     zIndex: 1000, backdropFilter: "blur(4px)",
   },
   popup: {
-    background: "#1a1a1f", border: "1px solid rgba(255,255,255,0.12)",
+    background: "#FDF9F5", border: "1px solid rgba(255,255,255,0.12)",
     borderRadius: "20px", padding: "32px", width: "100%", maxWidth: "420px",
-    fontFamily: "'Georgia', serif",
+    fontFamily: "'Heebo', sans-serif",
   },
-  popupTitle: { fontSize: "18px", fontWeight: "600", color: "#ffffff", margin: "0 0 24px" },
+  popupTitle: { fontSize: "18px", fontWeight: "600", color: "#3d2c2c", margin: "0 0 24px" },
   popupField: { marginBottom: "14px" },
   popupLabel: {
-    display: "block", fontSize: "11px", color: "rgba(255,255,255,0.4)",
+    display: "block", fontSize: "11px", color: "#8B7060",
     letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px",
   },
   popupInput: {
     width: "100%", padding: "10px 14px",
-    background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: "10px", color: "#ffffff", fontSize: "14px",
-    fontFamily: "'Georgia', serif", outline: "none", boxSizing: "border-box",
+    background: "rgba(255,255,255,0.06)", border: "1px solid #E8DDD5",
+    borderRadius: "10px", color: "#3d2c2c", fontSize: "14px",
+    fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box",
   },
   popupActions: { display: "flex", gap: "10px", marginTop: "24px" },
   popupSave: {
     flex: 1, padding: "12px", background: "rgba(139,92,246,0.5)", border: "none",
-    borderRadius: "10px", color: "#ffffff", fontSize: "14px",
-    cursor: "pointer", fontFamily: "'Georgia', serif",
+    borderRadius: "10px", color: "#3d2c2c", fontSize: "14px",
+    cursor: "pointer", fontFamily: "'Heebo', sans-serif",
   },
   popupCancel: {
     flex: 1, padding: "12px", background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px",
-    color: "rgba(255,255,255,0.5)", fontSize: "14px", cursor: "pointer", fontFamily: "'Georgia', serif",
+    border: "1px solid #E8DDD5", borderRadius: "10px",
+    color: "#7A6060", fontSize: "14px", cursor: "pointer", fontFamily: "'Heebo', sans-serif",
   },
   detailChip: {
-    fontSize: "11px", color: "rgba(255,255,255,0.35)",
-    background: "rgba(255,255,255,0.05)", borderRadius: "6px", padding: "2px 8px",
+    fontSize: "11px", color: "#8B7060",
+    background: "rgba(193,123,123,0.08)", borderRadius: "6px", padding: "2px 8px",
     marginTop: "2px", display: "inline-block",
   },
   checklistAddRow: { display: "flex", gap: "8px", marginTop: "12px" },
@@ -192,13 +192,13 @@ const s = {
   aiHeaderLeft: { display: "flex", alignItems: "center", gap: "12px" },
   aiAvatar: {
     width: "40px", height: "40px", borderRadius: "12px",
-    background: "linear-gradient(135deg, #7c3aed, #c084fc)",
+    background: "linear-gradient(135deg, #7c3aed, #8B5A8B)",
     display: "flex", alignItems: "center", justifyContent: "center",
     fontSize: "20px", flexShrink: 0,
   },
-  aiName: { fontSize: "15px", fontWeight: "600", color: "#ffffff", margin: "0 0 2px" },
+  aiName: { fontSize: "15px", fontWeight: "600", color: "#3d2c2c", margin: "0 0 2px" },
   aiTagline: { fontSize: "12px", color: "rgba(255,255,255,0.35)", margin: 0 },
-  aiToggle: { fontSize: "20px", color: "rgba(255,255,255,0.3)" },
+  aiToggle: { fontSize: "20px", color: "#A89080" },
   aiBody: {
     padding: "0 28px 28px",
   },
@@ -213,12 +213,12 @@ const s = {
   msgAIBubble: {
     background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.2)",
     borderRadius: "16px 16px 16px 4px", padding: "12px 16px",
-    fontSize: "14px", color: "rgba(255,255,255,0.85)", lineHeight: "1.6",
+    fontSize: "14px", color: "#3d2c2c", lineHeight: "1.6",
     maxWidth: "80%",
   },
   msgAIAvatar: {
     width: "28px", height: "28px", borderRadius: "8px",
-    background: "linear-gradient(135deg, #7c3aed, #c084fc)",
+    background: "linear-gradient(135deg, #7c3aed, #8B5A8B)",
     display: "flex", alignItems: "center", justifyContent: "center",
     fontSize: "14px", flexShrink: 0, marginTop: "2px",
   },
@@ -226,9 +226,9 @@ const s = {
     display: "flex", justifyContent: "flex-end",
   },
   msgUserBubble: {
-    background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)",
+    background: "rgba(255,255,255,0.07)", border: "1px solid #E8DDD5",
     borderRadius: "16px 16px 4px 16px", padding: "12px 16px",
-    fontSize: "14px", color: "rgba(255,255,255,0.8)", lineHeight: "1.6",
+    fontSize: "14px", color: "#3d2c2c", lineHeight: "1.6",
     maxWidth: "80%",
   },
   typingDots: {
@@ -236,7 +236,7 @@ const s = {
   },
   dot: (delay) => ({
     width: "6px", height: "6px", borderRadius: "50%",
-    background: "#c084fc", opacity: 0.6,
+    background: "#8B5A8B", opacity: 0.6,
     animation: `bounce 1.2s ${delay}s infinite`,
   }),
   chatInputRow: {
@@ -245,14 +245,14 @@ const s = {
   },
   chatInput: {
     flex: 1, padding: "12px 16px",
-    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: "12px", color: "#ffffff", fontSize: "14px",
-    fontFamily: "'Georgia', serif", outline: "none", resize: "none",
+    background: "rgba(193,123,123,0.08)", border: "1px solid #E8DDD5",
+    borderRadius: "12px", color: "#3d2c2c", fontSize: "14px",
+    fontFamily: "'Heebo', sans-serif", outline: "none", resize: "none",
   },
   chatSendBtn: {
     padding: "12px 20px", background: "linear-gradient(135deg, #7c3aed, #9f4ff7)",
-    border: "none", borderRadius: "12px", color: "#ffffff",
-    fontSize: "14px", cursor: "pointer", fontFamily: "'Georgia', serif",
+    border: "none", borderRadius: "12px", color: "#3d2c2c",
+    fontSize: "14px", cursor: "pointer", fontFamily: "'Heebo', sans-serif",
     whiteSpace: "nowrap", alignSelf: "flex-end",
   },
   suggestedQuestions: {
@@ -261,8 +261,8 @@ const s = {
   suggestBtn: {
     padding: "7px 14px", background: "rgba(139,92,246,0.1)",
     border: "1px solid rgba(139,92,246,0.2)", borderRadius: "20px",
-    color: "#c084fc", fontSize: "12px", cursor: "pointer",
-    fontFamily: "'Georgia', serif", transition: "all 0.2s ease",
+    color: "#8B5A8B", fontSize: "12px", cursor: "pointer",
+    fontFamily: "'Heebo', sans-serif", transition: "all 0.2s ease",
   },
 };
 
@@ -314,10 +314,10 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he" }) {
                     onClick={() => set("invitedBy", side)}
                     style={{
                       flex: 1, padding: "10px", borderRadius: "10px", cursor: "pointer",
-                      fontFamily: "'Georgia', serif", fontSize: "14px",
-                      background: form.invitedBy === side ? "rgba(139,92,246,0.3)" : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${form.invitedBy === side ? "rgba(139,92,246,0.6)" : "rgba(255,255,255,0.08)"}`,
-                      color: form.invitedBy === side ? "#c084fc" : "rgba(255,255,255,0.5)",
+                      fontFamily: "'Heebo', sans-serif", fontSize: "14px",
+                      background: form.invitedBy === side ? "rgba(139,92,246,0.3)" : "#F5EDE8",
+                      border: `1px solid ${form.invitedBy === side ? "rgba(139,92,246,0.6)" : "#E8DDD5"}`,
+                      color: form.invitedBy === side ? "#8B5A8B" : "#7A6060",
                     }}
                   >
                     {side}
@@ -335,10 +335,10 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he" }) {
                     onClick={() => set("guestCount", n)}
                     style={{
                       width: "42px", height: "42px", borderRadius: "10px", cursor: "pointer",
-                      fontFamily: "'Georgia', serif", fontSize: "15px", fontWeight: "600",
-                      background: form.guestCount === n ? "rgba(139,92,246,0.3)" : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${form.guestCount === n ? "rgba(139,92,246,0.6)" : "rgba(255,255,255,0.08)"}`,
-                      color: form.guestCount === n ? "#c084fc" : "rgba(255,255,255,0.5)",
+                      fontFamily: "'Heebo', sans-serif", fontSize: "15px", fontWeight: "600",
+                      background: form.guestCount === n ? "rgba(139,92,246,0.3)" : "#F5EDE8",
+                      border: `1px solid ${form.guestCount === n ? "rgba(139,92,246,0.6)" : "#E8DDD5"}`,
+                      color: form.guestCount === n ? "#8B5A8B" : "#7A6060",
                     }}
                   >
                     {n}
@@ -363,10 +363,10 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he" }) {
                     onClick={() => set("paymentStatus", key)}
                     style={{
                       flex: 1, padding: "10px", borderRadius: "10px", cursor: "pointer",
-                      fontFamily: "'Georgia', serif", fontSize: "13px",
-                      background: form.paymentStatus === key ? "rgba(139,92,246,0.3)" : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${form.paymentStatus === key ? "rgba(139,92,246,0.6)" : "rgba(255,255,255,0.08)"}`,
-                      color: form.paymentStatus === key ? "#c084fc" : "rgba(255,255,255,0.5)",
+                      fontFamily: "'Heebo', sans-serif", fontSize: "13px",
+                      background: form.paymentStatus === key ? "rgba(139,92,246,0.3)" : "#F5EDE8",
+                      border: `1px solid ${form.paymentStatus === key ? "rgba(139,92,246,0.6)" : "#E8DDD5"}`,
+                      color: form.paymentStatus === key ? "#8B5A8B" : "#7A6060",
                     }}
                   >
                     {label}
@@ -569,11 +569,11 @@ RULES YOU MUST FOLLOW:
         .ai-bubble p { margin: 0 0 8px; }
         .ai-bubble p:last-child { margin-bottom: 0; }
         .ai-bubble strong { color: #e2d9f3; font-weight: 700; }
-        .ai-bubble h1 { color: #c084fc; font-size: 15px; font-weight: 700; margin: 10px 0 6px; }
-        .ai-bubble h2, .ai-bubble h3 { color: #c084fc; font-size: 14px; margin: 10px 0 6px; }
+        .ai-bubble h1 { color: #8B5A8B; font-size: 15px; font-weight: 700; margin: 10px 0 6px; }
+        .ai-bubble h2, .ai-bubble h3 { color: #8B5A8B; font-size: 14px; margin: 10px 0 6px; }
         .ai-bubble ul, .ai-bubble ol { margin: 6px 0; padding-left: 18px; }
         .ai-bubble li { margin-bottom: 4px; }
-        .ai-bubble hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 0; }
+        .ai-bubble hr { border: none; border-top: 1px solid #E8DDD5; margin: 10px 0; }
       `}</style>
       <div style={s.aiSection}>
         <div style={s.aiCard}>
@@ -675,6 +675,8 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
   const [guestFilter, setGuestFilter] = useState(null);
   const [showGuestTable, setShowGuestTable] = useState(false);
   const [showBudgetTable, setShowBudgetTable] = useState(false);
+  const [meetings, setMeetings] = useState([]);
+  const [showMeetingsPanel, setShowMeetingsPanel] = useState(false);
   const tr = translations[language];
   const isRTL = language === "he";
 
@@ -692,6 +694,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           if (d.budget) setBudget(d.budget);
           if (d.guests) setGuests(d.guests);
           if (d.providers) setProviders(d.providers);
+          if (d.meetings) setMeetings(d.meetings);
 
           const regularExpenses = (d.expenses || []).filter(e => !e.providerId);
           const providerExpenses = (d.providers || [])
@@ -737,7 +740,8 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     }, 800);
   };
 
-  const totalSpent = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+  const totalSpent = expenses.filter(e => !e.providerId).reduce((sum, e) => sum + (e.amount || 0), 0)
+  + providers.reduce((sum, p) => sum + (p.totalPrice || 0), 0);
   const remaining = budget.total - totalSpent;
   const spentPct = budget.total > 0 ? (totalSpent / budget.total) * 100 : 0;
   const doneCount = (checklist || []).filter((i) => i.done).length;
@@ -855,7 +859,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     try {
       const startDate = date || event.date;
       if (!startDate) { setCalendarPopup({ title, description, time }); return; }
-      const startDateTime = new Date(`${startDate}T${time}:00`);
+      const startDateTime = new Date(`${startDate}T${time}:00+03:00`);
       const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
       const res = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
         method: "POST",
@@ -865,9 +869,28 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           description,
           start: { dateTime: startDateTime.toISOString(), timeZone: "Asia/Jerusalem" },
           end: { dateTime: endDateTime.toISOString(), timeZone: "Asia/Jerusalem" },
+          reminders: calendarPopup?.reminder ? {
+            useDefault: false,
+            overrides: [{ method: "popup", minutes: calendarPopup.reminder }],
+          } : { useDefault: true },
         }),
       });
       const responseData = await res.json();
+      if (res.ok) {
+        const newMeeting = {
+          id: Date.now(),
+          googleEventId: responseData.id,
+          title,
+          date: startDate,
+          time,
+          description,
+        };
+        const nextMeetings = [...meetings, newMeeting].sort((a, b) => 
+          new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)
+        );
+        setMeetings(nextMeetings);
+        scheduleSave({ meetings: nextMeetings });
+      }
       setCalendarStatus(res.ok ? `✅ "${title}" ${language === "he" ? "נוסף ליומן גוגל!" : "added to Google Calendar!"}` : `❌ ${responseData.error?.message || "Failed"}`);
       setTimeout(() => setCalendarStatus(""), 4000);
     } catch (err) {
@@ -880,7 +903,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
   if (!loaded) {
     return (
       <div style={{ ...s.page, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ color: "rgba(255,255,255,0.3)" }}>Loading…</p>
+        <p style={{ color: "#A89080" }}>Loading…</p>
       </div>
     );
   }
@@ -945,6 +968,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
               <label style={s.popupLabel}>{tr.timeLabel}</label>
               <input style={s.popupInput} type="time"
                 value={calendarPopup.time || "10:00"}
+                dir="ltr"
                 onChange={(e) => setCalendarPopup(p => ({ ...p, time: e.target.value }))} />
             </div>
             <div style={s.popupField}>
@@ -952,6 +976,35 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
               <input style={s.popupInput} placeholder={tr.descriptionPlaceholder}
                 value={calendarPopup.description}
                 onChange={(e) => setCalendarPopup(p => ({ ...p, description: e.target.value }))} />
+            </div>
+            <div style={s.popupField}>
+              <label style={s.popupLabel}>{language === "he" ? "תזכורת" : "Reminder"}</label>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "6px" }}>
+                {[
+                  { value: 10, label: language === "he" ? "10 דק׳" : "10 min" },
+                  { value: 30, label: language === "he" ? "30 דק׳" : "30 min" },
+                  { value: 60, label: language === "he" ? "שעה" : "1 hour" },
+                  { value: 1440, label: language === "he" ? "יום" : "1 day" },
+                  { value: 10080, label: language === "he" ? "שבוע" : "1 week" },
+                ].map(({ value, label }) => (
+                  <button
+                    key={value}
+                    onClick={() => setCalendarPopup(p => ({ 
+                      ...p, 
+                      reminder: p.reminder === value ? null : value 
+                    }))}
+                    style={{
+                      padding: "6px 12px", borderRadius: "10px", cursor: "pointer",
+                      fontFamily: "'Heebo', sans-serif", fontSize: "13px",
+                      background: calendarPopup.reminder === value ? "rgba(139,92,246,0.3)" : "#F5EDE8",
+                      border: `1px solid ${calendarPopup.reminder === value ? "rgba(139,92,246,0.6)" : "#E8DDD5"}`,
+                      color: calendarPopup.reminder === value ? "#8B5A8B" : "#7A6060",
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div style={s.popupActions}>
               <button style={s.popupSave} onClick={() => {
@@ -974,10 +1027,94 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {calendarStatus && <span style={{ fontSize: "12px", color: "#4ade80" }}>{calendarStatus}</span>}
-          <button
-            style={{ ...s.addBtn("rgba(56,189,248,0.2)"), fontSize: "12px", padding: "6px 14px", border: "1px solid rgba(56,189,248,0.3)" }}
-            onClick={() => setCalendarPopup({ title: "", description: "", time: "10:00" })}
-          >{tr.addMeeting}</button>
+          <div style={{ position: "relative" }}>
+            <button
+              style={{ ...s.addBtn("rgba(56,189,248,0.2)"), fontSize: "12px", padding: "6px 14px", border: "1px solid rgba(56,189,248,0.3)" }}
+              onClick={() => setShowMeetingsPanel(o => !o)}
+            >
+              📅 {language === "he" ? "פגישות" : "Meetings"} {meetings.length > 0 && `(${meetings.length})`}
+            </button>
+
+            {showMeetingsPanel && (
+              <div style={{
+                position: "absolute", top: "36px", left: 0,
+                background: "#FDF9F5", border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "16px", padding: "16px", width: "320px",
+                zIndex: 500, boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                direction: isRTL ? "rtl" : "ltr",
+              }}>
+                <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+                  <button
+                    onClick={() => { setCalendarPopup({ title: "", description: "", time: "10:00" }); setShowMeetingsPanel(false); }}
+                    style={{
+                      flex: 1, padding: "8px", borderRadius: "10px", cursor: "pointer",
+                      background: "rgba(56,189,248,0.2)", border: "1px solid rgba(56,189,248,0.3)",
+                      color: "#38bdf8", fontSize: "13px", fontFamily: "'Heebo', sans-serif",
+                    }}
+                  >
+                    ＋ {language === "he" ? "הוסף פגישה" : "New Meeting"}
+                  </button>
+                </div>
+
+                {meetings.length === 0 ? (
+                  <p style={{ textAlign: "center", color: "#C4B0A8", fontSize: "13px", margin: "16px 0" }}>
+                    {language === "he" ? "אין פגישות עדיין" : "No meetings yet"}
+                  </p>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "300px", overflowY: "auto" }}>
+                    {meetings.map((m) => {
+                      const meetingDate = new Date(`${m.date}T${m.time}`);
+                      const today = new Date();
+                      const daysLeft = Math.ceil((meetingDate - today) / (1000 * 60 * 60 * 24));
+                      const isPast = daysLeft < 0;
+                      return (
+                        <div key={m.id} style={{
+                          background: "#F5EDE8", borderRadius: "10px", padding: "10px 12px",
+                          borderRight: `3px solid ${isPast ? "#E8DDD5" : "#38bdf8"}`,
+                          opacity: isPast ? 0.5 : 1,
+                        }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: "14px", fontWeight: "600", color: "#3d2c2c" }}>{m.title}</span>
+                            <span style={{
+                              fontSize: "11px", padding: "2px 8px", borderRadius: "10px",
+                              background: isPast ? "rgba(193,123,123,0.08)" : "rgba(56,189,248,0.15)",
+                              color: isPast ? "#A89080" : "#38bdf8",
+                            }}>
+                              {isPast
+                                ? (language === "he" ? "עבר" : "Past")
+                                : daysLeft === 0
+                                ? (language === "he" ? "היום!" : "Today!")
+                                : language === "he" ? `עוד ${daysLeft} ימים` : `${daysLeft} days left`}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: "12px", color: "#8B7060", marginTop: "4px" }}>
+                            📅 {m.date} · ⏰ {m.time}
+                          </div>
+                          {m.description && <div style={{ fontSize: "11px", color: "#A89080", marginTop: "2px" }}>{m.description}</div>}
+                          <button
+                            onClick={async () => {
+                              if (m.googleEventId && googleToken) {
+                                await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${m.googleEventId}`, {
+                                  method: "DELETE",
+                                  headers: { "Authorization": `Bearer ${googleToken}` },
+                                });
+                              }
+                              const next = meetings.filter(mt => mt.id !== m.id);
+                              setMeetings(next);
+                              scheduleSave({ meetings: next });
+                            }}
+                            style={{ background: "none", border: "none", color: "#C4B0A8", cursor: "pointer", fontSize: "12px", marginTop: "4px" }}
+                          >
+                            {language === "he" ? "בטל פגישה" : "Delete"}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <span style={s.savingDot(saving)}>{saving ? tr.saving : tr.saved}</span>
         </div>
       </div>
@@ -991,11 +1128,11 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           {/* BUDGET */}
           <div style={s.card}>
             <p style={{ ...s.cardTitle, cursor: "pointer" }} onClick={() => setShowBudgetTable(true)}>
-              💰 {tr.budget} <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", marginRight: "8px" }}>← {language === "he" ? "פירוט מלא" : "Full Details"}</span>
+              💰 {tr.budget} <span style={{ fontSize: "13px", color: "#7A6060", marginRight: "8px" }}>← {language === "he" ? "פירוט מלא" : "Full Details"}</span>
             </p>
             <div style={s.budgetNumbers}>
               <div style={s.budgetItem}>
-                <span style={s.budgetValue("#ffffff")}>₪{budget.total.toLocaleString()}</span>
+                <span style={s.budgetValue("#3d2c2c")}>₪{budget.total.toLocaleString()}</span>
                 <span style={s.budgetLabel}>{tr.total}</span>
               </div>
               <div style={s.budgetItem}>
@@ -1022,29 +1159,49 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                 onKeyDown={(e) => e.key === "Enter" && handleAddExpense()} />
               <button style={s.addBtn("rgba(248,113,113,0.4)")} onClick={handleAddExpense}>{tr.add}</button>
             </div>
-            {expenses.filter(e => !e.providerId).length === 0 ? <p style={s.emptyMsg}>{tr.noExpenses}</p> : (
-                expenses.filter(e => !e.providerId).map((exp) => (
-                  <div key={exp.id} style={s.expenseItem}>
-                    <div style={s.expenseTop}>
-                      <span style={s.expenseName}>{exp.name}</span>
-                      <div style={s.expenseActions}>
-                        <span style={s.expenseAmount}>₪{exp.amount.toLocaleString()}</span>
-                        <button style={s.iconBtn} onClick={() => handleRemoveExpense(exp.id)}>×</button>
-                      </div>
-                    </div>
-                    <input style={s.commentInput} type="text" placeholder={tr.addComment}
-                      value={exp.comment || ""}
-                      onChange={(e) => handleExpenseComment(exp.id, e.target.value)} />
+            {expenses.filter(e => !e.providerId).length === 0 && providers.length === 0 
+              ? <p style={s.emptyMsg}>{tr.noExpenses}</p> 
+              : null}
+
+            {/* Provider Expenses */}
+            {providers.filter(p => p.totalPrice > 0).map((p, i) => (
+              <div key={p.id || i} style={{ ...s.expenseItem, borderLeft: "2px solid #38bdf8" }}>
+                <div style={s.expenseTop}>
+                  <span style={s.expenseName}>{p.name} {p.serviceType ? `· ${p.serviceType}` : ""}</span>
+                  <span style={s.expenseAmount}>₪{p.totalPrice.toLocaleString()}</span>
+                </div>
+                <div style={{ fontSize: "13px", color: p.paymentStatus === "paid" ? "#4ade80" : p.paymentStatus === "deposit" ? "#fb923c" : "#f87171", marginTop: "4px" }}>
+                  {p.paymentStatus === "paid" 
+                    ? (language === "he" ? "שולם במלואו" : "Fully paid")
+                    : p.paymentStatus === "deposit"
+                    ? (language === "he" ? `שולמה מקדמה ₪${p.depositAmount || 0} · נותר ₪${(p.totalPrice - (p.depositAmount || 0)).toLocaleString()}` : `Deposit ₪${p.depositAmount || 0} paid · ₪${(p.totalPrice - (p.depositAmount || 0)).toLocaleString()} remaining`)
+                    : (language === "he" ? "טרם שולם" : "Not paid yet")}
+                </div>
+              </div>
+            ))}
+
+            {/* Regular Expenses */}
+            {expenses.filter(e => !e.providerId).map((exp) => (
+              <div key={exp.id} style={s.expenseItem}>
+                <div style={s.expenseTop}>
+                  <span style={s.expenseName}>{exp.name}</span>
+                  <div style={s.expenseActions}>
+                    <span style={s.expenseAmount}>₪{exp.amount.toLocaleString()}</span>
+                    <button style={s.iconBtn} onClick={() => handleRemoveExpense(exp.id)}>×</button>
                   </div>
-                ))
-              )}
+                </div>
+                <input style={s.commentInput} type="text" placeholder={tr.addComment}
+                  value={exp.comment || ""}
+                  onChange={(e) => handleExpenseComment(exp.id, e.target.value)} />
+              </div>
+            ))}
           </div>
 
           {/* CHECKLIST */}
           <div style={s.card}>
             <p style={s.cardTitle}>
               ✅ {tr.checklist}
-              <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", marginLeft: "auto" }}>
+              <span style={{ fontSize: "12px", color: "#A89080", marginLeft: "auto" }}>
                 {doneCount}/{checklist.length} {tr.done}
               </span>
             </p>
@@ -1055,7 +1212,12 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                 </div>
                 <span style={s.checkedText(item.done)} onClick={() => toggleChecklistItem(i)}>{item.text}</span>
                 <button style={{ ...s.iconBtn, fontSize: "12px", opacity: 0.5 }}
-                  onClick={() => addToCalendar(item.text, event.date, `Checklist: ${item.text}`)}>📅</button>
+                  onClick={() => setCalendarPopup({ 
+                    title: item.text, 
+                    description: `משימה: ${item.text}`,
+                    time: "10:00",
+                    reminder: 1440
+                  })}>📅</button>
                 <button style={{ ...s.iconBtn, fontSize: "14px", marginLeft: "4px", opacity: 0.4 }}
                   onClick={() => handleRemoveCheckItem(i)}>×</button>
               </div>
@@ -1072,15 +1234,15 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           <div style={s.card}>
             <p style={s.cardTitle}>
               👥 {tr.guestList}
-              <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
+              <span style={{ fontSize: "12px", color: "#A89080", marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
                 <button
                   onClick={() => setGuestFilter(guestFilter === "כלה" ? null : "כלה")}
                   style={{
-                    background: guestFilter === "כלה" ? "rgba(192,132,252,0.3)" : "rgba(255,255,255,0.05)",
-                    border: `1px solid ${guestFilter === "כלה" ? "#c084fc" : "rgba(255,255,255,0.1)"}`,
+                    background: guestFilter === "כלה" ? "rgba(192,132,252,0.3)" : "rgba(193,123,123,0.08)",
+                    border: `1px solid ${guestFilter === "כלה" ? "#8B5A8B" : "#E8DDD5"}`,
                     borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
-                    color: guestFilter === "כלה" ? "#c084fc" : "rgba(255,255,255,0.4)",
-                    fontSize: "11px", fontFamily: "'Georgia', serif"
+                    color: guestFilter === "כלה" ? "#8B5A8B" : "#8B7060",
+                    fontSize: "11px", fontFamily: "'Heebo', sans-serif"
                   }}
                 >
                   👰 {language === "he" ? "כלה" : "Bride"}: {guests.filter(g => g.invitedBy === "כלה").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
@@ -1088,11 +1250,11 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                 <button
                   onClick={() => setGuestFilter(guestFilter === "חתן" ? null : "חתן")}
                   style={{
-                    background: guestFilter === "חתן" ? "rgba(56,189,248,0.3)" : "rgba(255,255,255,0.05)",
-                    border: `1px solid ${guestFilter === "חתן" ? "#38bdf8" : "rgba(255,255,255,0.1)"}`,
+                    background: guestFilter === "חתן" ? "rgba(56,189,248,0.3)" : "rgba(193,123,123,0.08)",
+                    border: `1px solid ${guestFilter === "חתן" ? "#38bdf8" : "#E8DDD5"}`,
                     borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
-                    color: guestFilter === "חתן" ? "#38bdf8" : "rgba(255,255,255,0.4)",
-                    fontSize: "11px", fontFamily: "'Georgia', serif"
+                    color: guestFilter === "חתן" ? "#38bdf8" : "#8B7060",
+                    fontSize: "11px", fontFamily: "'Heebo', sans-serif"
                   }}
                 >
                   🤵 {language === "he" ? "חתן" : "Groom"}: {guests.filter(g => g.invitedBy === "חתן").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
@@ -1100,11 +1262,11 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                 <button
                   onClick={() => { setGuestFilter(null); setShowGuestTable(true); }}
                   style={{
-                    background: guestFilter === null ? "rgba(74,222,128,0.3)" : "rgba(255,255,255,0.05)",
-                    border: `1px solid ${guestFilter === null ? "#4ade80" : "rgba(255,255,255,0.1)"}`,
+                    background: guestFilter === null ? "rgba(90,158,111,0.2)" : "rgba(193,123,123,0.08)",
+                    border: `1px solid ${guestFilter === null ? "#5A9E6F" : "#E8DDD5"}`,
                     borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
-                    color: guestFilter === null ? "#4ade80" : "rgba(255,255,255,0.4)",
-                    fontSize: "11px", fontFamily: "'Georgia', serif"
+                    color: guestFilter === null ? "#5A9E6F" : "#8B7060",
+                    fontSize: "11px", fontFamily: "'Heebo', sans-serif"
                   }}
                 >
                   {language === "he" ? 'סה״כ' : "Total"}: {guests.reduce((sum, g) => sum + (g.guestCount || 1), 0)}
@@ -1145,7 +1307,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           <div style={s.card}>
             <p style={s.cardTitle}>
               🏢 {tr.providers}
-              <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", marginLeft: "auto" }}>
+              <span style={{ fontSize: "12px", color: "#A89080", marginLeft: "auto" }}>
                 {providers.length} {tr.added}
               </span>
             </p>
