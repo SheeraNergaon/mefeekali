@@ -141,10 +141,11 @@ const s = {
     zIndex: 1000, backdropFilter: "blur(4px)",
   },
   popup: {
-    background: "#FDF9F5", border: "1px solid rgba(255,255,255,0.12)",
+    background: "#FDF9F5", border: "1px solid rgba(193,123,123,0.12)",
     borderRadius: "20px", padding: "32px", width: "100%", maxWidth: "420px",
     fontFamily: "'Heebo', sans-serif",
-  },
+    maxHeight: "90vh", overflowY: "auto",
+  },  
   popupTitle: { fontSize: "18px", fontWeight: "600", color: "#3d2c2c", margin: "0 0 24px" },
   popupField: { marginBottom: "14px" },
   popupLabel: {
@@ -267,7 +268,7 @@ const s = {
 };
 
 // ── Contact Popup ─────────────────────────────────────────────────────────────
-function ContactPopup({ type, initial, onSave, onClose, language = "he" }) {
+function ContactPopup({ type, initial, onSave, onClose, language = "he", event }) {
   const tr = translations[language];
   const isRTL = language === "he";
   const [form, setForm] = useState(initial || { name: "", email: "", phone: "", note: "" });
@@ -305,26 +306,31 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he" }) {
         ))}
         {type === "guest" && (
           <>
-            <div style={s.popupField}>
-              <label style={s.popupLabel}>{language === "he" ? "של מי המוזמן?" : "Invited by?"}</label>
-              <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
-                {["חתן", "כלה"].map((side) => (
-                  <button
-                    key={side}
-                    onClick={() => set("invitedBy", side)}
-                    style={{
-                      flex: 1, padding: "10px", borderRadius: "10px", cursor: "pointer",
-                      fontFamily: "'Heebo', sans-serif", fontSize: "14px",
-                      background: form.invitedBy === side ? "rgba(139,92,246,0.3)" : "#F5EDE8",
-                      border: `1px solid ${form.invitedBy === side ? "rgba(139,92,246,0.6)" : "#E8DDD5"}`,
-                      color: form.invitedBy === side ? "#8B5A8B" : "#7A6060",
-                    }}
-                  >
-                    {side}
-                  </button>
-                ))}
+            {event?.type === "wedding" && (
+              <div style={s.popupField}>
+                <label style={s.popupLabel}>{language === "he" ? "של מי המוזמן?" : "Invited by?"}</label>
+                <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
+                  {[
+                    { value: "חתן", label: language === "he" ? "חתן" : "Groom" },
+                    { value: "כלה", label: language === "he" ? "כלה" : "Bride" },
+                  ].map(({ value, label }) => (
+                    <button
+                      key={value}
+                      onClick={() => set("invitedBy", value)}
+                      style={{
+                        flex: 1, padding: "10px", borderRadius: "10px", cursor: "pointer",
+                        fontFamily: "'Heebo', sans-serif", fontSize: "14px",
+                        background: form.invitedBy === value ? "rgba(139,92,246,0.3)" : "#F5EDE8",
+                        border: `1px solid ${form.invitedBy === value ? "rgba(139,92,246,0.6)" : "#E8DDD5"}`,
+                        color: form.invitedBy === value ? "#8B5A8B" : "#7A6060",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <div style={s.popupField}>
               <label style={s.popupLabel}>{language === "he" ? "כמה מוזמנים?" : "Number of guests?"}</label>
@@ -463,8 +469,8 @@ RULES YOU MUST FOLLOW:
 8. Keep responses concise and friendly — use short paragraphs, not walls of text.
 9. When users ask about venues, vendors, or places — use web search to find REAL options in their region. Search in Hebrew or English for actual venues with names, locations and prices. Always search before giving price estimates — never guess prices from memory.
 10. For Israeli market prices always search first — prices change frequently. Never assume catering costs, venue prices, or vendor fees without searching.
-11. Always format responses with numbered lists or bullet points. Never write long paragraphs. Keep each point short and scannable.
-12. IMPORTANT LANGUAGE RULE: ${language === "he" ? "ענה תמיד בעברית בלבד, גם בברכה הראשונה וגם בכל התשובות." : "Always respond in English only, including the first greeting and all responses."}
+11. Always format responses with proper markdown — use - for bullet points, **bold** for emphasis. Never use • as bullet characters. Use proper line breaks between sections.
+12. IMPORTANT LANGUAGE RULE: Always respond in the SAME LANGUAGE the user writes in. If they write in Hebrew — respond in Hebrew. If they write in English — respond in English. Never switch languages mid-conversation.
 `;
   };
 
@@ -568,11 +574,12 @@ RULES YOU MUST FOLLOW:
         }
         .ai-bubble p { margin: 0 0 8px; }
         .ai-bubble p:last-child { margin-bottom: 0; }
-        .ai-bubble strong { color: #e2d9f3; font-weight: 700; }
+        .ai-bubble strong { color: #5A3A8B; font-weight: 700; }
         .ai-bubble h1 { color: #8B5A8B; font-size: 15px; font-weight: 700; margin: 10px 0 6px; }
         .ai-bubble h2, .ai-bubble h3 { color: #8B5A8B; font-size: 14px; margin: 10px 0 6px; }
-        .ai-bubble ul, .ai-bubble ol { margin: 6px 0; padding-left: 18px; }
-        .ai-bubble li { margin-bottom: 4px; }
+        .ai-bubble ul, .ai-bubble ol { margin: 6px 0; padding-left: 18px; list-style: disc; }
+        .ai-bubble ul li { display: list-item; margin-bottom: 6px; line-height: 1.6; }
+        .ai-bubble ol li { display: list-item; margin-bottom: 6px; line-height: 1.6; }
         .ai-bubble hr { border: none; border-top: 1px solid #E8DDD5; margin: 10px 0; }
       `}</style>
       <div style={s.aiSection}>
@@ -707,10 +714,6 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
               comment: "",
             }));
           setExpenses([...regularExpenses, ...providerExpenses]);
-
-          console.log("regular:", regularExpenses);
-          console.log("providers:", providerExpenses);
-          console.log("merged:", [...regularExpenses, ...providerExpenses]);
 
           if (d.checklist) {
             setChecklist(d.checklist);
@@ -940,7 +943,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
       {guestPopup !== null && (
         <ContactPopup type="guest" initial={guestPopup?.data}
           onSave={handleSaveGuest} onClose={() => setGuestPopup(null)}
-          language={language} />
+          language={language} event={event} />
       )}
       {providerPopup !== null && (
         <ContactPopup type="provider" initial={providerPopup?.data}
@@ -1230,49 +1233,53 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             </div>
           </div>
 
-          {/* GUESTS */}
-          <div style={s.card}>
-            <p style={s.cardTitle}>
-              👥 {tr.guestList}
-              <span style={{ fontSize: "12px", color: "#A89080", marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
-                <button
-                  onClick={() => setGuestFilter(guestFilter === "כלה" ? null : "כלה")}
-                  style={{
-                    background: guestFilter === "כלה" ? "rgba(192,132,252,0.3)" : "rgba(193,123,123,0.08)",
-                    border: `1px solid ${guestFilter === "כלה" ? "#8B5A8B" : "#E8DDD5"}`,
-                    borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
-                    color: guestFilter === "כלה" ? "#8B5A8B" : "#8B7060",
-                    fontSize: "11px", fontFamily: "'Heebo', sans-serif"
-                  }}
-                >
-                  👰 {language === "he" ? "כלה" : "Bride"}: {guests.filter(g => g.invitedBy === "כלה").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
-                </button>
-                <button
-                  onClick={() => setGuestFilter(guestFilter === "חתן" ? null : "חתן")}
-                  style={{
-                    background: guestFilter === "חתן" ? "rgba(56,189,248,0.3)" : "rgba(193,123,123,0.08)",
-                    border: `1px solid ${guestFilter === "חתן" ? "#38bdf8" : "#E8DDD5"}`,
-                    borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
-                    color: guestFilter === "חתן" ? "#38bdf8" : "#8B7060",
-                    fontSize: "11px", fontFamily: "'Heebo', sans-serif"
-                  }}
-                >
-                  🤵 {language === "he" ? "חתן" : "Groom"}: {guests.filter(g => g.invitedBy === "חתן").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
-                </button>
-                <button
-                  onClick={() => { setGuestFilter(null); setShowGuestTable(true); }}
-                  style={{
-                    background: guestFilter === null ? "rgba(90,158,111,0.2)" : "rgba(193,123,123,0.08)",
-                    border: `1px solid ${guestFilter === null ? "#5A9E6F" : "#E8DDD5"}`,
-                    borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
-                    color: guestFilter === null ? "#5A9E6F" : "#8B7060",
-                    fontSize: "11px", fontFamily: "'Heebo', sans-serif"
-                  }}
-                >
-                  {language === "he" ? 'סה״כ' : "Total"}: {guests.reduce((sum, g) => sum + (g.guestCount || 1), 0)}
-                </button>
-              </span>
-            </p>
+            {/* GUESTS */}
+            <div style={s.card}>
+              <p style={s.cardTitle}>
+                👥 {tr.guestList}
+                <span style={{ fontSize: "12px", color: "#A89080", marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
+                  {event.type === "wedding" && (
+                    <>
+                      <button
+                        onClick={() => setGuestFilter(guestFilter === "כלה" ? null : "כלה")}
+                        style={{
+                          background: guestFilter === "כלה" ? "rgba(192,132,252,0.3)" : "rgba(193,123,123,0.08)",
+                          border: `1px solid ${guestFilter === "כלה" ? "#8B5A8B" : "#E8DDD5"}`,
+                          borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
+                          color: guestFilter === "כלה" ? "#8B5A8B" : "#8B7060",
+                          fontSize: "11px", fontFamily: "'Heebo', sans-serif"
+                        }}
+                      >
+                        👰 {language === "he" ? "כלה" : "Bride"}: {guests.filter(g => g.invitedBy === "כלה").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
+                      </button>
+                      <button
+                        onClick={() => setGuestFilter(guestFilter === "חתן" ? null : "חתן")}
+                        style={{
+                          background: guestFilter === "חתן" ? "rgba(56,189,248,0.3)" : "rgba(193,123,123,0.08)",
+                          border: `1px solid ${guestFilter === "חתן" ? "#38bdf8" : "#E8DDD5"}`,
+                          borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
+                          color: guestFilter === "חתן" ? "#38bdf8" : "#8B7060",
+                          fontSize: "11px", fontFamily: "'Heebo', sans-serif"
+                        }}
+                      >
+                        🤵 {language === "he" ? "חתן" : "Groom"}: {guests.filter(g => g.invitedBy === "חתן").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={() => { setGuestFilter(null); setShowGuestTable(true); }}
+                    style={{
+                      background: guestFilter === null ? "rgba(90,158,111,0.2)" : "rgba(193,123,123,0.08)",
+                      border: `1px solid ${guestFilter === null ? "#5A9E6F" : "#E8DDD5"}`,
+                      borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
+                      color: guestFilter === null ? "#5A9E6F" : "#8B7060",
+                      fontSize: "11px", fontFamily: "'Heebo', sans-serif"
+                    }}
+                  >
+                    {language === "he" ? 'סה״כ' : "Total"}: {guests.reduce((sum, g) => sum + (g.guestCount || 1), 0)}
+                  </button>
+                </span>
+              </p>
             <button style={{ ...s.addBtn("rgba(139,92,246,0.3)"), width: "100%", marginBottom: "12px" }}
               onClick={() => setGuestPopup("new")}>{tr.addGuest}</button>
             {guests.length === 0 ? <p style={s.emptyMsg}>{tr.noGuests}</p> : (
@@ -1293,7 +1300,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                     <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", paddingRight: "28px" }}>
                       {g.phone && <span style={s.detailChip}>📞 {g.phone}</span>}
                       {g.email && <span style={s.detailChip}>✉️ {g.email}</span>}
-                      {g.invitedBy && <span style={s.detailChip}>{g.invitedBy === "כלה" ? "👰" : "🤵"} {g.invitedBy}</span>}
+                      {g.invitedBy && (<span style={s.detailChip}> {g.invitedBy === "כלה" ? "👰" : "🤵"} {g.invitedBy === "כלה" ? (language === "he" ? "כלה" : "Bride") : (language === "he" ? "חתן" : "Groom")}</span> )}
                       {g.guestCount && <span style={s.detailChip}>👥 {g.guestCount}</span>}
                       {g.note && <span style={{ ...s.detailChip, fontStyle: "italic" }}>{g.note}</span>}
                     </div>
