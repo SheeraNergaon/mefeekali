@@ -30,7 +30,49 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
         : String(valA).localeCompare(String(valB), "he");
       return sortDir === "asc" ? result : -result;
     });
+  const exportToExcel = () => {
+    const headers = language === "he"
+      ? ["שם", "טלפון", "אימייל", "מזמין", "כמות מוזמנים", "הזמנה נשלחה", "סטטוס", "כמה מגיעים", "הערה"]
+      : ["Name", "Phone", "Email", "Invited By", "Guest Count", "Invite Sent", "RSVP Status", "Attending", "Note"];
 
+    const rows = guests.map(g => [
+      g.name || "",
+      g.phone || "",
+      g.email || "",
+      g.invitedBy || "",
+      g.guestCount || 1,
+      g.invitationSent ? (language === "he" ? "כן" : "Yes") : (language === "he" ? "לא" : "No"),
+      g.rsvpStatus === "confirmed" ? (language === "he" ? "מגיע" : "Confirmed")
+        : g.rsvpStatus === "declined" ? (language === "he" ? "לא מגיע" : "Declined")
+        : g.rsvpStatus === "no_answer" ? (language === "he" ? "אין מענה" : "No Answer") : "",
+      g.rsvpStatus === "confirmed" ? (g.rsvpCount || g.guestCount || 1) : "",
+      g.note || "",
+    ]);
+
+    const tableHTML = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+      <head><meta charset="UTF-8"></head>
+      <body><table border="1">
+        <tr>${headers.map(h => `<th style="background:#DFC5EE;font-weight:bold">${h}</th>`).join("")}</tr>
+        ${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`).join("")}
+        <tr>
+          <td colspan="4"><b>${language === "he" ? `סה״כ: ${guests.length} אנשי קשר` : `Total: ${guests.length} contacts`}</b></td>
+          <td>${guests.reduce((sum, g) => sum + (g.guestCount || 1), 0)}</td>
+          <td></td>
+          <td><b>${language === "he"
+            ? `מגיעים: ${guests.filter(g => g.rsvpStatus === "confirmed").reduce((sum, g) => sum + (g.rsvpCount || g.guestCount || 1), 0)}`
+            : `Confirmed: ${guests.filter(g => g.rsvpStatus === "confirmed").reduce((sum, g) => sum + (g.rsvpCount || g.guestCount || 1), 0)}`}</b></td>
+          <td></td><td></td>
+        </tr>
+      </table></body></html>`;
+
+    const blob = new Blob(["\uFEFF" + tableHTML], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `guest_list_${new Date().toISOString().split("T")[0]}.xls`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
   const totalGuests = guests.reduce((sum, g) => sum + (g.guestCount || 1), 0);
   const totalConfirmed = guests.filter(g => g.rsvpStatus === "confirmed").reduce((sum, g) => sum + (g.rsvpCount || g.guestCount || 1), 0);
   const totalInvited = guests.filter(g => g.invitationSent).length;
@@ -92,6 +134,13 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
             <div style={{ fontSize: "18px", fontWeight: "700", color: "#fb923c" }}>{guests.length - totalInvited}</div>
             <div style={{ fontSize: "11px", color: "#8B7060" }}>{ language === "he" ? "לא נשלחו הזמנות" : "Invites Not Sent"}</div>
           </div>
+          <button onClick={exportToExcel} style={{
+            padding: "10px 20px", background: "rgba(90,158,111,0.15)",
+            border: "1px solid rgba(90,158,111,0.3)", borderRadius: "10px",
+            color: "#5A9E6F", cursor: "pointer", fontSize: "14px",
+            fontFamily: "'Heebo', sans-serif", }}>
+            📥 {language === "he" ? "ייצוא לאקסל" : "Export to Excel"}
+          </button>
           <button onClick={onClose} style={{
             padding: "10px 20px", background: "rgba(255,255,255,0.06)",
             border: "1px solid #E0D5CC", borderRadius: "10px",
@@ -188,7 +237,7 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                       color: g.invitedBy === "כלה" ? "#8B5A8B" : "#38bdf8",
                       border: `1px solid ${g.invitedBy === "כלה" ? "rgba(192,132,252,0.3)" : "rgba(56,189,248,0.3)"}`,
                     }}>
-                      {g.invitedBy === "כלה" ? "👰" : "🤵"} {g.invitedBy}
+                      {g.invitedBy === "כלה" ? "👰" : "🤵"} {g.invitedBy === "כלה" ? (language === "he" ? "כלה" : "Bride") : (language === "he" ? "חתן" : "Groom")}
                     </span>
                   ) : "—"}
                 </td>

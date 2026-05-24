@@ -1232,84 +1232,46 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
               <button style={s.addBtn("rgba(74,222,128,0.25)")} onClick={handleAddCheckItem}>＋</button>
             </div>
           </div>
+              {/* GUESTS */}
+              <div style={s.card}>
+                <p style={s.cardTitle}>
+                  👥 {tr.guestList}
+                </p>
 
-            {/* GUESTS */}
-            <div style={s.card}>
-              <p style={s.cardTitle}>
-                👥 {tr.guestList}
-                <span style={{ fontSize: "12px", color: "#A89080", marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
-                  {event.type === "wedding" && (
-                    <>
-                      <button
-                        onClick={() => setGuestFilter(guestFilter === "כלה" ? null : "כלה")}
-                        style={{
-                          background: guestFilter === "כלה" ? "rgba(192,132,252,0.3)" : "rgba(193,123,123,0.08)",
-                          border: `1px solid ${guestFilter === "כלה" ? "#8B5A8B" : "#E8DDD5"}`,
-                          borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
-                          color: guestFilter === "כלה" ? "#8B5A8B" : "#8B7060",
-                          fontSize: "11px", fontFamily: "'Heebo', sans-serif"
-                        }}
-                      >
-                        👰 {language === "he" ? "כלה" : "Bride"}: {guests.filter(g => g.invitedBy === "כלה").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
-                      </button>
-                      <button
-                        onClick={() => setGuestFilter(guestFilter === "חתן" ? null : "חתן")}
-                        style={{
-                          background: guestFilter === "חתן" ? "rgba(56,189,248,0.3)" : "rgba(193,123,123,0.08)",
-                          border: `1px solid ${guestFilter === "חתן" ? "#38bdf8" : "#E8DDD5"}`,
-                          borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
-                          color: guestFilter === "חתן" ? "#38bdf8" : "#8B7060",
-                          fontSize: "11px", fontFamily: "'Heebo', sans-serif"
-                        }}
-                      >
-                        🤵 {language === "he" ? "חתן" : "Groom"}: {guests.filter(g => g.invitedBy === "חתן").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
-                      </button>
-                    </>
-                  )}
-                  <button
-                    onClick={() => { setGuestFilter(null); setShowGuestTable(true); }}
-                    style={{
-                      background: guestFilter === null ? "rgba(90,158,111,0.2)" : "rgba(193,123,123,0.08)",
-                      border: `1px solid ${guestFilter === null ? "#5A9E6F" : "#E8DDD5"}`,
-                      borderRadius: "8px", padding: "2px 8px", cursor: "pointer",
-                      color: guestFilter === null ? "#5A9E6F" : "#8B7060",
-                      fontSize: "11px", fontFamily: "'Heebo', sans-serif"
-                    }}
-                  >
-                    {language === "he" ? 'סה״כ' : "Total"}: {guests.reduce((sum, g) => sum + (g.guestCount || 1), 0)}
-                  </button>
-                </span>
-              </p>
-            <button style={{ ...s.addBtn("rgba(139,92,246,0.3)"), width: "100%", marginBottom: "12px" }}
-              onClick={() => setGuestPopup("new")}>{tr.addGuest}</button>
-            {guests.length === 0 ? <p style={s.emptyMsg}>{tr.noGuests}</p> : (
-              <ul style={s.list}>
-                {guests.filter(g => !guestFilter || g.invitedBy === guestFilter).map((g, i) => (
-                  <li key={g.id || i} style={{ ...s.listItem, flexDirection: "column", alignItems: "flex-start", gap: "8px" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <span>👤</span>
-                        <div style={{ fontWeight: "500" }}>{g.name}</div>
-                      </div>
-                      <div style={{ display: "flex", gap: "6px" }}>
-                        <button style={{ ...s.iconBtn, fontSize: "14px" }}
-                          onClick={() => setGuestPopup({ index: i, data: g })}>✏️</button>
-                        <button style={s.iconBtn} onClick={() => handleRemoveGuest(i)}>×</button>
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", paddingRight: "28px" }}>
-                      {g.phone && <span style={s.detailChip}>📞 {g.phone}</span>}
-                      {g.email && <span style={s.detailChip}>✉️ {g.email}</span>}
-                      {g.invitedBy && (<span style={s.detailChip}> {g.invitedBy === "כלה" ? "👰" : "🤵"} {g.invitedBy === "כלה" ? (language === "he" ? "כלה" : "Bride") : (language === "he" ? "חתן" : "Groom")}</span> )}
-                      {g.guestCount && <span style={s.detailChip}>👥 {g.guestCount}</span>}
-                      {g.note && <span style={{ ...s.detailChip, fontStyle: "italic" }}>{g.note}</span>}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px", marginBottom: "14px" }}>
+                  <div style={{ textAlign: "center", background: "#F5EDE8", border: "1px solid #E8DDD5", borderRadius: "12px", padding: "10px 4px" }}>
+                    <span style={{ fontSize: "22px", fontWeight: "500", color: "#3d2c2c", display: "block" }}>
+                      {guests.reduce((sum, g) => sum + (g.guestCount || 1), 0)}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "מוזמנים" : "Invited"}</span>
+                  </div>
+                  <div style={{ textAlign: "center", background: "#D5E8D4", border: "1px solid #B8D4B6", borderRadius: "12px", padding: "10px 4px" }}>
+                    <span style={{ fontSize: "22px", fontWeight: "500", color: "#3A6B38", display: "block" }}>
+                      {guests.filter(g => g.rsvpStatus === "confirmed").reduce((sum, g) => sum + (g.rsvpCount || g.guestCount || 1), 0)}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "אישרו" : "Confirmed"}</span>
+                  </div>
+                  <div style={{ textAlign: "center", background: "#F2D7D5", border: "1px solid #E0C0BD", borderRadius: "12px", padding: "10px 4px" }}>
+                    <span style={{ fontSize: "22px", fontWeight: "500", color: "#C17B7B", display: "block" }}>
+                      {guests.filter(g => g.rsvpStatus === "declined").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "לא מגיעים" : "Declined"}</span>
+                  </div>
+                  <div style={{ textAlign: "center", background: "#FFF0D5", border: "1px solid #F0D8A8", borderRadius: "12px", padding: "10px 4px" }}>
+                    <span style={{ fontSize: "22px", fontWeight: "500", color: "#B07820", display: "block" }}>
+                      {guests.filter(g => !g.rsvpStatus).length}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "ממתינים" : "Pending"}</span>
+                  </div>
+                </div>
 
+                <button
+                  style={{ width: "100%", padding: "10px", background: "rgba(139,90,139,0.08)", border: "1px dashed #C9A8E0", borderRadius: "12px", color: "#8B5A8B", cursor: "pointer", fontSize: "13px", fontFamily: "'Heebo', sans-serif" }}
+                  onClick={() => setShowGuestTable(true)}
+                >
+                  {language === "he" ? "פתח רשימת אורחים ←" : "Open guest list →"}
+                </button>
+              </div>
           {/* PROVIDERS */}
           <div style={s.card}>
             <p style={s.cardTitle}>

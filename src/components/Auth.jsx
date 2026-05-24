@@ -11,7 +11,7 @@ import { auth } from "../firebase/config";
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "#0d0d0f",
+    background: "#FAF7F2",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -25,7 +25,7 @@ const styles = {
     width: "600px",
     height: "600px",
     borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)",
+    background: "radial-gradient(circle, rgba(193,123,123,0.12) 0%, transparent 70%)",
     top: "-200px",
     right: "-100px",
     pointerEvents: "none",
@@ -35,7 +35,7 @@ const styles = {
     width: "400px",
     height: "400px",
     borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(251,191,36,0.07) 0%, transparent 70%)",
+    background: "radial-gradient(circle, rgba(139,92,246,0.07) 0%, transparent 70%)",
     bottom: "-100px",
     left: "-100px",
     pointerEvents: "none",
@@ -43,13 +43,13 @@ const styles = {
   card: {
     width: "100%",
     maxWidth: "420px",
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.08)",
+    background: "#FDF9F5",
+    border: "1px solid #E8DDD5",
     borderRadius: "24px",
     padding: "48px 40px",
-    backdropFilter: "blur(20px)",
     position: "relative",
     zIndex: 1,
+    boxShadow: "0 4px 24px rgba(193,123,123,0.08)",
   },
   logo: {
     textAlign: "center",
@@ -59,23 +59,24 @@ const styles = {
     fontSize: "36px",
     display: "block",
     marginBottom: "12px",
+    fontFamily: "serif",
   },
   logoTitle: {
     fontSize: "28px",
     fontWeight: "700",
-    color: "#ffffff",
+    color: "#3d2c2c",
     margin: "0 0 6px",
     letterSpacing: "-0.5px",
   },
   logoSub: {
     fontSize: "14px",
-    color: "rgba(255,255,255,0.4)",
+    color: "#A89080",
     margin: 0,
     letterSpacing: "0.3px",
   },
   tabs: {
     display: "flex",
-    background: "rgba(255,255,255,0.05)",
+    background: "#F5EDE8",
     borderRadius: "12px",
     padding: "4px",
     marginBottom: "28px",
@@ -89,8 +90,8 @@ const styles = {
     fontSize: "14px",
     fontWeight: "500",
     transition: "all 0.2s ease",
-    background: active ? "rgba(139,92,246,0.85)" : "transparent",
-    color: active ? "#ffffff" : "rgba(255,255,255,0.4)",
+    background: active ? "#cda0df" : "transparent",
+    color: active ? "#ffffff" : "#8B7060",
     fontFamily: "'Heebo', sans-serif",
   }),
   inputGroup: {
@@ -100,7 +101,7 @@ const styles = {
     display: "block",
     fontSize: "12px",
     fontWeight: "500",
-    color: "rgba(255,255,255,0.5)",
+    color: "#8B7060",
     marginBottom: "8px",
     letterSpacing: "0.8px",
     textTransform: "uppercase",
@@ -108,10 +109,10 @@ const styles = {
   input: {
     width: "100%",
     padding: "14px 16px",
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "#F5EDE8",
+    border: "1px solid #E8DDD5",
     borderRadius: "12px",
-    color: "#ffffff",
+    color: "#3d2c2c",
     fontSize: "15px",
     outline: "none",
     boxSizing: "border-box",
@@ -121,7 +122,7 @@ const styles = {
   primaryBtn: {
     width: "100%",
     padding: "15px",
-    background: "linear-gradient(135deg, #7c3aed, #9f4ff7)",
+    background: "#cda0df",
     border: "none",
     borderRadius: "12px",
     color: "#ffffff",
@@ -142,20 +143,20 @@ const styles = {
   dividerLine: {
     flex: 1,
     height: "1px",
-    background: "rgba(255,255,255,0.08)",
+    background: "#E8DDD5",
   },
   dividerText: {
     fontSize: "12px",
-    color: "rgba(255,255,255,0.25)",
+    color: "#A89080",
     letterSpacing: "0.5px",
   },
   googleBtn: {
     width: "100%",
     padding: "14px",
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "#F5EDE8",
+    border: "1px solid #E8DDD5",
     borderRadius: "12px",
-    color: "rgba(255,255,255,0.8)",
+    color: "#5A4040",
     fontSize: "15px",
     fontWeight: "500",
     cursor: "pointer",
@@ -167,11 +168,11 @@ const styles = {
     transition: "background 0.2s ease",
   },
   errorBox: {
-    background: "rgba(239,68,68,0.1)",
-    border: "1px solid rgba(239,68,68,0.3)",
+    background: "rgba(239,68,68,0.08)",
+    border: "1px solid rgba(239,68,68,0.2)",
     borderRadius: "10px",
     padding: "12px 14px",
-    color: "#fca5a5",
+    color: "#c0504a",
     fontSize: "13px",
     marginTop: "14px",
     lineHeight: "1.5",
@@ -187,21 +188,21 @@ const styles = {
   },
   welcomeTitle: {
     fontSize: "22px",
-    color: "#ffffff",
+    color: "#3d2c2c",
     margin: "0 0 8px",
     fontWeight: "600",
   },
   welcomeEmail: {
     fontSize: "14px",
-    color: "rgba(255,255,255,0.4)",
+    color: "#A89080",
     margin: "0 0 32px",
   },
   logoutBtn: {
     padding: "13px 32px",
-    background: "rgba(255,255,255,0.07)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "#F5EDE8",
+    border: "1px solid #E8DDD5",
     borderRadius: "12px",
-    color: "rgba(255,255,255,0.7)",
+    color: "#7A6060",
     fontSize: "14px",
     cursor: "pointer",
     fontFamily: "'Heebo', sans-serif",
@@ -252,6 +253,7 @@ function Auth({ onLogin }) {
       setLoading(false);
     }
   };
+
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError("");
@@ -284,7 +286,7 @@ function Auth({ onLogin }) {
         <div style={styles.bgCircle2} />
         <div style={styles.card}>
           <div style={styles.welcomeCard}>
-            <span style={styles.welcomeEmoji}>🎉</span>
+            <span style={styles.welcomeEmoji}>ðŸŽ‰</span>
             <h2 style={styles.welcomeTitle}>
               Welcome, {user.displayName || "Event Planner"}!
             </h2>
@@ -303,11 +305,10 @@ function Auth({ onLogin }) {
       <div style={styles.bgCircle1} />
       <div style={styles.bgCircle2} />
       <div style={styles.card}>
-        <div style={styles.logo}>
-          <span style={styles.logoEmoji}>🎊</span>
-          <h1 style={styles.logoTitle}>MefeeKali</h1>
-          <p style={styles.logoSub}>Your personal event producer</p>
-        </div>
+      <div style={styles.logo}>
+        <img src="/mefeekali-logo.svg" alt="MefeeKali" style={{ width: "200px", height: "auto", marginBottom: "8px" }} />
+        <p style={styles.logoSub}>Your personal event producer</p>
+      </div>
 
         <div style={styles.tabs}>
           <button style={styles.tab(mode === "login")} onClick={() => { setMode("login"); setError(""); }}>

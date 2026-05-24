@@ -214,7 +214,7 @@ if (events.length === 0 && !loadingEvents) {
   return (
     <div style={styles.layout}>
       <div style={{ ...styles.sidebar, width: sidebarOpen ? "260px" : "0px", overflow: "hidden", transition: "width 0.3s ease", padding: sidebarOpen ? "24px 16px" : "0" }}>
-        <h1 style={styles.sidebarLogo}>🎊 MefeeKali</h1>
+        <img src="/mefeekali-logo.svg" alt="MefeeKali" style={{ width: "150px", height: "auto", marginBottom: "24px", display: "block", margin: "0 auto 24px" }} />
         <p style={styles.sidebarSection}>My Events</p>
         {events.map((event) => (
     <div key={event.id} style={{ position: "relative", display: "flex", alignItems: "center" }}>
