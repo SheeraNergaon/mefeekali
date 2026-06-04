@@ -97,7 +97,7 @@ const s = {
     fontSize: "14px", cursor: "pointer", fontFamily: "'Heebo', sans-serif", whiteSpace: "nowrap",
   }),
   iconBtn: {
-    background: "none", border: "none", color: "rgba(255,255,255,0.25)",
+    background: "none", border: "none", color: "#6B5B5B",
     cursor: "pointer", fontSize: "18px", padding: "0", lineHeight: 1,
   },
   expenseItem: { background: "#F5EDE8", borderRadius: "12px", padding: "12px 14px", marginBottom: "8px" },
@@ -285,7 +285,6 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
     : [
         { key: "name", label: tr.fullName, placeholder: tr.guestNamePlaceholder },
         { key: "phone", label: tr.phone, placeholder: tr.phonePlaceholder },
-        { key: "email", label: tr.email, placeholder: tr.emailGuestPlaceholder },
         { key: "note", label: tr.note, placeholder: tr.notePlaceholder },
       ];
 
@@ -301,7 +300,8 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
           <div key={key} style={s.popupField}>
             <label style={s.popupLabel}>{label}</label>
             <input style={s.popupInput} placeholder={placeholder}
-              value={form[key] || ""} onChange={(e) => set(key, e.target.value)} />
+              value={form[key] || ""} onChange={(e) => set(key, e.target.value)}
+              dir={key === "phone" ? "ltr" : undefined} />
           </div>
         ))}
         {type === "guest" && (
@@ -311,8 +311,8 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
                 <label style={s.popupLabel}>{language === "he" ? "של מי המוזמן?" : "Invited by?"}</label>
                 <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
                   {[
-                    { value: "חתן", label: language === "he" ? "חתן" : "Groom" },
-                    { value: "כלה", label: language === "he" ? "כלה" : "Bride" },
+                    { value: "חתן", label: language === "he" ? "🤵 חתן" : "🤵 Groom" },
+                    { value: "כלה", label: language === "he" ? "👰 כלה" : "👰 Bride" },
                   ].map(({ value, label }) => (
                     <button
                       key={value}
@@ -684,6 +684,8 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
   const [showBudgetTable, setShowBudgetTable] = useState(false);
   const [meetings, setMeetings] = useState([]);
   const [showMeetingsPanel, setShowMeetingsPanel] = useState(false);
+  const [expenseStatus, setExpenseStatus] = useState("unpaid");
+  const [expenseDeposit, setExpenseDeposit] = useState("");
   const tr = translations[language];
   const isRTL = language === "he";
 
@@ -758,9 +760,17 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
 
   const handleAddExpense = () => {
     if (!expenseName.trim() || !expenseAmount) return;
-    const newExpense = { id: Date.now(), name: expenseName.trim(), amount: Number(expenseAmount), comment: "" };
+    const newExpense = {
+      id: Date.now(),
+      name: expenseName.trim(),
+      amount: Number(expenseAmount),
+      comment: "",
+      paymentStatus: expenseStatus,
+      depositAmount: expenseStatus === "deposit" ? Number(expenseDeposit) : 0,
+    };
     const next = [...expenses, newExpense];
     setExpenses(next); setExpenseName(""); setExpenseAmount("");
+    setExpenseStatus("unpaid"); setExpenseDeposit("");
     const regularOnly = next.filter(e => !e.providerId);
     scheduleSave({ expenses: regularOnly });
   };
@@ -919,6 +929,11 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           language={language}
           onClose={() => setShowGuestTable(false)}
           onUpdateGuest={handleUpdateGuestField}
+          onRemoveGuest={(idOrIndex) => {
+            const next = guests.filter((g, i) => (g.id === idOrIndex || i === idOrIndex) ? false : true);
+            setGuests(next);
+            scheduleSave({ guests: next });
+          }}
         />
       )}
       {showBudgetTable && (
@@ -929,14 +944,22 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           language={language}
           onClose={() => setShowBudgetTable(false)}
           onUpdateProvider={(id, fields) => {
-            const next = providers.map(p => p.id === id ? { ...p, ...fields } : p);
-            setProviders(next);
-            scheduleSave({ providers: next });
+            const nextProviders = providers.map(p => p.id === id ? { ...p, ...fields } : p);
+            setProviders(nextProviders);
+            const updatedProvider = nextProviders.find(p => p.id === id);
+            const nextExpenses = expenses.map(e =>
+              e.providerId === id
+                ? { ...e, amount: updatedProvider?.totalPrice || e.amount }
+                : e
+            );
+            setExpenses(nextExpenses);
+            scheduleSave({ providers: nextProviders });
           }}
           onUpdateExpense={(id, fields) => {
             const next = expenses.map(e => e.id === id ? { ...e, ...fields } : e);
             setExpenses(next);
-            scheduleSave({ expenses: next });
+            const regularOnly = next.filter(e => !e.providerId);
+            scheduleSave({ expenses: regularOnly });
           }}
         />
       )}
@@ -1133,6 +1156,12 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             <p style={{ ...s.cardTitle, cursor: "pointer" }} onClick={() => setShowBudgetTable(true)}>
               💰 {tr.budget} <span style={{ fontSize: "13px", color: "#7A6060", marginRight: "8px" }}>← {language === "he" ? "פירוט מלא" : "Full Details"}</span>
             </p>
+            <div style={s.inputRow}>
+              <input style={s.input} type="number" placeholder={tr.setBudget}
+                value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSetBudget()} />
+              <button style={s.addBtn("rgba(139,92,246,0.4)")} onClick={handleSetBudget}>{tr.set}</button>
+            </div>
             <div style={s.budgetNumbers}>
               <div style={s.budgetItem}>
                 <span style={s.budgetValue("#3d2c2c")}>₪{budget.total.toLocaleString()}</span>
@@ -1148,12 +1177,41 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
               </div>
             </div>
             <div style={s.progressBar}><div style={s.progressFill(spentPct)} /></div>
-            <div style={s.inputRow}>
-              <input style={s.input} type="number" placeholder={tr.setBudget}
-                value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSetBudget()} />
-              <button style={s.addBtn("rgba(139,92,246,0.4)")} onClick={handleSetBudget}>{tr.set}</button>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+              {[
+                { key: "unpaid", label: language === "he" ? "לא שולם" : "Unpaid" },
+                { key: "deposit", label: language === "he" ? "מקדמה" : "Deposit" },
+                { key: "paid", label: language === "he" ? "שולם" : "Paid" },
+              ].map(({ key, label }) => (
+                <button key={key} onClick={() => setExpenseStatus(key)} style={{
+                  flex: 1, padding: "8px", borderRadius: "10px", cursor: "pointer",
+                  fontFamily: "'Heebo', sans-serif", fontSize: "13px",
+                  background: expenseStatus === key 
+                    ? key === "paid" ? "rgba(90,158,111,0.2)" 
+                    : key === "deposit" ? "rgba(251,146,60,0.2)" 
+                    : "rgba(248,113,113,0.2)"
+                    : "#F5EDE8",
+                  border: `1px solid ${expenseStatus === key 
+                    ? key === "paid" ? "#5A9E6F" 
+                    : key === "deposit" ? "#fb923c" 
+                    : "#f87171"
+                    : "#E8DDD5"}`,
+                  color: expenseStatus === key 
+                    ? key === "paid" ? "#5A9E6F" 
+                    : key === "deposit" ? "#fb923c" 
+                    : "#f87171"
+                    : "#7A6060",
+                }}>{label}</button>
+              ))}
             </div>
+            {expenseStatus === "deposit" && (
+              <div style={{ ...s.inputRow }}>
+                <input style={s.input} type="number"
+                  placeholder={language === "he" ? "סכום מקדמה (₪)" : "Deposit amount (₪)"}
+                  value={expenseDeposit}
+                  onChange={(e) => setExpenseDeposit(e.target.value)} />
+              </div>
+            )}
             <div style={s.inputRow}>
               <input style={s.input} type="text" placeholder={tr.expenseName}
                 value={expenseName} onChange={(e) => setExpenseName(e.target.value)} />
@@ -1193,6 +1251,15 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                     <button style={s.iconBtn} onClick={() => handleRemoveExpense(exp.id)}>×</button>
                   </div>
                 </div>
+                {exp.paymentStatus && exp.paymentStatus !== "unpaid" && (
+                  <div style={{ fontSize: "12px", marginTop: "4px",
+                    color: exp.paymentStatus === "paid" ? "#5A9E6F" : "#fb923c"
+                  }}>
+                    {exp.paymentStatus === "paid"
+                      ? (language === "he" ? "שולם במלואו" : "Fully paid")
+                      : (language === "he" ? `מקדמה ₪${exp.depositAmount || 0}` : `Deposit ₪${exp.depositAmount || 0}`)}
+                  </div>
+                )}
                 <input style={s.commentInput} type="text" placeholder={tr.addComment}
                   value={exp.comment || ""}
                   onChange={(e) => handleExpenseComment(exp.id, e.target.value)} />
@@ -1261,10 +1328,15 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                     <span style={{ fontSize: "22px", fontWeight: "500", color: "#B07820", display: "block" }}>
                       {guests.filter(g => !g.rsvpStatus).length}
                     </span>
-                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "ממתינים" : "Pending"}</span>
+                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "אין מענה" : "Pending"}</span>
                   </div>
                 </div>
-
+                <button
+                  style={{ width: "100%", padding: "10px", background: "rgba(139,92,246,0.15)", border: "1px solid #C9A8E0", borderRadius: "12px", color: "#8B5A8B", cursor: "pointer", fontSize: "13px", fontFamily: "'Heebo', sans-serif", marginBottom: "8px" }}
+                  onClick={() => setGuestPopup({})}
+                >
+                  + {language === "he" ? "הוסף מוזמן" : "Add Guest"}
+                </button>
                 <button
                   style={{ width: "100%", padding: "10px", background: "rgba(139,90,139,0.08)", border: "1px dashed #C9A8E0", borderRadius: "12px", color: "#8B5A8B", cursor: "pointer", fontSize: "13px", fontFamily: "'Heebo', sans-serif" }}
                   onClick={() => setShowGuestTable(true)}

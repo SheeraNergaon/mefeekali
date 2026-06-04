@@ -227,12 +227,9 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
             {/* Date */}
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.eventDate}</label>
-              <input
-                style={s.input}
-                type="date"
+              <input style={s.input} type="date" dir="ltr"
                 value={eventDate}
-                onChange={(e) => setEventDate(e.target.value)}
-              />
+                onChange={(e) => setEventDate(e.target.value)} />
             </div>
 
             {/* Guest count */}

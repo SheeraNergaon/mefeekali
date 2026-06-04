@@ -15,13 +15,21 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
       paidAmount: p.paymentStatus === "paid" ? (p.totalPrice || 0)
         : p.paymentStatus === "deposit" ? (p.depositAmount || 0) : 0,
     })),
-    ...expenses.filter(e => !e.providerId).map(e => ({
-      ...e,
-      isProvider: false,
-      agreedPrice: e.amount || 0,
-      paidAmount: e.amount || 0,
-      paymentStatus: "paid",
-    })),
+    ...expenses.filter(e => !e.providerId).map(e => {
+      const status = e.paymentStatus || "paid";
+      const paid = status === "paid"
+        ? (e.amount || 0)
+        : status === "deposit"
+        ? (e.depositAmount || 0)
+        : 0;
+      return {
+        ...e,
+        isProvider: false,
+        agreedPrice: e.amount || 0,
+        paidAmount: paid,
+        paymentStatus: status,
+      };
+    }),
   ];
 
   const filtered = allItems.filter(item => {
@@ -212,14 +220,17 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
                       onChange={(e) => {
                         const val = Number(e.target.value);
                         if (item.isProvider) {
+                          const newStatus = val >= item.agreedPrice ? "paid" : val > 0 ? "deposit" : "unpaid";
                           onUpdateProvider(item.id, {
-                            ...item,
-                            paidAmount: val,
-                            paymentStatus: val >= item.agreedPrice ? "paid" : val > 0 ? "deposit" : "unpaid",
+                            paymentStatus: newStatus,
                             depositAmount: val,
                           });
                         } else {
-                          onUpdateExpense(item.id, { amount: val });
+                          const newStatus = val >= item.agreedPrice ? "paid" : val > 0 ? "deposit" : "unpaid";
+                          onUpdateExpense(item.id, {
+                            paymentStatus: newStatus,
+                            depositAmount: val,
+                          });
                         }
                       }}
                       style={{

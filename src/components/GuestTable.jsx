@@ -1,6 +1,7 @@
 import { useState } from "react";
+import * as XLSX from "xlsx";
 
-export default function GuestTable({ guests, onClose, onUpdateGuest, language }) {
+export default function GuestTable({ guests, onClose, onUpdateGuest, onRemoveGuest, language }) {
   const [sortBy, setSortBy] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
   const [filterBy, setFilterBy] = useState("all");
@@ -30,15 +31,15 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
         : String(valA).localeCompare(String(valB), "he");
       return sortDir === "asc" ? result : -result;
     });
+
   const exportToExcel = () => {
     const headers = language === "he"
-      ? ["שם", "טלפון", "אימייל", "מזמין", "כמות מוזמנים", "הזמנה נשלחה", "סטטוס", "כמה מגיעים", "הערה"]
-      : ["Name", "Phone", "Email", "Invited By", "Guest Count", "Invite Sent", "RSVP Status", "Attending", "Note"];
+      ? ["שם", "טלפון", "מזמין", "כמות מוזמנים", "הזמנה נשלחה", "סטטוס", "כמה מגיעים", "הערה"]
+      : ["Name", "Phone", "Invited By", "Guest Count", "Invite Sent", "RSVP Status", "Attending", "Note"];
 
     const rows = guests.map(g => [
       g.name || "",
       g.phone || "",
-      g.email || "",
       g.invitedBy || "",
       g.guestCount || 1,
       g.invitationSent ? (language === "he" ? "כן" : "Yes") : (language === "he" ? "לא" : "No"),
@@ -49,30 +50,12 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
       g.note || "",
     ]);
 
-    const tableHTML = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
-      <head><meta charset="UTF-8"></head>
-      <body><table border="1">
-        <tr>${headers.map(h => `<th style="background:#DFC5EE;font-weight:bold">${h}</th>`).join("")}</tr>
-        ${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`).join("")}
-        <tr>
-          <td colspan="4"><b>${language === "he" ? `סה״כ: ${guests.length} אנשי קשר` : `Total: ${guests.length} contacts`}</b></td>
-          <td>${guests.reduce((sum, g) => sum + (g.guestCount || 1), 0)}</td>
-          <td></td>
-          <td><b>${language === "he"
-            ? `מגיעים: ${guests.filter(g => g.rsvpStatus === "confirmed").reduce((sum, g) => sum + (g.rsvpCount || g.guestCount || 1), 0)}`
-            : `Confirmed: ${guests.filter(g => g.rsvpStatus === "confirmed").reduce((sum, g) => sum + (g.rsvpCount || g.guestCount || 1), 0)}`}</b></td>
-          <td></td><td></td>
-        </tr>
-      </table></body></html>`;
-
-    const blob = new Blob(["\uFEFF" + tableHTML], { type: "application/vnd.ms-excel;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `guest_list_${new Date().toISOString().split("T")[0]}.xls`;
-    link.click();
-    URL.revokeObjectURL(url);
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, language === "he" ? "מוזמנים" : "Guests");
+    XLSX.writeFile(wb, `guest_list_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
+
   const totalGuests = guests.reduce((sum, g) => sum + (g.guestCount || 1), 0);
   const totalConfirmed = guests.filter(g => g.rsvpStatus === "confirmed").reduce((sum, g) => sum + (g.rsvpCount || g.guestCount || 1), 0);
   const totalInvited = guests.filter(g => g.invitationSent).length;
@@ -130,8 +113,8 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
             <div style={{ fontSize: "18px", fontWeight: "700", color: "#38bdf8" }}>{totalInvited}</div>
             <div style={{ fontSize: "11px", color: "#8B7060" }}>{ language === "he" ? "נשלחו הזמנות" : "Invites Sent"}</div>
           </div>
-          <div style={{ textAlign: "center", background: "rgba(251,146,60,0.1)", border: "1px solid rgba(251,146,60,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
-            <div style={{ fontSize: "18px", fontWeight: "700", color: "#fb923c" }}>{guests.length - totalInvited}</div>
+          <div style={{ textAlign: "center", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
+            <div style={{ fontSize: "18px", fontWeight: "700", color: "#cf5d9a" }}>{guests.length - totalInvited}</div>
             <div style={{ fontSize: "11px", color: "#8B7060" }}>{ language === "he" ? "לא נשלחו הזמנות" : "Invites Not Sent"}</div>
           </div>
           <button onClick={exportToExcel} style={{
@@ -155,9 +138,11 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
         <div style={{ display: "flex", gap: "8px", padding: "16px 32px", borderBottom: "1px solid #F5EDE8", alignItems: "center", flexWrap: "wrap" }}>
             {/* filters */}
             {[
-                { key: "all", label: language === "he" ? "הכל" : "All" },
-                { key: "bride", label: language === "he" ? "👰 כלה" : "👰 Bride" },
-                { key: "groom", label: language === "he" ? "🤵 חתן" : "🤵 Groom" },
+                ...(guests.some(g => g.invitedBy) ? [
+                  { key: "all", label: language === "he" ? "הכל" : "All" },
+                  { key: "bride", label: language === "he" ? "👰 כלה" : "👰 Bride" },
+                  { key: "groom", label: language === "he" ? "🤵 חתן" : "🤵 Groom" },
+                ] : []),
             ].map(f => (
                 <button key={f.key} onClick={() => setFilterBy(f.key)} style={{
                     padding: "7px 16px", borderRadius: "20px", cursor: "pointer",
@@ -177,7 +162,7 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                 </span>
                 {[
                     { key: "name", label: language === "he" ? "א-ב" : "A-Z" },
-                    { key: "invitedBy", label: language === "he" ? "מזמין" : "Invited By" },
+                    ...(guests.some(g => g.invitedBy) ? [{ key: "invitedBy", label: language === "he" ? "מזמין" : "Invited By" }] : []),
                     { key: "rsvpStatus", label: language === "he" ? "סטטוס" : "Status" },
                     { key: "invitationSent", label: language === "he" ? "הזמנה" : "Invite" },
                 ].map(s => (
@@ -202,9 +187,11 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
               <th style={thStyle("name")} onClick={() => handleSort("name")}>
                 <SortArrow field="name" />{language === "he" ? "שם" : "Name"}
               </th>
-              <th style={thStyle("invitedBy")} onClick={() => handleSort("invitedBy")}>
-                <SortArrow field="invitedBy" />{language === "he" ? "מזמין" : "Invited By"}
-              </th>
+              {guests.some(g => g.invitedBy) && (
+                <th style={thStyle("invitedBy")} onClick={() => handleSort("invitedBy")}>
+                  <SortArrow field="invitedBy" />{language === "he" ? "מזמין" : "Invited By"}
+                </th>
+              )}
               <th style={thStyle("guestCount")} onClick={() => handleSort("guestCount")}>
                 <SortArrow field="guestCount" />{language === "he" ? "כמות" : "Count"}
               </th>
@@ -220,6 +207,7 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
               <th style={{ ...thStyle("rsvpCount"), textAlign: "center" }}>
                 {language === "he" ? "כמה מגיעים" : "Attending"}
               </th>
+              <th style={thStyle("")}></th>
             </tr>
           </thead>
           <tbody>
@@ -229,18 +217,20 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                   <div style={{ fontWeight: "600" }}>{g.name}</div>
                   {g.note && <div style={{ fontSize: "11px", color: "#A89080", marginTop: "2px" }}>{g.note}</div>}
                 </td>
-                <td style={tdStyle}>
-                  {g.invitedBy ? (
-                    <span style={{
-                      fontSize: "12px", padding: "3px 10px", borderRadius: "12px",
-                      background: g.invitedBy === "כלה" ? "rgba(192,132,252,0.15)" : "rgba(56,189,248,0.15)",
-                      color: g.invitedBy === "כלה" ? "#8B5A8B" : "#38bdf8",
-                      border: `1px solid ${g.invitedBy === "כלה" ? "rgba(192,132,252,0.3)" : "rgba(56,189,248,0.3)"}`,
-                    }}>
-                      {g.invitedBy === "כלה" ? "👰" : "🤵"} {g.invitedBy === "כלה" ? (language === "he" ? "כלה" : "Bride") : (language === "he" ? "חתן" : "Groom")}
-                    </span>
-                  ) : "—"}
-                </td>
+                {guests.some(g => g.invitedBy) && (
+                  <td style={tdStyle}>
+                    {g.invitedBy ? (
+                      <span style={{
+                        fontSize: "12px", padding: "3px 10px", borderRadius: "12px",
+                        background: g.invitedBy === "כלה" ? "rgba(192,132,252,0.15)" : "rgba(56,189,248,0.15)",
+                        color: g.invitedBy === "כלה" ? "#8B5A8B" : "#38bdf8",
+                        border: `1px solid ${g.invitedBy === "כלה" ? "rgba(192,132,252,0.3)" : "rgba(56,189,248,0.3)"}`,
+                      }}>
+                        {g.invitedBy === "כלה" ? "👰" : "🤵"} {g.invitedBy === "כלה" ? (language === "he" ? "כלה" : "Bride") : (language === "he" ? "חתן" : "Groom")}
+                      </span>
+                    ) : "—"}
+                  </td>
+                )}
                 <td style={{ ...tdStyle, textAlign: "center" }}>{g.guestCount || 1}</td>
                 <td style={tdStyle}>{g.phone || "—"}</td>
                 <td style={{ ...tdStyle, textAlign: "center" }}>
@@ -306,6 +296,22 @@ export default function GuestTable({ guests, onClose, onUpdateGuest, language })
                             {[1,2,3,4,5,6,7].map(n => <option key={n} value={n}>{n}</option>)}
                         </select>
                     ) : "—"}
+                </td>
+                <td style={{ ...tdStyle, textAlign: "center" }}>
+                  <button
+                    onClick={() => {
+                      if (window.confirm(language === "he"
+                        ? `האם בטוח שברצונך למחוק את ${g.name} מרשימת המוזמנים?`
+                        : `Are you sure you want to remove ${g.name} from the guest list?`
+                      )) {
+                        onRemoveGuest(g.id || i);
+                      }
+                    }}
+                    style={{
+                      background: "none", border: "none", color: "#6B5B5B",
+                      cursor: "pointer", fontSize: "18px", padding: "0", lineHeight: 1,
+                    }}
+                  >×</button>
                 </td>
               </tr>
             ))}
