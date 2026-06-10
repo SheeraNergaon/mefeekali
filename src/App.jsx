@@ -1,3 +1,7 @@
+// This is the main component that controls the entire app flow.
+// It manages authentication state, loads events from Firestore,
+// and decides which screen to render based on the current state.
+
 import { useState, useEffect } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase/config";
@@ -6,7 +10,9 @@ import { collection, query, where, getDocs, orderBy, deleteDoc, doc, updateDoc }
 import Auth from "./components/Auth";
 import EventPicker from "./components/EventPicker";
 import Dashboard from "./components/Dashboard";
+import { translations } from "./translations";
 
+// All inline styles for the main layout — sidebar, main area, buttons
 const styles = {
   layout: {
     display: "flex",
@@ -116,6 +122,7 @@ const eventEmojis = {
   bar_mitzvah: "✡️",
 };
 
+
 function App() {
   const [user, setUser] = useState(null);
   const [googleToken, setGoogleToken] = useState(null);
@@ -128,6 +135,8 @@ function App() {
   const [draggedId, setDraggedId] = useState(null);
   const [sortByDate, setSortByDate] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
+
+  const tr = translations[language];
 
   // Load events from Firestore whenever user logs in
   useEffect(() => {
@@ -152,6 +161,7 @@ function App() {
     });
   }, [user]);
 
+
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
@@ -160,12 +170,14 @@ function App() {
     setShowPicker(false);
   };
 
+  // Called after a new event is created in EventPicker
   const handleEventCreated = (event) => {
     setEvents((prev) => [event, ...prev]);
     setCurrentEventId(event.id);
     setShowPicker(false);
   };
 
+  // Deletes an event from Firestore after confirmation
   const handleDeleteEvent = async (eventId) => {
     const eventToDelete = events.find(e => e.id === eventId);
     if (!window.confirm(language === "he"
@@ -185,6 +197,7 @@ function App() {
     }
   };
 
+  // Saves edited event fields (title, date, guestCount, region) to Firestore and updates local state
   const handleUpdateEvent = async (eventId, fields) => {
     try {
       await updateDoc(doc(db, "events", eventId), fields);
@@ -195,10 +208,12 @@ function App() {
     }
   };
 
+  // Initiates drag — stores the dragged event's ID in state.
   const handleDragStart = (e, id) => {
     setDraggedId(id);
     e.dataTransfer.effectAllowed = "move";
   };
+
 
   const handleDragOver = (e, targetId) => {
     e.preventDefault();
@@ -222,6 +237,7 @@ function App() {
     setDraggedId(null);
   };
 
+  // Renders a single event row in the sidebar supporting drag-and-drop, edit, and delete
   const renderEvent = (event) => {
     const now = new Date();
     const isPast = event.date && new Date(event.date) < now;
@@ -257,21 +273,17 @@ function App() {
             </span>
           )}
         </button>
-        <button
-        onClick={() => setEditingEvent(event)}
-        style={{
-          background: "none",
-          border: "1px solid #D4B8E0",
-          borderRadius: "6px",
-          color: "#B090C0",
-          cursor: "pointer",
-          fontSize: "10px",
-          padding: "2px 6px",
-          lineHeight: 1,
-          flexShrink: 0,
-          fontFamily: "'Heebo', sans-serif",
-        }}
-      >{language === "he" ? "עריכה" : "Edit"}</button>
+        {!isPast && (
+          <button
+            onClick={() => setEditingEvent(event)}
+            style={{
+              background: "none", border: "1px solid #D4B8E0",
+              borderRadius: "6px", color: "#B090C0", cursor: "pointer",
+              fontSize: "10px", padding: "2px 6px", lineHeight: 1,
+              flexShrink: 0, fontFamily: "'Heebo', sans-serif",
+            }}
+          >{tr.editBtn}</button>
+        )}
         <button
           onClick={() => handleDeleteEvent(event.id)}
           style={{ background: "none", border: "none", color: "#6B5B5B", cursor: "pointer", fontSize: "16px", padding: "4px", lineHeight: 1, flexShrink: 0 }}
@@ -315,6 +327,7 @@ function App() {
 
   return (
     <>
+    {/* ── Edit Event Popup  */}
       {editingEvent && (
         <div style={{
           position: "fixed", inset: 0, background: "rgba(61,44,44,0.5)",
@@ -327,17 +340,17 @@ function App() {
             direction: "rtl",
           }} onClick={e => e.stopPropagation()}>
             <h2 style={{ margin: "0 0 24px", fontSize: "18px", fontWeight: "700", color: "#3d2c2c" }}>
-              {language === "he" ? "✏️ עריכת אירוע" : "✏️ Edit Event"}
+              {tr.editEventTitle}
             </h2>
 
-            <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{language === "he" ? "שם האירוע" : "Event Name"}</label>
+            <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{tr.eventNameLabel}</label>
             <input
               style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px" }}
               value={editingEvent.title || ""}
               onChange={e => setEditingEvent(ev => ({ ...ev, title: e.target.value }))}
             />
 
-            <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{language === "he" ? "תאריך" : "Date"}</label>
+            <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{tr.dateLabel2}</label>
             <input
               type="date"
               style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px" }}
@@ -345,7 +358,7 @@ function App() {
               onChange={e => setEditingEvent(ev => ({ ...ev, date: e.target.value }))}
             />
 
-            <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{language === "he" ? "כמות מוזמנים" : "Guest Count"}</label>
+            <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{tr.guestCountLabel}</label>
             <input
               type="number"
               style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px" }}
@@ -353,7 +366,7 @@ function App() {
               onChange={e => setEditingEvent(ev => ({ ...ev, guestCount: Number(e.target.value) }))}
             />
 
-            <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{language === "he" ? "אזור" : "Region"}</label>
+            <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{tr.regionLabel}</label>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "24px" }}>
               {[
                 { id: "tel_aviv", label: "תל אביב והמרכז" },
@@ -385,18 +398,22 @@ function App() {
                   region: editingEvent.region,
                 })}
                 style={{ flex: 1, padding: "12px", background: "rgba(76, 185, 68, 0.4)", border: "none", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", cursor: "pointer", fontFamily: "'Heebo', sans-serif" }}
-              >{language === "he" ? "שמור" : "Save"}</button>
+              >{tr.save}</button>
               <button
                 onClick={() => setEditingEvent(null)}
                 style={{ flex: 1, padding: "12px", background: "#F5EDE8", border: "1px solid #E8DDD5", borderRadius: "10px", color: "#7A6060", fontSize: "14px", cursor: "pointer", fontFamily: "'Heebo', sans-serif" }}
-              >{language === "he" ? "ביטול" : "Cancel"}</button>
+              >{tr.cancel}</button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Main Layout : Two-column flex layout: sidebar on the left, main content on the right. */}
       <div style={styles.layout}>
         <div style={{ ...styles.sidebar, width: sidebarOpen ? "260px" : "0px", overflow: "hidden", transition: "width 0.3s ease", padding: sidebarOpen ? "24px 16px" : "0" }}>
           <img src="/mefeekali-logo.svg" alt="MefeeKali" style={{ width: "150px", height: "auto", marginBottom: "24px", display: "block", margin: "0 auto 24px" }} />
+              
+              {/* Events List Header */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "8px 0 4px 8px" }}>
                 <p style={{ ...styles.sidebarSection, margin: 0, color: "#8B7060" }}>My Events</p>
                 <button
@@ -410,10 +427,11 @@ function App() {
                     textDecoration: sortByDate ? "underline" : "none",
                   }}
                 >
-                  {language === "he" ? "מיין לפי תאריך" : "Sort by date"}
+                  {tr.sortByDate}
                 </button>
               </div>
 
+              {/* Upcoming Events List*/}
               {(() => {
                 const now = new Date();
                 const sorted = sortByDate
@@ -443,13 +461,14 @@ function App() {
               ＋ New event
             </button>
 
+            {/* Past Events Section*/}
             {(() => {
               const now = new Date();
               const past = events.filter(e => e.date && new Date(e.date) < now);
               return past.length > 0 ? (
                 <>
                   <p style={{ ...styles.sidebarSection, margin: "16px 0 4px 8px", color: "#f87171" }}>
-                    {language === "he" ? "אירועי עבר" : "Past Events"}
+                    {tr.pastEvents}
                   </p>
                   {past.map(renderEvent)}
                 </>
@@ -462,35 +481,39 @@ function App() {
               style={{ ...styles.signOutBtn, marginBottom: "8px" }}
               onClick={() => setLanguage(language === "he" ? "en" : "he")}
             >
-              {language === "he" ? "🇺🇸 English" : "🇮🇱 עברית"}
+              {tr.languageToggle}
             </button>
             <button style={styles.signOutBtn} onClick={handleLogout}>
-              {language === "he" ? "התנתק" : "Sign out"}
+              {tr.signOut}
             </button>
           </div>
         </div>
 
+        {/* Main Content Area*/}
         <div style={{ ...styles.main, position: "relative" }}>
-        <button
-          onClick={() => setSidebarOpen(o => !o)}
-          style={{
-            position: "absolute", top: "20px", left: "-12px",
-            zIndex: 100, background: "#E8D5F2",
-            border: "11px solid #C9A8E0", borderRadius: "50%",
-            color: "#8B5A8B", cursor: "pointer", fontSize: "10px",
-            padding: "6px 8px", transition: "left 0.3s ease",
-            fontFamily: "'Heebo', sans-serif",
-          }}
-        >
-          {sidebarOpen ? "◀" : "▶"}
-        </button>
-          {currentEvent ? (
-            <Dashboard user={user} event={currentEvent} onLogout={handleLogout} googleToken={googleToken} language={language} />
-          ) : (
-            <div style={{ color: "white", padding: "40px" }}>
-              Select an event from the sidebar
-            </div>
-          )}
+          <button
+            onClick={() => setSidebarOpen(o => !o)}
+            style={{
+              position: "absolute", top: "20px", left: "-12px",
+              zIndex: 100, background: "#E8D5F2",
+              border: "11px solid #C9A8E0", borderRadius: "50%",
+              color: "#8B5A8B", cursor: "pointer", fontSize: "10px",
+              padding: "6px 8px", transition: "left 0.3s ease",
+              fontFamily: "'Heebo', sans-serif",
+            }}
+          >
+            {sidebarOpen ? "◀" : "▶"}
+          </button>
+
+            {/* Renders Dashboard for selected event, or fallback message */}
+            {currentEvent ? (
+              <Dashboard user={user} event={currentEvent} onLogout={handleLogout} googleToken={googleToken} language={language} />
+            ) : (
+              <div style={{ color: "white", padding: "40px" }}>
+                Select an event from the sidebar
+              </div>
+            )}
+
         </div>
       </div>
     </>

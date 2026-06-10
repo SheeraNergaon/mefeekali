@@ -1,4 +1,7 @@
+// Full-screen overlay showing a detailed breakdown of all budget items.
+
 import { useState } from "react";
+import { translations } from "../translations";
 
 export default function BudgetTable({ expenses, providers, budget, onClose, onUpdateProvider, onUpdateExpense, language }) {
   const [sortBy, setSortBy] = useState("name");
@@ -6,7 +9,9 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
   const [filterBy, setFilterBy] = useState("all");
 
   const isHe = language === "he";
+  const tr = translations[language];
 
+  // Merges providers and regular expenses into one unified list
   const allItems = [
     ...providers.map(p => ({
       ...p,
@@ -32,6 +37,7 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
     }),
   ];
 
+  // Filters allItems based on the active payment status filter (all/paid/deposit/unpaid)
   const filtered = allItems.filter(item => {
     if (filterBy === "all") return true;
     if (filterBy === "paid") return item.paymentStatus === "paid";
@@ -56,6 +62,8 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
     else { setSortBy(field); setSortDir("asc"); }
   };
 
+  // Summary totals calculated from allItems (not filtered) for the header stats bar  
+  // budgetRemaining = total budget minus total agreed price (not what's been paid)
   const totalAgreed = allItems.reduce((sum, i) => sum + i.agreedPrice, 0);
   const totalPaid = allItems.reduce((sum, i) => sum + i.paidAmount, 0);
   const totalRemaining = totalAgreed - totalPaid;
@@ -83,10 +91,11 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
     </span>
   );
 
+  // Returns display properties (text, color, background) for a payment status badge
   const statusLabel = (item) => {
-    if (item.paymentStatus === "paid") return { text: isHe ? "שולם" : "Paid", color: "#5A9E6F", bg: "rgba(74,222,128,0.15)" };
-    if (item.paymentStatus === "deposit") return { text: isHe ? "מקדמה" : "Deposit", color: "#fb923c", bg: "rgba(251,146,60,0.15)" };
-    return { text: isHe ? "לא שולם" : "Unpaid", color: "#f87171", bg: "rgba(248,113,113,0.15)" };
+    if (item.paymentStatus === "paid") return { text: tr.paid, color: "#5A9E6F", bg: "rgba(74,222,128,0.15)" };
+    if (item.paymentStatus === "deposit") return { text: tr.deposit, color: "#fb923c", bg: "rgba(251,146,60,0.15)" };
+    return { text: tr.unpaid, color: "#f87171", bg: "rgba(248,113,113,0.15)" };
   };
 
   return (
@@ -95,7 +104,7 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
       zIndex: 9999, display: "flex", flexDirection: "column",
       fontFamily: "'Heebo', sans-serif", direction: isHe ? "rtl" : "ltr",
     }}>
-      {/* Header */}
+      {/* Header Bar */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "20px 32px", borderBottom: "1px solid #E8DDD5",
@@ -103,7 +112,7 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <h1 style={{ margin: 0, fontSize: "22px", fontWeight: "700", color: "#3d2c2c" }}>
-            💰 {isHe ? "פירוט תקציב" : "Budget Details"}
+            💰 {tr.budgetDetails}
           </h1>
         </div>
 
@@ -111,21 +120,21 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <div style={{ textAlign: "center", background: "#F5EDE8", border: "1px solid #E0D5CC", borderRadius: "10px", padding: "8px 16px" }}>
             <div style={{ fontSize: "18px", fontWeight: "700", color: "#3d2c2c" }}>₪{totalAgreed.toLocaleString()}</div>
-            <div style={{ fontSize: "11px", color: "#8B7060" }}>{isHe ? "סה״כ הוזמן" : "Total Ordered"}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{tr.totalOrdered}</div>
           </div>
           <div style={{ textAlign: "center", background: "rgba(90,158,111,0.1)", border: "1px solid rgba(90,158,111,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
             <div style={{ fontSize: "18px", fontWeight: "700", color: "#5A9E6F" }}>₪{totalPaid.toLocaleString()}</div>
-            <div style={{ fontSize: "11px", color: "#8B7060" }}>{isHe ? "שולם" : "Paid"}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{tr.paid}</div>
           </div>
           <div style={{ textAlign: "center", background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.2)", borderRadius: "10px", padding: "8px 16px" }}>
             <div style={{ fontSize: "18px", fontWeight: "700", color: "#f87171" }}>₪{totalRemaining.toLocaleString()}</div>
-            <div style={{ fontSize: "11px", color: "#8B7060" }}>{isHe ? "נותר לשלם לאחר האירוע" : "Remaining After Event"}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{tr.remainingAfterEvent}</div>
           </div>
           <div style={{ textAlign: "center", background: budgetRemaining >= 0 ? "rgba(251,146,60,0.1)" : "rgba(248,113,113,0.1)", border: `1px solid ${budgetRemaining >= 0 ? "rgba(251,146,60,0.2)" : "rgba(248,113,113,0.2)"}`, borderRadius: "10px", padding: "8px 16px" }}>
             <div style={{ fontSize: "18px", fontWeight: "700", color: budgetRemaining >= 0 ? "#fb923c" : "#f87171" }}>
               ₪{budgetRemaining.toLocaleString()}
             </div>
-            <div style={{ fontSize: "11px", color: "#8B7060" }}>{isHe ? "נותר מהתקציב" : "Budget Remaining"}</div>
+            <div style={{ fontSize: "11px", color: "#8B7060" }}>{tr.budgetRemaining}</div>
           </div>
           <button onClick={onClose} style={{
             padding: "10px 20px", background: "#F2EBE1",
@@ -133,7 +142,7 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
             color: "#5A4040", cursor: "pointer", fontSize: "14px",
             fontFamily: "'Heebo', sans-serif",
           }}>
-            ✕ {isHe ? "סגור" : "Close"}
+            ✕ {tr.close}
           </button>
         </div>
       </div>
@@ -141,10 +150,10 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
       {/* Filters + Sort */}
       <div style={{ display: "flex", gap: "8px", padding: "16px 32px", borderBottom: "1px solid #F5EDE8", alignItems: "center", flexWrap: "wrap" }}>
         {[
-          { key: "all", label: isHe ? "הכל" : "All" },
-          { key: "paid", label: isHe ? "שולם" : "Paid" },
-          { key: "deposit", label: isHe ? "מקדמה" : "Deposit" },
-          { key: "unpaid", label: isHe ? "לא שולם" : "Unpaid" },
+          { key: "all", label: tr.filterAll },
+          { key: "paid", label: tr.paid },
+          { key: "deposit", label: tr.deposit },
+          { key: "unpaid", label: tr.unpaid },
         ].map(f => (
           <button key={f.key} onClick={() => setFilterBy(f.key)} style={{
             padding: "7px 16px", borderRadius: "20px", cursor: "pointer",
@@ -159,12 +168,12 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
 
         <div style={{ marginRight: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
           <span style={{ fontSize: "12px", color: "#A89080" }}>
-            {isHe ? "מיין לפי:" : "Sort by:"}
+            {tr.sortBy}
           </span>
           {[
-            { key: "name", label: isHe ? "א-ב" : "A-Z" },
-            { key: "agreedPrice", label: isHe ? "מחיר" : "Price" },
-            { key: "paymentStatus", label: isHe ? "סטטוס" : "Status" },
+            { key: "name", label: tr.sortAZ},
+            { key: "agreedPrice", label: tr.agreedPrice },
+            { key: "paymentStatus", label: tr.sortStatus },
           ].map(s => (
             <button key={s.key} onClick={() => handleSort(s.key)} style={{
               padding: "7px 14px", borderRadius: "20px", cursor: "pointer",
@@ -183,18 +192,21 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
       <div style={{ flex: 1, overflowY: "auto", padding: "0 32px 32px" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "16px" }}>
           <thead>
+
+               {/* Column headers — clicking Name and Price headers triggers sorting */}
             <tr>
               <th style={thStyle} onClick={() => handleSort("name")}>
-                <SortArrow field="name" />{isHe ? "שם" : "Name"}
+                <SortArrow field="name" />{tr.colName}
               </th>
-              <th style={thStyle}>{isHe ? "סוג" : "Type"}</th>
+              <th style={thStyle}>{tr.serviceType}</th>
               <th style={thStyle} onClick={() => handleSort("agreedPrice")}>
-                <SortArrow field="agreedPrice" />{isHe ? "מחיר מוסכם" : "Agreed Price"}
+                <SortArrow field="agreedPrice" />{tr.agreedPrice}
               </th>
-              <th style={thStyle}>{isHe ? "שולם" : "Paid"}</th>
-              <th style={thStyle}>{isHe ? "נותר לשלם" : "Remaining"}</th>
-              <th style={{ ...thStyle, textAlign: "center" }}>{isHe ? "סטטוס" : "Status"}</th>
+              <th style={thStyle}>{tr.paid}</th>
+              <th style={thStyle}>{tr.remaining2}</th>
+              <th style={{ ...thStyle, textAlign: "center" }}>{tr.sortStatus}</th>
             </tr>
+
           </thead>
           <tbody>
             {sorted.map((item, i) => {
@@ -209,7 +221,7 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
                   <td style={tdStyle}>
                     {item.isProvider
                       ? <span style={{ color: "#38bdf8", fontSize: "12px" }}>{item.serviceType || "—"}</span>
-                      : <span style={{ color: "#8B7060", fontSize: "12px" }}>{isHe ? "הוצאה" : "Expense"}</span>
+                      : <span style={{ color: "#8B7060", fontSize: "12px" }}>{tr.expense}</span>
                     }
                   </td>
                   <td style={tdStyle}>₪{item.agreedPrice.toLocaleString()}</td>
@@ -257,9 +269,10 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
           </tbody>
         </table>
 
+        {/* Empty state — shown when no items match the active filter */}
         {sorted.length === 0 && (
           <div style={{ textAlign: "center", padding: "60px", color: "rgba(255,255,255,0.2)", fontSize: "16px" }}>
-            {isHe ? "אין פריטים להצגה" : "No items to display"}
+            {tr.noItems}
           </div>
         )}
       </div>

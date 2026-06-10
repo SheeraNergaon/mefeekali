@@ -1,3 +1,8 @@
+// The main event management screen. Renders after a user selects an event
+// Contains 4 cards: Budget, Checklist, Guests, Providers
+// Also renders the AI Producer chat panel at the bottom
+// All data is loaded from and saved to Firestore in real time
+
 import { useState, useEffect, useRef } from "react";
 import { translations } from "../translations";
 import { db } from "../firebase/config";
@@ -6,6 +11,8 @@ import ReactMarkdown from "react-markdown";
 import GuestTable from "./GuestTable";
 import BudgetTable from "./BudgetTable";
 
+// Default checklist items per event type
+// Keys match the event type IDs from EventPicker
 const defaultChecklist = {
   wedding: [
     "הזמינו את האולם", "בחרו קייטרינג", "שכרו צלם",
@@ -36,6 +43,8 @@ const regionLabels = {
   nationwide: "Anywhere in Israel",
 };
 
+// All inline styles for the Dashboard component.
+// Some are plain objects, some are functions that accept dynamic values
 const s = {
   page: {
     minHeight: "100vh", background: "#FAF7F2", 
@@ -267,13 +276,19 @@ const s = {
   },
 };
 
+
 // ── Contact Popup ─────────────────────────────────────────────────────────────
+// Reusable popup for adding or editing a guest or provider.
+// The fields rendered depend on the `type` prop ("guest" or "provider")
 function ContactPopup({ type, initial, onSave, onClose, language = "he", event }) {
   const tr = translations[language];
   const isRTL = language === "he";
   const [form, setForm] = useState(initial || { name: "", email: "", phone: "", note: "" });
+  
+  // Helper to update a single field in the form state without replacing the whole object
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
+  // Defines which input fields to render based on type
   const fields = type === "provider"
     ? [
         { key: "name", label: tr.providerName, placeholder: tr.providerNamePlaceholder },
@@ -296,6 +311,7 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
             ? (initial ? tr.editProviderTitle : tr.addProviderTitle)
             : (initial ? tr.editGuestTitle : tr.addGuestTitle)}
         </p>
+
         {fields.map(({ key, label, placeholder }) => (
           <div key={key} style={s.popupField}>
             <label style={s.popupLabel}>{label}</label>
@@ -304,15 +320,17 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
               dir={key === "phone" ? "ltr" : undefined} />
           </div>
         ))}
+
+        {/* Guest-only fields — shown only when type === "guest" */}
         {type === "guest" && (
           <>
             {event?.type === "wedding" && (
               <div style={s.popupField}>
-                <label style={s.popupLabel}>{language === "he" ? "של מי המוזמן?" : "Invited by?"}</label>
+                <label style={s.popupLabel}>{tr.invitedBy}</label>
                 <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
                   {[
-                    { value: "חתן", label: language === "he" ? "🤵 חתן" : "🤵 Groom" },
-                    { value: "כלה", label: language === "he" ? "👰 כלה" : "👰 Bride" },
+                    { value: "חתן", label: tr.groomLabel },
+                    { value: "כלה", label: tr.brideLabel },
                   ].map(({ value, label }) => (
                     <button
                       key={value}
@@ -333,7 +351,7 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
             )}
 
             <div style={s.popupField}>
-              <label style={s.popupLabel}>{language === "he" ? "כמה מוזמנים?" : "Number of guests?"}</label>
+              <label style={s.popupLabel}>{tr.howManyGuests}</label>
               <div style={{ display: "flex", gap: "8px", marginTop: "6px", flexWrap: "wrap" }}>
                 {[1,2,3,4,5,6,7].map((n) => (
                   <button
@@ -354,15 +372,17 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
             </div>
           </>
         )}
+
+        {/* Provider-only fields — shown only when type === "provider" */}
         {type === "provider" && (
           <>
             <div style={s.popupField}>
-              <label style={s.popupLabel}>{language === "he" ? "סטטוס תשלום" : "Payment Status"}</label>
+              <label style={s.popupLabel}>{tr.paymentStatusLabel}</label>
               <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
                 {[
-                  { key: "unpaid", label: language === "he" ? "לא שולם" : "Unpaid" },
-                  { key: "deposit", label: language === "he" ? "מקדמה" : "Deposit" },
-                  { key: "paid", label: language === "he" ? "שולם" : "Paid" },
+                  { key: "unpaid", label: tr.unpaid },
+                  { key: "deposit", label: tr.deposit },
+                  { key: "paid", label: tr.paid },
                 ].map(({ key, label }) => (
                   <button
                     key={key}
@@ -383,7 +403,7 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
 
             {form.paymentStatus === "deposit" && (
               <div style={s.popupField}>
-                <label style={s.popupLabel}>{language === "he" ? "סכום מקדמה (₪)" : "Deposit Amount (₪)"}</label>
+                <label style={s.popupLabel}>{tr.depositAmountLabel}</label>
                 <input
                   style={s.popupInput}
                   type="number"
@@ -395,7 +415,7 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
             )}
 
             <div style={s.popupField}>
-              <label style={s.popupLabel}>{language === "he" ? "מחיר כולל (₪)" : "Total Price (₪)"}</label>
+              <label style={s.popupLabel}>{tr.totalPriceLabel}</label>
               <input
                 style={s.popupInput}
                 type="number"
@@ -406,6 +426,8 @@ function ContactPopup({ type, initial, onSave, onClose, language = "he", event }
             </div>
           </>
         )}
+
+        {/* Save and Cancel buttons */}
         <div style={s.popupActions}>
           <button style={s.popupSave} onClick={() => form.name.trim() && onSave(form)}>{tr.save}</button>
           <button style={s.popupCancel} onClick={onClose}>{tr.cancel}</button>
@@ -425,7 +447,9 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
   const [initialized, setInitialized] = useState(false);
   const messagesEndRef = useRef(null);
 
+  // Summary stats passed into the AI context so it knows the current planning state
   const totalSpent = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+  
   const remaining = budget.total - totalSpent;
   const spentPct = budget.total > 0 ? Math.round((totalSpent / budget.total) * 100) : 0;
   const doneCount = (checklist || []).filter((i) => i.done).length;
@@ -438,42 +462,45 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
       : null;
 
     return `
-You are a warm, smart, proactive Israeli event planning assistant called the "Digital Producer" for MefeeKali — a platform built for the Israeli event market.
+  You are a warm, smart, proactive Israeli event planning assistant called the "Digital Producer" for MefeeKali — a platform built for the Israeli event market.
 
-TODAY'S DATE: ${today.toLocaleDateString('en-IL', { year: 'numeric', month: 'long', day: 'numeric' })}
-DAYS UNTIL EVENT: ${daysUntilEvent !== null ? `${daysUntilEvent} days` : "event date not set yet"}
+  TODAY'S DATE: ${today.toLocaleDateString('en-IL', { year: 'numeric', month: 'long', day: 'numeric' })}
+  DAYS UNTIL EVENT: ${daysUntilEvent !== null ? `${daysUntilEvent} days` : "event date not set yet"}
 
-CURRENT EVENT CONTEXT:
-- Event type: ${event.type}
-- Event name: ${event.title}
-- Date: ${event.date || "not set yet"}
-- Region: ${event.region ? regionLabels[event.region] : "not set yet"}
-- Guest count: ${event.guestCount || "not set yet"}
-- Total budget: ${budget.total > 0 ? `₪${budget.total.toLocaleString()}` : "NOT SET YET"}
-- Amount spent: ₪${totalSpent.toLocaleString()}
-- Remaining budget: ₪${remaining.toLocaleString()}
-- Budget used: ${budget.total > 0 ? `${spentPct}%` : "N/A"}
-- Expenses logged: ${expenses.map(e => `${e.name} (₪${e.amount})`).join(", ") || "none"}
-- Providers booked: ${providers.map(p => `${p.name} (${p.serviceType || p.type || "general"})`).join(", ") || "none"}
-- Checklist: ${doneCount}/${(checklist || []).length} items done
-- Guests added: ${guests.length}
+  CURRENT EVENT CONTEXT:
+  - Event type: ${event.type}
+  - Event name: ${event.title}
+  - Date: ${event.date || "not set yet"}
+  - Region: ${event.region ? regionLabels[event.region] : "not set yet"}
+  - Guest count: ${event.guestCount || "not set yet"}
+  - Total budget: ${budget.total > 0 ? `₪${budget.total.toLocaleString()}` : "NOT SET YET"}
+  - Amount spent: ₪${totalSpent.toLocaleString()}
+  - Remaining budget: ₪${remaining.toLocaleString()}
+  - Budget used: ${budget.total > 0 ? `${spentPct}%` : "N/A"}
+  - Expenses logged: ${expenses.map(e => `${e.name} (₪${e.amount})`).join(", ") || "none"}
+  - Providers booked: ${providers.map(p => `${p.name} (${p.serviceType || p.type || "general"})`).join(", ") || "none"}
+  - Checklist: ${doneCount}/${(checklist || []).length} items done
+  - Guests added: ${guests.length}
 
-RULES YOU MUST FOLLOW:
-1. If budget is NOT SET, do not recommend vendors or give cost estimates. Instead ask them to set a budget first.
-2. Always be aware of remaining budget — never recommend something that would exceed it without flagging it.
-3. If guest count is not set, ask for it when relevant (e.g. catering, venue capacity).
-4. If region is not set, ask where they want the event before recommending local vendors.
-5. Be proactive — notice gaps. If no venue is booked, mention it. If the event is soon and checklist is low, flag it.
-6. Be warm, encouraging, and conversational. You know the Israeli event market well.
-7. Prices should always be in Israeli Shekels (₪).
-8. Keep responses concise and friendly — use short paragraphs, not walls of text.
-9. When users ask about venues, vendors, or places — use web search to find REAL options in their region. Search in Hebrew or English for actual venues with names, locations and prices. Always search before giving price estimates — never guess prices from memory.
-10. For Israeli market prices always search first — prices change frequently. Never assume catering costs, venue prices, or vendor fees without searching.
-11. Always format responses with proper markdown — use - for bullet points, **bold** for emphasis. Never use • as bullet characters. Use proper line breaks between sections.
-12. IMPORTANT LANGUAGE RULE: Always respond in the SAME LANGUAGE the user writes in. If they write in Hebrew — respond in Hebrew. If they write in English — respond in English. Never switch languages mid-conversation.
-`;
+  RULES YOU MUST FOLLOW:
+  1. If budget is NOT SET, do not recommend vendors or give cost estimates. Instead ask them to set a budget first.
+  2. Always be aware of remaining budget — never recommend something that would exceed it without flagging it.
+  3. If guest count is not set, ask for it when relevant (e.g. catering, venue capacity).
+  4. If region is not set, ask where they want the event before recommending local vendors.
+  5. Be proactive — notice gaps. If no venue is booked, mention it. If the event is soon and checklist is low, flag it.
+  6. Be warm, encouraging, and conversational. You know the Israeli event market well.
+  7. Prices should always be in Israeli Shekels (₪).
+  8. Keep responses concise and friendly — use short paragraphs, not walls of text.
+  9. When users ask about venues, vendors, or places — use web search to find REAL options in their region. Search in Hebrew or English for actual venues with names, locations and prices. Always search before giving price estimates — never guess prices from memory.
+  10. For Israeli market prices always search first — prices change frequently. Never assume catering costs, venue prices, or vendor fees without searching.
+  11. Always format responses with proper markdown — use - for bullet points, **bold** for emphasis. Never use • as bullet characters. Use proper line breaks between sections.
+  12. IMPORTANT LANGUAGE RULE: Always respond in the SAME LANGUAGE the user writes in. If they write in Hebrew — respond in Hebrew. If they write in English — respond in English. Never switch languages mid-conversation.
+  `;
   };
 
+  // Sends an automatic opening message when the panel first loads.
+  // If event details are missing (budget, date, etc.), Claude asks for them one at a time.
+  // If all details exist, Claude gives a proactive planning tip instead
   const sendInitialGreeting = async () => {
     setLoading(true);
     try {
@@ -517,10 +544,13 @@ RULES YOU MUST FOLLOW:
     }
   }, []);
 
+  // Auto-scrolls to the latest message whenever messages or loading state changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+
+  // Sends a user message to Claude API along with the full conversation history
   const sendMessage = async (userText) => {
     if (!userText.trim() || loading) return;
     const newMessages = [...messages, { role: "user", text: userText }];
@@ -561,9 +591,12 @@ RULES YOU MUST FOLLOW:
     setLoading(false);
   };
 
+  // Suggested questions shown as quick-tap buttons below the chat.
+  // Shows beginner questions when budget is not set, advanced questions when it is
   const suggested = budget.total === 0
     ? [tr.suggestedQ1_nobudget, tr.suggestedQ2_nobudget, tr.suggestedQ3_nobudget]
     : [tr.suggestedQ1, tr.suggestedQ2, tr.suggestedQ3];
+
 
   return (
     <>
@@ -582,8 +615,11 @@ RULES YOU MUST FOLLOW:
         .ai-bubble ol li { display: list-item; margin-bottom: 6px; line-height: 1.6; }
         .ai-bubble hr { border: none; border-top: 1px solid #E8DDD5; margin: 10px 0; }
       `}</style>
+
+      {/*AI Card*/}
       <div style={s.aiSection}>
         <div style={s.aiCard}>
+          {/* Header — avatar, name, tagline, collapse toggle arrow */}
           <div style={s.aiHeader} onClick={() => setOpen((o) => !o)}>
             <div style={s.aiHeaderLeft}>
               <div style={s.aiAvatar}>🎬</div>
@@ -597,6 +633,8 @@ RULES YOU MUST FOLLOW:
 
           {open && (
             <div style={s.aiBody}>
+
+              {/* ── Messages List ── */}
               <div style={s.chatMessages}>
                 {messages.map((m, i) =>
                   m.role === "ai" ? (
@@ -612,6 +650,8 @@ RULES YOU MUST FOLLOW:
                     </div>
                   )
                 )}
+
+                {/* Typing indicator — 3 animated dots shown while loading */}
                 {loading && (
                   <div style={s.msgAI}>
                     <div style={s.msgAIAvatar}>🎬</div>
@@ -624,15 +664,18 @@ RULES YOU MUST FOLLOW:
                     </div>
                   </div>
                 )}
+
                 <div ref={messagesEndRef} />
               </div>
 
+              {/* Suggested question buttons — clicking sends message directly */}
               <div style={s.suggestedQuestions}>
                 {suggested.map((q, i) => (
                   <button key={i} style={s.suggestBtn} onClick={() => sendMessage(q)}>{q}</button>
                 ))}
               </div>
 
+              {/*Input Row*/}
               <div style={s.chatInputRow}>
                 <textarea
                   style={s.chatInput}
@@ -658,6 +701,7 @@ RULES YOU MUST FOLLOW:
     </>
   );
 }
+
 
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 function Dashboard({ user, event, googleToken, language = "he" }) {
@@ -689,6 +733,8 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
   const tr = translations[language];
   const isRTL = language === "he";
 
+  // Loads all event data from Firestore when the selected event changes.
+  // Resets all state first to prevent showing stale data from a previous event.
   useEffect(() => {
       setLoaded(false);
       setBudget({ total: 0 });
@@ -735,6 +781,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
       });
     }, [event.id]);
 
+  
   const scheduleSave = (patch) => {
     setSaving(true);
     clearTimeout(saveTimeout.current);
@@ -745,12 +792,17 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     }, 800);
   };
 
+  // Calculates total amount spent: regular expenses + all provider prices.
+  // Provider expenses are read from the providers array (not from expenses)
+  // to avoid double-counting
   const totalSpent = expenses.filter(e => !e.providerId).reduce((sum, e) => sum + (e.amount || 0), 0)
   + providers.reduce((sum, p) => sum + (p.totalPrice || 0), 0);
+
   const remaining = budget.total - totalSpent;
   const spentPct = budget.total > 0 ? (totalSpent / budget.total) * 100 : 0;
   const doneCount = (checklist || []).filter((i) => i.done).length;
 
+  // Sets a new total budget and saves to Firestore
   const handleSetBudget = () => {
     if (!budgetInput) return;
     const next = { total: Number(budgetInput) };
@@ -758,6 +810,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     scheduleSave({ budget: next });
   };
 
+  // Creates a new expense, saves only regular expenses to Firestore
   const handleAddExpense = () => {
     if (!expenseName.trim() || !expenseAmount) return;
     const newExpense = {
@@ -775,6 +828,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     scheduleSave({ expenses: regularOnly });
   };
 
+  // Removes an expense and saves only regular expenses to Firestore
   const handleRemoveExpense = (id) => {
     const next = expenses.filter((e) => e.id !== id);
     setExpenses(next);
@@ -782,13 +836,15 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     scheduleSave({ expenses: regularOnly });
   };
 
-    const handleExpenseComment = (id, comment) => {
+  // Updates the comment of an expense and saves only regular expenses to Firestore
+  const handleExpenseComment = (id, comment) => {
     const next = expenses.map((e) => e.id === id ? { ...e, comment } : e);
     setExpenses(next);
     const regularOnly = next.filter(e => !e.providerId);
     scheduleSave({ expenses: regularOnly });
   };
 
+  // Adds a new guest or updates an existing one based on whether guestPopup.index is set.
   const handleSaveGuest = (form) => {
     const next = guestPopup?.index !== undefined
       ? guests.map((g, i) => i === guestPopup.index ? { ...g, ...form } : g)
@@ -796,11 +852,13 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     setGuests(next); setGuestPopup(null); scheduleSave({ guests: next });
   };
 
+  // Removes a guest by index 
   const handleRemoveGuest = (i) => {
     const next = guests.filter((_, j) => j !== i);
     setGuests(next); scheduleSave({ guests: next });
   };
 
+  // Updates specific fields on a guest
   const handleUpdateGuestField = (idOrIndex, fields) => {
     const next = guests.map((g, i) =>
       (g.id === idOrIndex || i === idOrIndex) ? { ...g, ...fields } : g
@@ -809,6 +867,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     scheduleSave({ guests: next });
   };
 
+  // Saves a new provider or updates an existing one based on whether providerPopup.index is set.
   const handleSaveProvider = (form) => {
     const providerId = providerPopup?.index !== undefined
       ? providers[providerPopup.index]?.id || Date.now()
@@ -842,27 +901,33 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     }
   };
 
+  // Removes a provider by index
   const handleRemoveProvider = (i) => {
     const next = providers.filter((_, j) => j !== i);
     setProviders(next); scheduleSave({ providers: next });
   };
 
+  // Toggles a checklist item between done and not done
   const toggleChecklistItem = (index) => {
     const next = (checklist || []).map((item, i) => i === index ? { ...item, done: !item.done } : item);
     setChecklist(next); scheduleSave({ checklist: next });
   };
 
+  // Adds a new checklist item with done: false
   const handleAddCheckItem = () => {
     if (!newCheckItem.trim()) return;
     const next = [...(checklist || []), { text: newCheckItem.trim(), done: false }];
     setChecklist(next); setNewCheckItem(""); scheduleSave({ checklist: next });
   };
 
+  // Removes a checklist item by index
   const handleRemoveCheckItem = (index) => {
     const next = (checklist || []).filter((_, i) => i !== index);
     setChecklist(next); scheduleSave({ checklist: next });
   };
 
+  // Adds an event to Google Calendar via the Calendar API
+  // Also supports custom reminders (popup notifications)
   const addToCalendar = async (title, date, description = "", time = "10:00") => {
     if (!googleToken) {
       setCalendarStatus(tr.signInGoogle);
@@ -904,7 +969,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
         setMeetings(nextMeetings);
         scheduleSave({ meetings: nextMeetings });
       }
-      setCalendarStatus(res.ok ? `✅ "${title}" ${language === "he" ? "נוסף ליומן גוגל!" : "added to Google Calendar!"}` : `❌ ${responseData.error?.message || "Failed"}`);
+      setCalendarStatus(res.ok ? `✅ "${title}" ${tr.calendarAdded}` : `❌ ${responseData.error?.message || "Failed"}`);
       setTimeout(() => setCalendarStatus(""), 4000);
     } catch (err) {
       console.error("Calendar error:", err);
@@ -921,8 +986,13 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     );
   }
 
+
+
   return (
     <div style={{ ...s.page, direction: isRTL ? "rtl" : "ltr" }}>
+    {/* Full-screen Overlays*/}
+
+      {/* GuestTable overlay*/}
       {showGuestTable && (
         <GuestTable
           guests={guests}
@@ -936,6 +1006,8 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           }}
         />
       )}
+
+      {/* BudgetTable overlay*/}
       {showBudgetTable && (
         <BudgetTable
           expenses={expenses}
@@ -963,17 +1035,22 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           }}
         />
       )}
+
+      {/* ContactPopup for adding/editing a guest */}
       {guestPopup !== null && (
         <ContactPopup type="guest" initial={guestPopup?.data}
           onSave={handleSaveGuest} onClose={() => setGuestPopup(null)}
           language={language} event={event} />
       )}
+
+      {/* ContactPopup for adding/editing a provider */}
       {providerPopup !== null && (
         <ContactPopup type="provider" initial={providerPopup?.data}
           onSave={handleSaveProvider} onClose={() => setProviderPopup(null)}
           language={language} />
       )}
 
+      {/* Calendar popup*/}
       {calendarPopup !== null && (
         <div style={s.popupOverlay} onClick={() => setCalendarPopup(null)}>
           <div style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr" }} onClick={(e) => e.stopPropagation()}>
@@ -1004,14 +1081,14 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                 onChange={(e) => setCalendarPopup(p => ({ ...p, description: e.target.value }))} />
             </div>
             <div style={s.popupField}>
-              <label style={s.popupLabel}>{language === "he" ? "תזכורת" : "Reminder"}</label>
+              <label style={s.popupLabel}>{tr.reminder}</label>
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "6px" }}>
                 {[
-                  { value: 10, label: language === "he" ? "10 דק׳" : "10 min" },
-                  { value: 30, label: language === "he" ? "30 דק׳" : "30 min" },
-                  { value: 60, label: language === "he" ? "שעה" : "1 hour" },
-                  { value: 1440, label: language === "he" ? "יום" : "1 day" },
-                  { value: 10080, label: language === "he" ? "שבוע" : "1 week" },
+                  { value: 10, label: tr.reminder10 },
+                  { value: 30, label: tr.reminder30 },
+                  { value: 60, label: tr.reminder60 },
+                  { value: 1440, label: tr.reminder1day },
+                  { value: 10080, label: tr.reminder1week },
                 ].map(({ value, label }) => (
                   <button
                     key={value}
@@ -1045,20 +1122,25 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
 
       {/* Top bar */}
       <div style={s.topBar}>
+        {/* Event metadata — left side */}
         <div style={s.eventMeta}>
           <span style={s.eventBadge}>{event.title}</span>
-          {event.date && <span style={s.metaChip}>📅 {event.date}</span>}
+          {event.date && <span style={s.metaChip}>📅 {event.date.split("-").reverse().join(".")}</span>}
           {event.guestCount && <span style={s.metaChip}>👥 {event.guestCount} {tr.guests}</span>}
           {event.region && <span style={s.metaChip}>📍 {regionLabels[event.region]}</span>}
         </div>
+
+         {/* Right side controls */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {calendarStatus && <span style={{ fontSize: "12px", color: "#4ade80" }}>{calendarStatus}</span>}
+          
+          {/*Meetings Panel*/}
           <div style={{ position: "relative" }}>
             <button
               style={{ ...s.addBtn("rgba(56,189,248,0.2)"), fontSize: "12px", padding: "6px 14px", border: "1px solid rgba(56,189,248,0.3)" }}
               onClick={() => setShowMeetingsPanel(o => !o)}
             >
-              📅 {language === "he" ? "פגישות" : "Meetings"} {meetings.length > 0 && `(${meetings.length})`}
+             📅 {tr.meetingsBtn} {meetings.length > 0 && `(${meetings.length})`}
             </button>
 
             {showMeetingsPanel && (
@@ -1078,13 +1160,13 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                       color: "#38bdf8", fontSize: "13px", fontFamily: "'Heebo', sans-serif",
                     }}
                   >
-                    ＋ {language === "he" ? "הוסף פגישה" : "New Meeting"}
+                   ＋ {tr.addMeetingBtn}
                   </button>
                 </div>
 
                 {meetings.length === 0 ? (
                   <p style={{ textAlign: "center", color: "#C4B0A8", fontSize: "13px", margin: "16px 0" }}>
-                    {language === "he" ? "אין פגישות עדיין" : "No meetings yet"}
+                    {tr.noMeetings}
                   </p>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "300px", overflowY: "auto" }}>
@@ -1107,10 +1189,10 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                               color: isPast ? "#A89080" : "#38bdf8",
                             }}>
                               {isPast
-                                ? (language === "he" ? "עבר" : "Past")
+                                ? tr.meetingPast
                                 : daysLeft === 0
-                                ? (language === "he" ? "היום!" : "Today!")
-                                : language === "he" ? `עוד ${daysLeft} ימים` : `${daysLeft} days left`}
+                                ? tr.meetingToday
+                                : `${daysLeft} ${tr.done}`}
                             </span>
                           </div>
                           <div style={{ fontSize: "12px", color: "#8B7060", marginTop: "4px" }}>
@@ -1131,7 +1213,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                             }}
                             style={{ background: "none", border: "none", color: "#C4B0A8", cursor: "pointer", fontSize: "12px", marginTop: "4px" }}
                           >
-                            {language === "he" ? "בטל פגישה" : "Delete"}
+                            {tr.deleteMeeting}
                           </button>
                         </div>
                       );
@@ -1145,16 +1227,17 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
         </div>
       </div>
 
+      {/* ── Dashboard Body ── */}
       <div style={s.body}>
         <h2 style={s.pageTitle}>{tr.eventDashboard}</h2>
         <p style={s.pageSubtitle}>{tr.manageEverything} {event.title} {tr.inOnePlace}</p>
 
         <div style={s.grid}>
 
-          {/* BUDGET */}
+          {/* BUDGET CARD */}
           <div style={s.card}>
             <p style={{ ...s.cardTitle, cursor: "pointer" }} onClick={() => setShowBudgetTable(true)}>
-              💰 {tr.budget} <span style={{ fontSize: "13px", color: "#7A6060", marginRight: "8px" }}>← {language === "he" ? "פירוט מלא" : "Full Details"}</span>
+              💰 {tr.budget} <span style={{ fontSize: "13px", color: "#7A6060", marginRight: "8px" }}>← {tr.fullDetails}</span>
             </p>
             <div style={s.inputRow}>
               <input style={s.input} type="number" placeholder={tr.setBudget}
@@ -1179,9 +1262,9 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             <div style={s.progressBar}><div style={s.progressFill(spentPct)} /></div>
             <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
               {[
-                { key: "unpaid", label: language === "he" ? "לא שולם" : "Unpaid" },
-                { key: "deposit", label: language === "he" ? "מקדמה" : "Deposit" },
-                { key: "paid", label: language === "he" ? "שולם" : "Paid" },
+                { key: "unpaid", label: tr.unpaid },
+                { key: "deposit", label: tr.deposit },
+                { key: "paid", label: tr.paid },
               ].map(({ key, label }) => (
                 <button key={key} onClick={() => setExpenseStatus(key)} style={{
                   flex: 1, padding: "8px", borderRadius: "10px", cursor: "pointer",
@@ -1207,7 +1290,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             {expenseStatus === "deposit" && (
               <div style={{ ...s.inputRow }}>
                 <input style={s.input} type="number"
-                  placeholder={language === "he" ? "סכום מקדמה (₪)" : "Deposit amount (₪)"}
+                  placeholder={tr.depositAmountPlaceholder}
                   value={expenseDeposit}
                   onChange={(e) => setExpenseDeposit(e.target.value)} />
               </div>
@@ -1233,10 +1316,10 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                 </div>
                 <div style={{ fontSize: "13px", color: p.paymentStatus === "paid" ? "#4ade80" : p.paymentStatus === "deposit" ? "#fb923c" : "#f87171", marginTop: "4px" }}>
                   {p.paymentStatus === "paid" 
-                    ? (language === "he" ? "שולם במלואו" : "Fully paid")
+                    ? tr.fullyPaid
                     : p.paymentStatus === "deposit"
-                    ? (language === "he" ? `שולמה מקדמה ₪${p.depositAmount || 0} · נותר ₪${(p.totalPrice - (p.depositAmount || 0)).toLocaleString()}` : `Deposit ₪${p.depositAmount || 0} paid · ₪${(p.totalPrice - (p.depositAmount || 0)).toLocaleString()} remaining`)
-                    : (language === "he" ? "טרם שולם" : "Not paid yet")}
+                    ? `${tr.depositPaid} ₪${p.depositAmount || 0} · ${tr.remaining} ₪${(p.totalPrice - (p.depositAmount || 0)).toLocaleString()}`
+                    : tr.notPaidYet}
                 </div>
               </div>
             ))}
@@ -1267,7 +1350,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             ))}
           </div>
 
-          {/* CHECKLIST */}
+          {/* CHECKLIST CARD*/}
           <div style={s.card}>
             <p style={s.cardTitle}>
               ✅ {tr.checklist}
@@ -1299,52 +1382,55 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
               <button style={s.addBtn("rgba(74,222,128,0.25)")} onClick={handleAddCheckItem}>＋</button>
             </div>
           </div>
-              {/* GUESTS */}
-              <div style={s.card}>
-                <p style={s.cardTitle}>
-                  👥 {tr.guestList}
-                </p>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px", marginBottom: "14px" }}>
-                  <div style={{ textAlign: "center", background: "#F5EDE8", border: "1px solid #E8DDD5", borderRadius: "12px", padding: "10px 4px" }}>
-                    <span style={{ fontSize: "22px", fontWeight: "500", color: "#3d2c2c", display: "block" }}>
-                      {guests.reduce((sum, g) => sum + (g.guestCount || 1), 0)}
-                    </span>
-                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "מוזמנים" : "Invited"}</span>
-                  </div>
-                  <div style={{ textAlign: "center", background: "#D5E8D4", border: "1px solid #B8D4B6", borderRadius: "12px", padding: "10px 4px" }}>
-                    <span style={{ fontSize: "22px", fontWeight: "500", color: "#3A6B38", display: "block" }}>
-                      {guests.filter(g => g.rsvpStatus === "confirmed").reduce((sum, g) => sum + (g.rsvpCount || g.guestCount || 1), 0)}
-                    </span>
-                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "אישרו" : "Confirmed"}</span>
-                  </div>
-                  <div style={{ textAlign: "center", background: "#F2D7D5", border: "1px solid #E0C0BD", borderRadius: "12px", padding: "10px 4px" }}>
-                    <span style={{ fontSize: "22px", fontWeight: "500", color: "#C17B7B", display: "block" }}>
-                      {guests.filter(g => g.rsvpStatus === "declined").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
-                    </span>
-                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "לא מגיעים" : "Declined"}</span>
-                  </div>
-                  <div style={{ textAlign: "center", background: "#FFF0D5", border: "1px solid #F0D8A8", borderRadius: "12px", padding: "10px 4px" }}>
-                    <span style={{ fontSize: "22px", fontWeight: "500", color: "#B07820", display: "block" }}>
-                      {guests.filter(g => !g.rsvpStatus).length}
-                    </span>
-                    <span style={{ fontSize: "11px", color: "#A89080" }}>{language === "he" ? "אין מענה" : "Pending"}</span>
-                  </div>
-                </div>
-                <button
-                  style={{ width: "100%", padding: "10px", background: "rgba(139,92,246,0.15)", border: "1px solid #C9A8E0", borderRadius: "12px", color: "#8B5A8B", cursor: "pointer", fontSize: "13px", fontFamily: "'Heebo', sans-serif", marginBottom: "8px" }}
-                  onClick={() => setGuestPopup({})}
-                >
-                  + {language === "he" ? "הוסף מוזמן" : "Add Guest"}
-                </button>
-                <button
-                  style={{ width: "100%", padding: "10px", background: "rgba(139,90,139,0.08)", border: "1px dashed #C9A8E0", borderRadius: "12px", color: "#8B5A8B", cursor: "pointer", fontSize: "13px", fontFamily: "'Heebo', sans-serif" }}
-                  onClick={() => setShowGuestTable(true)}
-                >
-                  {language === "he" ? "פתח רשימת אורחים ←" : "Open guest list →"}
-                </button>
+          {/* GUESTS CARD */}
+          <div style={s.card}>
+            <p style={s.cardTitle}>
+              👥 {tr.guestList}
+            </p>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px", marginBottom: "14px" }}>
+              <div style={{ textAlign: "center", background: "#F5EDE8", border: "1px solid #E8DDD5", borderRadius: "12px", padding: "10px 4px" }}>
+                <span style={{ fontSize: "22px", fontWeight: "500", color: "#3d2c2c", display: "block" }}>
+                  {guests.reduce((sum, g) => sum + (g.guestCount || 1), 0)}
+                </span>
+                <span style={{ fontSize: "11px", color: "#A89080" }}>{tr.invitedCount}</span>
               </div>
-          {/* PROVIDERS */}
+              <div style={{ textAlign: "center", background: "#D5E8D4", border: "1px solid #B8D4B6", borderRadius: "12px", padding: "10px 4px" }}>
+                <span style={{ fontSize: "22px", fontWeight: "500", color: "#3A6B38", display: "block" }}>
+                  {guests.filter(g => g.rsvpStatus === "confirmed").reduce((sum, g) => sum + (g.rsvpCount || g.guestCount || 1), 0)}
+                </span>
+                <span style={{ fontSize: "11px", color: "#A89080" }}>{tr.confirmedCount}</span>
+              </div>
+              <div style={{ textAlign: "center", background: "#F2D7D5", border: "1px solid #E0C0BD", borderRadius: "12px", padding: "10px 4px" }}>
+                <span style={{ fontSize: "22px", fontWeight: "500", color: "#C17B7B", display: "block" }}>
+                  {guests.filter(g => g.rsvpStatus === "declined").reduce((sum, g) => sum + (g.guestCount || 1), 0)}
+                </span>
+                <span style={{ fontSize: "11px", color: "#A89080" }}>{tr.declinedCount}</span>
+              </div>
+              <div style={{ textAlign: "center", background: "#FFF0D5", border: "1px solid #F0D8A8", borderRadius: "12px", padding: "10px 4px" }}>
+                <span style={{ fontSize: "22px", fontWeight: "500", color: "#B07820", display: "block" }}>
+                  {guests.filter(g => !g.rsvpStatus).length}
+                </span>
+                <span style={{ fontSize: "11px", color: "#A89080" }}>{tr.noAnswer}</span>
+              </div>
+            </div>
+            <button
+              style={{ width: "100%", padding: "10px", background: "rgba(139,92,246,0.15)", border: "1px solid #C9A8E0", borderRadius: "12px", color: "#8B5A8B", cursor: "pointer", fontSize: "13px", fontFamily: "'Heebo', sans-serif", marginBottom: "8px" }}
+              onClick={() => setGuestPopup({})}
+            >
+              + {tr.addGuestBtn}
+            </button>
+            <button
+              style={{ width: "100%", padding: "10px", background: "rgba(139,90,139,0.08)", border: "1px dashed #C9A8E0", borderRadius: "12px", color: "#8B5A8B", cursor: "pointer", fontSize: "13px", fontFamily: "'Heebo', sans-serif" }}
+              onClick={() => setShowGuestTable(true)}
+            >
+              {tr.openGuestList}
+            </button>
+          </div>
+
+
+          {/* PROVIDERS CARD*/}
           <div style={s.card}>
             <p style={s.cardTitle}>
               🏢 {tr.providers}
@@ -1378,10 +1464,10 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                         }}>
                           {p.paymentStatus === "paid" ? " " : p.paymentStatus === "deposit" ? " " : " "}
                           {p.paymentStatus === "paid"
-                            ? (language === "he" ? "שולם" : "Paid")
+                            ? tr.paid
                             : p.paymentStatus === "deposit"
-                            ? (language === "he" ? `מקדמה ₪${p.depositAmount || 0}` : `Deposit ₪${p.depositAmount || 0}`)
-                            : (language === "he" ? "לא שולם" : "Unpaid")}
+                            ? `${tr.deposit} ₪${p.depositAmount || 0}`
+                            : tr.unpaid}
                         </span>
                       )}
                       {p.totalPrice > 0 && <span style={s.detailChip}>💰 ₪{p.totalPrice.toLocaleString()}</span>}

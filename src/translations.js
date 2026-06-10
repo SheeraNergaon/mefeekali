@@ -23,6 +23,13 @@ export const translations = {
     noExpenses: "אין הוצאות עדיין",
     addComment: "הוסף הערה…",
 
+    // Budget card
+    fullDetails: "פירוט מלא",
+    depositAmountPlaceholder: "סכום מקדמה (₪)",
+    fullyPaid: "שולם במלואו",
+    notPaidYet: "טרם שולם",
+    depositPaid: "שולמה מקדמה",
+
     // Checklist
     checklist: "צ׳קליסט",
     done: "בוצע",
@@ -34,11 +41,33 @@ export const translations = {
     addGuest: "＋ הוסף אורח",
     noGuests: "אין אורחים עדיין",
 
+    // ContactPopup — guest
+    invitedBy: "של מי המוזמן?",
+    groomLabel: "🤵 חתן",
+    brideLabel: "👰 כלה",
+    howManyGuests: "כמה מוזמנים?",
+
+    // Guests card
+    invitedCount: "מוזמנים",
+    confirmedCount: "אישרו",
+    declinedCount: "לא מגיעים",
+    noAnswer: "אין מענה",
+    addGuestBtn: "הוסף מוזמן",
+    openGuestList: "פתח רשימת אורחים ←",
+
     // Providers
     providers: "ספקים",
     added: "נוספו",
     addProvider: "＋ הוסף ספק",
     noProviders: "אין ספקים עדיין",
+
+    // ContactPopup — provider
+    paymentStatusLabel: "סטטוס תשלום",
+    depositAmountLabel: "סכום מקדמה (₪)",
+    totalPriceLabel: "מחיר כולל (₪)",
+    unpaid: "לא שולם",
+    deposit: "מקדמה",
+    paid: "שולם",
 
     // Calendar
     addMeeting: "📅 הוסף פגישה",
@@ -55,6 +84,21 @@ export const translations = {
     saving: "● שומר…",
     saved: "● נשמר",
     signInGoogle: "⚠️ יש להתחבר עם גוגל כדי להשתמש ביומן.",
+
+    // Meetings
+    reminder: "תזכורת",
+    reminder10: "10 דק׳",
+    reminder30: "30 דק׳",
+    reminder60: "שעה",
+    reminder1day: "יום",
+    reminder1week: "שבוע",
+    meetingsBtn: "פגישות",
+    addMeetingBtn: "הוסף פגישה",
+    noMeetings: "אין פגישות עדיין",
+    meetingPast: "עבר",
+    meetingToday: "היום!",
+    deleteMeeting: "בטל פגישה",
+    calendarAdded: "נוסף ליומן גוגל!",
 
     // Popup
     editGuest: "✏️ ערוך אורח",
@@ -124,6 +168,55 @@ export const translations = {
     emailProviderPlaceholder: "contact@provider.com",
     notePlaceholder: "מגבלות תזונה, +1 וכו׳",
     noteProviderPlaceholder: "מידע נוסף...",
+
+    // GuestTable
+    guestListTitle: "רשימת מוזמנים",
+    invitesSent: "נשלחו הזמנות",
+    invitesNotSent: "לא נשלחו הזמנות",
+    exportExcel: "ייצוא לאקסל",
+    close: "סגור",
+    filterAll: "הכל",
+    sortBy: "מיין לפי:",
+    sortAZ: "א-ב",
+    sortInvitedBy: "מזמין",
+    sortStatus: "סטטוס",
+    sortInvite: "הזמנה",
+    colName: "שם",
+    colInvitedBy: "מזמין",
+    colCount: "כמות",
+    colPhone: "טלפון",
+    colInviteSent: "הזמנה נשלחה",
+    colRSVP: "אישר הגעה",
+    colAttending: "כמה מגיעים",
+    coming: "מגיע",
+    notComing: "לא מגיע",
+    noGuestsDisplay: "אין אורחים להצגה",
+    yes: "כן",
+    no: "לא",
+    sheetName: "מוזמנים",
+    bride: "כלה",
+    groom: "חתן",
+
+    // App — sidebar & edit event
+    editEventTitle: "✏️ עריכת אירוע",
+    eventNameLabel: "שם האירוע",
+    dateLabel2: "תאריך",
+    guestCountLabel: "כמות מוזמנים",
+    regionLabel: "אזור",
+    editBtn: "עריכה",
+    sortByDate: "מיין לפי תאריך",
+    pastEvents: "אירועי עבר",
+    languageToggle: "🇺🇸 English",
+
+    // BudgetTable
+    totalOrdered: "סה״כ הוזמן",
+    remainingAfterEvent: "נותר לשלם לאחר האירוע",
+    budgetRemaining: "נותר מהתקציב",
+    budgetDetails: "פירוט תקציב",
+    expense: "הוצאה",
+    agreedPrice: "מחיר מוסכם",
+    remaining2: "נותר לשלם",
+    noItems: "אין פריטים להצגה",
   },
   en: {
     // Sidebar
@@ -249,5 +342,98 @@ export const translations = {
     emailProviderPlaceholder: "contact@provider.com",
     notePlaceholder: "Dietary restrictions, +1, etc.",
     noteProviderPlaceholder: "Any extra info…",
+
+    // ContactPopup — guest
+    invitedBy: "Invited by?",
+    groomLabel: "🤵 Groom",
+    brideLabel: "👰 Bride",
+    howManyGuests: "Number of guests?",
+
+    // ContactPopup — provider
+    paymentStatusLabel: "Payment Status",
+    depositAmountLabel: "Deposit Amount (₪)",
+    totalPriceLabel: "Total Price (₪)",
+    unpaid: "Unpaid",
+    deposit: "Deposit",
+    paid: "Paid",
+
+    // Meetings
+    reminder: "Reminder",
+    reminder10: "10 min",
+    reminder30: "30 min",
+    reminder60: "1 hour",
+    reminder1day: "1 day",
+    reminder1week: "1 week",
+    meetingsBtn: "Meetings",
+    addMeetingBtn: "New Meeting",
+    noMeetings: "No meetings yet",
+    meetingPast: "Past",
+    meetingToday: "Today!",
+    deleteMeeting: "Delete",
+    calendarAdded: "added to Google Calendar!",
+
+    // Budget card
+    fullDetails: "Full Details",
+    depositAmountPlaceholder: "Deposit amount (₪)",
+    fullyPaid: "Fully paid",
+    notPaidYet: "Not paid yet",
+    depositPaid: "Deposit paid",
+
+    // Guests card
+    invitedCount: "Invited",
+    confirmedCount: "Confirmed",
+    declinedCount: "Declined",
+    noAnswer: "No Answer",
+    addGuestBtn: "Add Guest",
+    openGuestList: "Open guest list →",
+
+    // GuestTable
+    guestListTitle: "Guest List",
+    invitesSent: "Invites Sent",
+    invitesNotSent: "Invites Not Sent",
+    exportExcel: "Export to Excel",
+    close: "Close",
+    filterAll: "All",
+    sortBy: "Sort by:",
+    sortAZ: "A-Z",
+    sortInvitedBy: "Invited By",
+    sortStatus: "Status",
+    sortInvite: "Invite",
+    colName: "Name",
+    colInvitedBy: "Invited By",
+    colCount: "Count",
+    colPhone: "Phone",
+    colInviteSent: "Invite Sent",
+    colRSVP: "RSVP",
+    colAttending: "Attending",
+    coming: "Coming",
+    notComing: "Not Coming",
+    noGuestsDisplay: "No guests to display",
+    yes: "Yes",
+    no: "No",
+    sheetName: "Guests",
+    bride: "Bride",
+    groom: "Groom",
+
+    // App — sidebar & edit event
+    editEventTitle: "✏️ Edit Event",
+    eventNameLabel: "Event Name",
+    dateLabel2: "Date",
+    guestCountLabel: "Guest Count",
+    regionLabel: "Region",
+    editBtn: "Edit",
+    sortByDate: "Sort by date",
+    pastEvents: "Past Events",
+    languageToggle: "🇮🇱 עברית",
+
+    // BudgetTable
+    totalOrdered: "Total Ordered",
+    remainingAfterEvent: "Remaining After Event",
+    budgetRemaining: "Budget Remaining",
+    budgetDetails: "Budget Details",
+    expense: "Expense",
+    agreedPrice: "Agreed Price",
+    remaining2: "Remaining",
+    noItems: "No items to display",
   }
 };

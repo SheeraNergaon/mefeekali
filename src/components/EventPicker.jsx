@@ -1,8 +1,13 @@
+// This is the first screen a user sees after logging in (if they have no events).
+// It lets the user choose an event type (wedding, birthday, etc.) 
+
 import { useState } from "react";
 import { translations } from "../translations";
 import { db } from "../firebase/config";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
+// Defines the 4 available event types with their display properties.
+// Uses translated text from translations.js via the `tr` object.
 const getEventTypes = (tr) => [
   { id: "wedding", emoji: "💍", title: tr.wedding, description: tr.weddingDesc, color: "#8B5A8B", glow: "rgba(192,132,252,0.15)" },
   { id: "birthday", emoji: "🎂", title: tr.birthday, description: tr.birthdayDesc, color: "#fb923c", glow: "rgba(251,146,60,0.15)" },
@@ -20,6 +25,7 @@ const getRegions = (tr) => [
   { id: "nationwide", label: tr.nationwide },
 ];
 
+// All inline styles for this component - kept in one object for readability.
 const s = {
   page: {
     minHeight: "100vh", background: "#FAF7F2", display: "flex", flexDirection: "column",
@@ -138,6 +144,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
   const [guestCount, setGuestCount] = useState("");
   const [region, setRegion] = useState("");
 
+  // Opens the event setup popup and resets all form fields.
   const handleCardClick = (eventType) => {
     setSelectedType(eventType);
     setEventName("");
@@ -146,6 +153,8 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
     setRegion("");
   };
 
+  // Saves the new event to Firestore with initial empty data structures,
+  // then calls onEventCreated to navigate the user into their new event dashboard.
   const handleConfirm = async () => {
     if (!selectedType) return;
     setLoading(true);
@@ -184,6 +193,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
 
   return (
     <>
+      {/* Top bar - shows Cancel and Sign Out buttons */}
       <div style={s.logoutBar}>
         {onCancel && (
           <button style={{ ...s.logoutBtn, marginLeft: "8px" }} onClick={onCancel}>
@@ -193,6 +203,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
         <button style={s.logoutBtn} onClick={onLogout}>{tr.signOut}</button>
       </div>
 
+
       {loading && (
         <div style={s.loadingOverlay}>
           <span style={s.loadingEmoji}>{selectedType?.emoji}</span>
@@ -200,6 +211,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
         </div>
       )}
 
+      {/* Event setup popup — shown after user clicks an event type card */}
       {selectedType && !loading && (
         <div style={s.overlay} onClick={() => setSelectedType(null)}>
           <div style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr" }} onClick={(e) => e.stopPropagation()}>
@@ -207,7 +219,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
             <h2 style={s.popupTitle}>{tr.letsSetUp} {selectedType.title}</h2>
             <p style={s.popupSub}>{tr.popupSub}</p>
 
-            {/* Event name */}
+            {/* Event name input*/}
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.eventName}</label>
               <input
@@ -224,7 +236,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
               />
             </div>
 
-            {/* Date */}
+            {/* Date input*/}
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.eventDate}</label>
               <input style={s.input} type="date" dir="ltr"
@@ -232,7 +244,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
                 onChange={(e) => setEventDate(e.target.value)} />
             </div>
 
-            {/* Guest count */}
+            {/* Guest count input*/}
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.guestCount}</label>
               <input
@@ -266,6 +278,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
             </div>
 
             <p style={s.skipNote}>{tr.skipNote}</p>
+            {/* Confirm / Cancel buttons */}
             <div style={s.popupActions}>
               <button style={s.popupConfirm(selectedType.color)} onClick={handleConfirm}>
                 {tr.createEvent}
@@ -278,6 +291,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
         </div>
       )}
 
+      {/* Main page — greeting header + 4 event type cards grid */}
       <div style={s.page}>
         <div style={s.bgCircle1} />
         <div style={s.bgCircle2} />
@@ -289,6 +303,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
         </div>
 
         <div style={s.grid}>
+          {/* Maps over eventTypes array to render each card */}
           {eventTypes.map((et) => (
             <div
               key={et.id}

@@ -1,3 +1,6 @@
+// This file initializes the connection to Firebase — the backend service used
+// by MefeeKali for authentication and database storage
+
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";

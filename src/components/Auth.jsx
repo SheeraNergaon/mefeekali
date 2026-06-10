@@ -1,3 +1,6 @@
+// This file handles all user authentication for MefeeKali.
+// It supports two sign-in methods: Email/Password and Google Sign-In.
+
 import { useState } from "react";
 import {
   createUserWithEmailAndPassword,
@@ -228,6 +231,7 @@ function Auth({ onLogin }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Request Google Calendar access scope so users can add meetings
   const provider = new GoogleAuthProvider();
   provider.addScope("https://www.googleapis.com/auth/calendar.events");
 
