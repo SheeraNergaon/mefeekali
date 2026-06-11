@@ -9,6 +9,7 @@ import { db } from "../firebase/config";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import ReactMarkdown from "react-markdown";
 import GuestTable from "./GuestTable";
+import VisionBoard from "./VisionBoard";
 import BudgetTable from "./BudgetTable";
 
 // Default checklist items per event type
@@ -64,8 +65,10 @@ const s = {
   },
   metaChip: {
     fontSize: "12px", color: "#A89080",
-    background: "#F5EDE8", borderRadius: "8px",
+    background: "transparent",
+    borderRadius: "8px",
     padding: "4px 10px",
+    border: "none",
   },
   savingDot: (saving) => ({
     fontSize: "12px", color: saving ? "#fb923c" : "#4ade80",
@@ -544,11 +547,6 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
     }
   }, []);
 
-  // Auto-scrolls to the latest message whenever messages or loading state changes
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
-
 
   // Sends a user message to Claude API along with the full conversation history
   const sendMessage = async (userText) => {
@@ -726,6 +724,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
   const [guestFilter, setGuestFilter] = useState(null);
   const [showGuestTable, setShowGuestTable] = useState(false);
   const [showBudgetTable, setShowBudgetTable] = useState(false);
+  const [showVisionBoard, setShowVisionBoard] = useState(false);
   const [meetings, setMeetings] = useState([]);
   const [showMeetingsPanel, setShowMeetingsPanel] = useState(false);
   const [expenseStatus, setExpenseStatus] = useState("unpaid");
@@ -1035,6 +1034,13 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           }}
         />
       )}
+    {showVisionBoard && (
+      <VisionBoard
+        event={event}
+        onClose={() => setShowVisionBoard(false)}
+        language={language}
+      />
+    )}
 
       {/* ContactPopup for adding/editing a guest */}
       {guestPopup !== null && (
@@ -1136,10 +1142,18 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           
           {/*Meetings Panel*/}
           <div style={{ position: "relative" }}>
-            <button
-              style={{ ...s.addBtn("rgba(56,189,248,0.2)"), fontSize: "12px", padding: "6px 14px", border: "1px solid rgba(56,189,248,0.3)" }}
-              onClick={() => setShowMeetingsPanel(o => !o)}
-            >
+          <button
+            style={{ ...s.addBtn("rgba(56,189,248,0.2)"), fontSize: "12px", padding: "6px 14px", border: "1px solid rgba(56,189,248,0.3)", transition: "all 0.2s ease" }}
+            onClick={() => setShowMeetingsPanel(o => !o)}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(56,189,248,0.35)";
+              e.currentTarget.style.borderColor = "rgba(56,189,248,0.6)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "rgba(56,189,248,0.2)";
+              e.currentTarget.style.borderColor = "rgba(56,189,248,0.3)";
+            }}
+          >
              📅 {tr.meetingsBtn} {meetings.length > 0 && `(${meetings.length})`}
             </button>
 
@@ -1223,6 +1237,26 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
               </div>
             )}
           </div>
+            <button
+              style={{
+                ...s.addBtn("rgba(236,182,210,0.2)"),
+                fontSize: "12px", padding: "6px 14px",
+                border: "1px solid rgba(200,140,180,0.3)",
+                color: "#a0507a",
+                transition: "all 0.2s ease",
+              }}
+              onClick={() => setShowVisionBoard(true)}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = "rgba(236,182,210,0.5)";
+                e.currentTarget.style.borderColor = "rgba(200,140,180,0.6)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = "rgba(236,182,210,0.2)";
+                e.currentTarget.style.borderColor = "rgba(200,140,180,0.3)";
+              }}
+            >
+              🎨 Vision Board
+            </button>
           <span style={s.savingDot(saving)}>{saving ? tr.saving : tr.saved}</span>
         </div>
       </div>
