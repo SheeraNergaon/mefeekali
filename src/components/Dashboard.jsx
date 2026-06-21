@@ -14,25 +14,20 @@ import BudgetTable from "./BudgetTable";
 
 // Default checklist items per event type
 // Keys match the event type IDs from EventPicker
-const defaultChecklist = {
-  wedding: [
-    "הזמינו את האולם", "בחרו קייטרינג", "שכרו צלם",
-    "שלחו הזמנות", "הזמינו דיג'י או להקה", "הזמינו עוגת חתונה",
-    "סדרו פרחים", "הזמינו לינה לאורחים",
-  ],
-  birthday: [
-    "הזמינו מקום", "שלחו הזמנות", "הזמינו עוגת יום הולדת",
-    "סדרו קייטרינג", "תכננו בידור", "קנו קישוטים",
-  ],
-  corporate: [
-    "הזמינו אולם כנסים", "הכינו ציוד AV", "שלחו הזמנות",
-    "סדרו קייטרינג", "הכינו אג'נדה", "הזמינו נואם מרכזי",
-  ],
-  bar_mitzvah: [
-    "הזמינו בית כנסת", "הזמינו אולם קבלה", "שלחו הזמנות",
-    "סדרו קייטרינג", "שכרו דיג'י או להקה", "הזמינו עוגה", "שכרו צלם",
-  ],
-};
+const getDefaultChecklist = (language) => ({
+  wedding: language === "he"
+    ? ["הזמינו את האולם", "בחרו קייטרינג", "שכרו צלם", "שלחו הזמנות", "הזמינו דיג'י או להקה", "הזמינו עוגת חתונה", "סדרו פרחים", "הזמינו לינה לאורחים"]
+    : ["Book the venue", "Choose catering", "Hire photographer", "Send invitations", "Book DJ or band", "Order wedding cake", "Arrange flowers", "Book accommodation for guests"],
+  birthday: language === "he"
+    ? ["הזמינו מקום", "שלחו הזמנות", "הזמינו עוגת יום הולדת", "סדרו קייטרינג", "תכננו בידור", "קנו קישוטים"]
+    : ["Book a venue", "Send invitations", "Order birthday cake", "Arrange catering", "Plan entertainment", "Buy decorations"],
+  corporate: language === "he"
+    ? ["הזמינו אולם כנסים", "הכינו ציוד AV", "שלחו הזמנות", "סדרו קייטרינג", "הכינו אג'נדה", "הזמינו נואם מרכזי"]
+    : ["Book conference hall", "Prepare AV equipment", "Send invitations", "Arrange catering", "Prepare agenda", "Book keynote speaker"],
+  bar_mitzvah: language === "he"
+    ? ["הזמינו בית כנסת", "הזמינו אולם קבלה", "שלחו הזמנות", "סדרו קייטרינג", "שכרו דיג'י או להקה", "הזמינו עוגה", "שכרו צלם"]
+    : ["Book synagogue", "Book reception hall", "Send invitations", "Arrange catering", "Book DJ or band", "Order cake", "Hire photographer"],
+});
 
 const regionLabels = {
   tel_aviv: "Tel Aviv & Center",
@@ -227,7 +222,8 @@ const s = {
     background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.2)",
     borderRadius: "16px 16px 16px 4px", padding: "12px 16px",
     fontSize: "14px", color: "#3d2c2c", lineHeight: "1.6",
-    maxWidth: "80%",
+    maxWidth: "80%", direction: "ltr", textAlign: "left",
+
   },
   msgAIAvatar: {
     width: "28px", height: "28px", borderRadius: "8px",
@@ -285,7 +281,6 @@ const s = {
 // The fields rendered depend on the `type` prop ("guest" or "provider")
 function ContactPopup({ type, initial, onSave, onClose, language = "he", event }) {
   const tr = translations[language];
-  const isRTL = language === "he";
   const [form, setForm] = useState(initial || { name: "", email: "", phone: "", note: "" });
   
   // Helper to update a single field in the form state without replacing the whole object
@@ -497,8 +492,12 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
   9. When users ask about venues, vendors, or places — use web search to find REAL options in their region. Search in Hebrew or English for actual venues with names, locations and prices. Always search before giving price estimates — never guess prices from memory.
   10. For Israeli market prices always search first — prices change frequently. Never assume catering costs, venue prices, or vendor fees without searching.
   11. Always format responses with proper markdown — use - for bullet points, **bold** for emphasis. Never use • as bullet characters. Use proper line breaks between sections.
-  12. IMPORTANT LANGUAGE RULE: Always respond in the SAME LANGUAGE the user writes in. If they write in Hebrew — respond in Hebrew. If they write in English — respond in English. Never switch languages mid-conversation.
-  `;
+  12. CRITICAL LANGUAGE RULE: 
+  - Your FIRST message (the greeting) must be in the app UI language: ${language === "he" ? "HEBREW" : "ENGLISH"}.
+  - After that, ALWAYS follow the language the USER writes in. If they write in English — respond in English. If they write in Hebrew — respond in Hebrew.
+  - NEVER mix languages in a single response.
+  - NEVER switch back to the app language once the user has written in their own language.
+    `;
   };
 
   // Sends an automatic opening message when the panel first loads.
@@ -608,8 +607,7 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
         .ai-bubble strong { color: #5A3A8B; font-weight: 700; }
         .ai-bubble h1 { color: #8B5A8B; font-size: 15px; font-weight: 700; margin: 10px 0 6px; }
         .ai-bubble h2, .ai-bubble h3 { color: #8B5A8B; font-size: 14px; margin: 10px 0 6px; }
-        .ai-bubble ul, .ai-bubble ol { margin: 6px 0; padding-left: 18px; list-style: disc; }
-        .ai-bubble ul li { display: list-item; margin-bottom: 6px; line-height: 1.6; }
+        .ai-bubble ul, .ai-bubble ol { margin: 6px 0; padding-inline-start: 20px; list-style: disc; }
         .ai-bubble ol li { display: list-item; margin-bottom: 6px; line-height: 1.6; }
         .ai-bubble hr { border: none; border-top: 1px solid #E8DDD5; margin: 10px 0; }
       `}</style>
@@ -638,9 +636,15 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
                   m.role === "ai" ? (
                     <div key={i} style={s.msgAI}>
                       <div style={s.msgAIAvatar}>🎬</div>
-                      <div style={s.msgAIBubble} className="ai-bubble">
-                        <ReactMarkdown>{m.text}</ReactMarkdown>
-                      </div>
+                        <div style={{
+                          ...s.msgAIBubble,
+                          direction: /[\u0590-\u05FF]/.test(m.text) ? "rtl" : "ltr",
+                          textAlign: /[\u0590-\u05FF]/.test(m.text) ? "right" : "left",
+                          paddingRight: /[\u0590-\u05FF]/.test(m.text) ? "16px" : "16px",
+                          paddingLeft: /[\u0590-\u05FF]/.test(m.text) ? "16px" : "16px",
+                        }} className="ai-bubble">
+                          <ReactMarkdown>{m.text}</ReactMarkdown>
+                        </div>
                     </div>
                   ) : (
                     <div key={i} style={s.msgUser}>
@@ -766,19 +770,19 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             setChecklist(d.checklist);
           } else {
             setChecklist(
-              (defaultChecklist[event.type] || defaultChecklist.birthday)
+              (getDefaultChecklist(language)[event.type] || getDefaultChecklist(language).birthday)
                 .map((text) => ({ text, done: false }))
             );
           }
         } else {
           setChecklist(
-            (defaultChecklist[event.type] || defaultChecklist.birthday)
+            (getDefaultChecklist(language)[event.type] || getDefaultChecklist(language).birthday)
               .map((text) => ({ text, done: false }))
           );
         }
         setLoaded(true);
       });
-    }, [event.id]);
+  }, [event.id]);
 
   
   const scheduleSave = (patch) => {

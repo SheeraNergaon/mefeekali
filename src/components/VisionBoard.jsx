@@ -30,7 +30,7 @@ export default function VisionBoard({ event, onClose, language }) {
         setSaved(snap.data().visionBoard);
       }
     });
-  }, [event.id]);
+  }, [event.id, language]);
 
   // Search Unsplash for images
   const handleSearch = async () => {
@@ -38,7 +38,7 @@ export default function VisionBoard({ event, onClose, language }) {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=20&orientation=landscape`,
+        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=30`,
         { headers: { Authorization: `Client-ID ${UNSPLASH_KEY}` } }
       );
       const data = await res.json();
@@ -188,12 +188,12 @@ export default function VisionBoard({ event, onClose, language }) {
             {/* Quick tags */}
             <div style={{ display: "flex", gap: "8px", marginTop: "12px", flexWrap: "wrap" }}>
               {(event.type === "wedding"
-                ? ["wedding flowers", "bridal dress", "wedding venue", "wedding cake", "table decor", "wedding photography"]
+                ? ["wedding flowers", "bridal bouquet", "wedding venue", "wedding cake", "table setting", "wedding decor"]
                 : event.type === "birthday"
-                ? ["birthday decoration", "birthday cake", "birthday party", "balloons", "birthday flowers"]
+                ? ["birthday flowers", "celebration cake", "party decoration", "balloon decor", "festive table"]
                 : event.type === "bar_mitzvah"
-                ? ["bar mitzvah decor", "jewish celebration", "synagogue", "party flowers"]
-                : ["corporate event", "event venue", "stage design", "conference decor"]
+                ? ["elegant party decor", "floral centerpiece", "luxury celebration", "event flowers", "festive decoration"]
+                : ["conference room", "corporate dinner", "event stage", "business meeting", "office party"]
               ).map(tag => (
                 <button key={tag}
                   onClick={() => { setQuery(tag); setTimeout(handleSearch, 100); }}
