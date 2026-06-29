@@ -226,9 +226,14 @@ export default function VisionBoard({ event, onClose, language }) {
                 {language === "he" ? "מחפשת..." : "Searching..."}
               </div>
             )}
-            {!loading && results.length === 0 && (
+            {!loading && results.length === 0 && query.trim() === "" && (
               <div style={{ textAlign: "center", padding: "60px", color: "#C4B0A8", fontSize: "16px" }}>
                 {language === "he" ? "חפשי השראה למעלה ✨" : "Search for inspiration above ✨"}
+              </div>
+            )}
+            {!loading && results.length === 0 && query.trim() !== "" && (
+              <div style={{ textAlign: "center", padding: "60px", color: "#C4B0A8", fontSize: "16px" }}>
+                {language === "he" ? `לא נמצאו תמונות עבור "${query}" — נסי מילה אחרת` : `No images found for "${query}" — try a different search`}
               </div>
             )}
             <div style={{ columns: "4 200px", columnGap: "12px" }}>

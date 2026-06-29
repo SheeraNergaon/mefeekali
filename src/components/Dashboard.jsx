@@ -279,10 +279,11 @@ const s = {
 // ── Contact Popup ─────────────────────────────────────────────────────────────
 // Reusable popup for adding or editing a guest or provider.
 // The fields rendered depend on the `type` prop ("guest" or "provider")
-function ContactPopup({ type, initial, onSave, onClose, language = "he", event }) {
-  const tr = translations[language];
-  const [form, setForm] = useState(initial || { name: "", email: "", phone: "", note: "" });
-  
+  function ContactPopup({ type, initial, onSave, onClose, language = "he", event }) {
+    const tr = translations[language];
+    const isRTL = language === "he";
+    const [form, setForm] = useState(initial || { name: "", email: "", phone: "", note: "" });
+
   // Helper to update a single field in the form state without replacing the whole object
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -1286,15 +1287,15 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             <div style={s.budgetNumbers}>
               <div style={s.budgetItem}>
                 <span style={s.budgetValue("#3d2c2c")}>₪{budget.total.toLocaleString()}</span>
-                <span style={s.budgetLabel}>{tr.total}</span>
-              </div>
-              <div style={s.budgetItem}>
-                <span style={s.budgetValue("#f87171")}>₪{totalSpent.toLocaleString()}</span>
-                <span style={s.budgetLabel}>{tr.spent}</span>
+                <span style={{ ...s.budgetLabel, color: "#3d2c2c" }}>{tr.total}</span>
               </div>
               <div style={s.budgetItem}>
                 <span style={s.budgetValue("#4ade80")}>₪{remaining.toLocaleString()}</span>
-                <span style={s.budgetLabel}>{tr.remaining}</span>
+                <span style={{ ...s.budgetLabel, color: "#4ade80" }}>{tr.remaining}</span>
+              </div>
+              <div style={s.budgetItem}>
+                <span style={s.budgetValue("#f87171")}>₪{totalSpent.toLocaleString()}</span>
+                <span style={{ ...s.budgetLabel, color: "#f87171" }}>{tr.spent}</span>
               </div>
             </div>
             <div style={s.progressBar}><div style={s.progressFill(spentPct)} /></div>

@@ -180,10 +180,11 @@ function App() {
   // Deletes an event from Firestore after confirmation
   const handleDeleteEvent = async (eventId) => {
     const eventToDelete = events.find(e => e.id === eventId);
-    if (!window.confirm(language === "he"
-      ? `האם בטוח שברצונך למחוק את "${eventToDelete?.title}"? לא ניתן לשחזר.`
-      : `Delete "${eventToDelete?.title}"? This cannot be undone.`
-    )) return;
+    const hasData = (eventToDelete?.guestCount > 0);
+    const warningMsg = language === "he"
+      ? `האם בטוח שברצונך למחוק את "${eventToDelete?.title}"?\n\nכל הנתונים (אורחים, תקציב, ספקים, צ׳קליסט) יימחקו לצמיתות.`
+      : `Delete "${eventToDelete?.title}"?\n\nAll data (guests, budget, providers, checklist) will be permanently deleted.`;
+    if (!window.confirm(warningMsg)) return;
     try {
       await deleteDoc(doc(db, "events", eventId));
       const remaining = events.filter((e) => e.id !== eventId);
