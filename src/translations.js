@@ -32,7 +32,7 @@ export const translations = {
 
     // Checklist
     checklist: "צ׳קליסט",
-    done: "בוצע",
+    completedTask: "בוצע",
     addChecklistItem: "הוסף פריט לצ׳קליסט…",
 
     // Guests
@@ -60,6 +60,19 @@ export const translations = {
     added: "נוספו",
     addProvider: "＋ הוסף ספק",
     noProviders: "אין ספקים עדיין",
+    providerName: "שם הספק",
+    serviceType: "סוג השירות",
+    phone: "טלפון",
+    email: "אימייל",
+    note: "הערה",
+    fullName: "שם מלא",
+    addProviderTitle: "➕ הוסף ספק",
+    editProviderTitle: "✏️ ערוך ספק",
+    openProviderList: "רשימה מלאה",
+    providerListTitle: "רשימת ספקים",
+    firstName: "שם",
+    lastName: "שם משפחה",
+    noProvidersDisplay: "אין ספקים להצגה",
 
     // ContactPopup — provider
     paymentStatusLabel: "סטטוס תשלום",
@@ -87,6 +100,8 @@ export const translations = {
 
     // Meetings
     reminder: "תזכורת",
+    addReminder: "הוסף תזכורת",
+    taskReminderDescription: "משימה",
     reminder10: "10 דק׳",
     reminder30: "30 דק׳",
     reminder60: "שעה",
@@ -99,12 +114,27 @@ export const translations = {
     meetingToday: "היום!",
     deleteMeeting: "בטל פגישה",
     calendarAdded: "נוסף ליומן גוגל!",
+    editMeeting: "ערוך",
+    editMeetingTitle: "✏️ עריכת פגישה / תזכורת",
+    saveChanges: "שמור שינויים",
+    syncFromCalendar: "סנכרן מיומן Google",
+    calendarUpdated: "עודכן ביומן Google!",
+    calendarSynced: "סונכרן מיומן Google",
+    calendarSyncFailed: "הסנכרון מיומן Google נכשל",
+    meetingLabel: "פגישה",
+    taskReminderLabel: "תזכורת משימה",
+    cancelReminder: "בטל תזכורת",
+    editTaskReminder: "ערוך תזכורת משימה",
+    inDaysPrefix: "בעוד",
+    daySingular: "יום",
+    daysPlural: "ימים",
 
     // Popup
     editGuest: "✏️ ערוך אורח",
     addGuestTitle: "➕ הוסף אורח",
     editProvider: "✏️ ערוך ספק",
     addProviderTitle: "➕ הוסף ספק",
+    editExpenseTitle: "✏️ עריכת הוצאה",
     save: "שמור",
 
     // AI
@@ -118,14 +148,8 @@ export const translations = {
     suggestedQ2: "האם אני בתקציב?",
     suggestedQ3: "הצע לי ציר זמן",
 
-    providerName: "שם הספק",
-    serviceType: "סוג השירות",
-    phone: "טלפון",
-    email: "אימייל",
-    note: "הערה",
-    fullName: "שם מלא",
-    addProviderTitle: "➕ הוסף ספק",
-    editProviderTitle: "✏️ ערוך ספק",
+
+    
     addGuestTitle: "➕ הוסף אורח",
     editGuestTitle: "✏️ ערוך אורח",
 
@@ -217,6 +241,47 @@ export const translations = {
     agreedPrice: "מחיר מוסכם",
     remaining2: "נותר לשלם",
     noItems: "אין פריטים להצגה",
+
+    defaultChecklist: {
+      wedding: [
+        "הזמינו את האולם",
+        "בחרו קייטרינג",
+        "שכרו צלם",
+        "שלחו הזמנות",
+        "הזמינו דיג'י או להקה",
+        "הזמינו עוגת חתונה",
+        "סדרו פרחים",
+        "הזמינו לינה לאורחים",
+      ],
+      birthday: [
+        "הזמינו מקום",
+        "שלחו הזמנות",
+        "הזמינו עוגת יום הולדת",
+        "סדרו קייטרינג",
+        "תכננו בידור",
+        "קנו קישוטים",
+      ],
+      corporate: [
+        "הזמינו אולם כנסים",
+        "הכינו ציוד AV",
+        "שלחו הזמנות",
+        "סדרו קייטרינג",
+        "הכינו אג'נדה",
+        "הזמינו נואם מרכזי",
+      ],
+      bar_mitzvah: [
+        "הזמינו בית כנסת",
+        "הזמינו אולם קבלה",
+        "שלחו הזמנות",
+        "סדרו קייטרינג",
+        "שכרו דיג'י או להקה",
+        "הזמינו עוגה",
+        "שכרו צלם",
+      ],
+    },
+
+    fullyPaid: "שולם במלואו",
+    depositPaidPrefix: "מקדמה",
   },
   en: {
     // Sidebar
@@ -244,7 +309,7 @@ export const translations = {
 
     // Checklist
     checklist: "Checklist",
-    done: "done",
+    completedTask: "Completed",
     addChecklistItem: "Add a checklist item…",
 
     // Guests
@@ -258,6 +323,19 @@ export const translations = {
     added: "added",
     addProvider: "＋ Add Provider",
     noProviders: "No providers added yet",
+    providerName: "Provider Name",
+    serviceType: "Service Type",
+    phone: "Phone",
+    email: "Email",
+    note: "Note",
+    fullName: "Full Name",
+    addProviderTitle: "➕ Add Provider",
+    editProviderTitle: "✏️ Edit Provider",
+    openProviderList: "Full list",
+    providerListTitle: "Providers list",
+    firstName: "First name",
+    lastName: "Last name",
+    noProvidersDisplay: "No providers to display",
 
     // Calendar
     addMeeting: "📅 Add Meeting",
@@ -280,6 +358,7 @@ export const translations = {
     addGuestTitle: "➕ Add Guest",
     editProvider: "✏️ Edit Provider",
     addProviderTitle: "➕ Add Provider",
+    editExpenseTitle: "✏️ Edit Expense",
     save: "Save",
 
     // AI
@@ -293,14 +372,6 @@ export const translations = {
     suggestedQ2: "Am I on track with my budget?",
     suggestedQ3: "Suggest a timeline for me",
 
-    providerName: "Provider Name",
-    serviceType: "Service Type",
-    phone: "Phone",
-    email: "Email",
-    note: "Note",
-    fullName: "Full Name",
-    addProviderTitle: "➕ Add Provider",
-    editProviderTitle: "✏️ Edit Provider",
     addGuestTitle: "➕ Add Guest",
     editGuestTitle: "✏️ Edit Guest",
 
@@ -359,6 +430,8 @@ export const translations = {
 
     // Meetings
     reminder: "Reminder",
+    addReminder: "Add reminder",
+    taskReminderDescription: "Task",
     reminder10: "10 min",
     reminder30: "30 min",
     reminder60: "1 hour",
@@ -371,6 +444,20 @@ export const translations = {
     meetingToday: "Today!",
     deleteMeeting: "Delete",
     calendarAdded: "added to Google Calendar!",
+    editMeeting: "Edit",
+    editMeetingTitle: "✏️ Edit Meeting / Reminder",
+    saveChanges: "Save changes",
+    syncFromCalendar: "Sync from Google Calendar",
+    calendarUpdated: "updated in Google Calendar!",
+    calendarSynced: "Synced from Google Calendar",
+    calendarSyncFailed: "Google Calendar sync failed",
+    meetingLabel: "Meeting",
+    taskReminderLabel: "Task reminder",
+    cancelReminder: "Cancel reminder",
+    editTaskReminder: "Edit task reminder",
+    inDaysPrefix: "in",
+    daySingular: "day",
+    daysPlural: "days",
 
     // Budget card
     fullDetails: "Full Details",
@@ -435,5 +522,46 @@ export const translations = {
     agreedPrice: "Agreed Price",
     remaining2: "Remaining",
     noItems: "No items to display",
+
+    defaultChecklist: {
+      wedding: [
+        "Book the venue",
+        "Choose catering",
+        "Hire photographer",
+        "Send invitations",
+        "Book DJ or band",
+        "Order wedding cake",
+        "Arrange flowers",
+        "Book accommodation for guests",
+      ],
+      birthday: [
+        "Book a venue",
+        "Send invitations",
+        "Order birthday cake",
+        "Arrange catering",
+        "Plan entertainment",
+        "Buy decorations",
+      ],
+      corporate: [
+        "Book conference hall",
+        "Prepare AV equipment",
+        "Send invitations",
+        "Arrange catering",
+        "Prepare agenda",
+        "Book keynote speaker",
+      ],
+      bar_mitzvah: [
+        "Book synagogue",
+        "Book reception hall",
+        "Send invitations",
+        "Arrange catering",
+        "Book DJ or band",
+        "Order cake",
+        "Hire photographer",
+      ],
+    },
+
+    fullyPaid: "Fully paid",
+    depositPaidPrefix: "Deposit",
   }
 };

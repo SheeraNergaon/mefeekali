@@ -9,25 +9,16 @@ import { db } from "../firebase/config";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import ReactMarkdown from "react-markdown";
 import GuestTable from "./GuestTable";
+import ProvidersTable from "./ProvidersTable";
 import VisionBoard from "./VisionBoard";
 import BudgetTable from "./BudgetTable";
 
 // Default checklist items per event type
 // Keys match the event type IDs from EventPicker
-const getDefaultChecklist = (language) => ({
-  wedding: language === "he"
-    ? ["הזמינו את האולם", "בחרו קייטרינג", "שכרו צלם", "שלחו הזמנות", "הזמינו דיג'י או להקה", "הזמינו עוגת חתונה", "סדרו פרחים", "הזמינו לינה לאורחים"]
-    : ["Book the venue", "Choose catering", "Hire photographer", "Send invitations", "Book DJ or band", "Order wedding cake", "Arrange flowers", "Book accommodation for guests"],
-  birthday: language === "he"
-    ? ["הזמינו מקום", "שלחו הזמנות", "הזמינו עוגת יום הולדת", "סדרו קייטרינג", "תכננו בידור", "קנו קישוטים"]
-    : ["Book a venue", "Send invitations", "Order birthday cake", "Arrange catering", "Plan entertainment", "Buy decorations"],
-  corporate: language === "he"
-    ? ["הזמינו אולם כנסים", "הכינו ציוד AV", "שלחו הזמנות", "סדרו קייטרינג", "הכינו אג'נדה", "הזמינו נואם מרכזי"]
-    : ["Book conference hall", "Prepare AV equipment", "Send invitations", "Arrange catering", "Prepare agenda", "Book keynote speaker"],
-  bar_mitzvah: language === "he"
-    ? ["הזמינו בית כנסת", "הזמינו אולם קבלה", "שלחו הזמנות", "סדרו קייטרינג", "שכרו דיג'י או להקה", "הזמינו עוגה", "שכרו צלם"]
-    : ["Book synagogue", "Book reception hall", "Send invitations", "Arrange catering", "Book DJ or band", "Order cake", "Hire photographer"],
-});
+const getDefaultChecklist = (language) => {
+  const tr = translations[language] || translations.he;
+  return tr.defaultChecklist || {};
+};
 
 const regionLabels = {
   tel_aviv: "Tel Aviv & Center",
@@ -436,6 +427,122 @@ const s = {
   );
 }
 
+//
+function ExpensePopup({ initial, onSave, onClose, language = "he" }) {
+  const tr = translations[language];
+  const isRTL = language === "he";
+
+  const [form, setForm] = useState({
+    name: initial?.name || "",
+    amount: initial?.amount || "",
+    paymentStatus: initial?.paymentStatus || "unpaid",
+    depositAmount: initial?.depositAmount || "",
+    comment: initial?.comment || "",
+  });
+
+  const set = (key, value) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = () => {
+    if (!form.name.trim() || form.amount === "") return;
+
+    onSave({
+      ...initial,
+      ...form,
+      name: form.name.trim(),
+      amount: Number(form.amount),
+      depositAmount: form.paymentStatus === "deposit" ? Number(form.depositAmount || 0) : 0,
+    });
+  };
+
+  return (
+    <div style={s.popupOverlay} onClick={onClose}>
+      <div
+        style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <p style={s.popupTitle}>{tr.editExpenseTitle}</p>
+        <div style={s.popupField}>
+          <label style={s.popupLabel}>{tr.expenseName}</label>
+          <input
+            style={s.popupInput}
+            type="text"
+            value={form.name}
+            onChange={(e) => set("name", e.target.value)}
+          />
+        </div>
+
+        <div style={s.popupField}>
+          <label style={s.popupLabel}>{tr.amount}</label>
+          <input
+            style={s.popupInput}
+            type="number"
+            value={form.amount}
+            onChange={(e) => set("amount", e.target.value)}
+          />
+        </div>
+
+        <div style={s.popupField}>
+          <label style={s.popupLabel}>{tr.paymentStatusLabel}</label>
+          <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+            {[
+              { key: "unpaid", label: tr.unpaid },
+              { key: "deposit", label: tr.deposit },
+              { key: "paid", label: tr.paid },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => set("paymentStatus", key)}
+                style={{
+                  flex: 1,
+                  padding: "10px",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  fontFamily: "'Heebo', sans-serif",
+                  fontSize: "13px",
+                  background: form.paymentStatus === key ? "rgba(139,92,246,0.3)" : "#F5EDE8",
+                  border: `1px solid ${form.paymentStatus === key ? "rgba(139,92,246,0.6)" : "#E8DDD5"}`,
+                  color: form.paymentStatus === key ? "#8B5A8B" : "#7A6060",
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {form.paymentStatus === "deposit" && (
+          <div style={s.popupField}>
+            <label style={s.popupLabel}>{tr.depositAmountLabel}</label>
+            <input
+              style={s.popupInput}
+              type="number"
+              value={form.depositAmount || ""}
+              onChange={(e) => set("depositAmount", e.target.value)}
+            />
+          </div>
+        )}
+
+        <div style={s.popupField}>
+          <label style={s.popupLabel}>{tr.note}</label>
+          <input
+            style={s.popupInput}
+            type="text"
+            value={form.comment || ""}
+            onChange={(e) => set("comment", e.target.value)}
+          />
+        </div>
+
+        <div style={s.popupActions}>
+          <button style={s.popupSave} onClick={handleSave}>{tr.save}</button>
+          <button style={s.popupCancel} onClick={onClose}>{tr.cancel}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── AI Producer Panel ─────────────────────────────────────────────────────────
 function AIProducer({ event, budget, expenses, guests, providers, checklist, language = "he" }) {
   const tr = translations[language];
@@ -710,6 +817,7 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
 function Dashboard({ user, event, googleToken, language = "he" }) {
   const docRef = doc(db, "events", event.id);
 
+  // states
   const [loaded, setLoaded] = useState(false);
   const [budget, setBudget] = useState({ total: 0 });
   const [budgetInput, setBudgetInput] = useState("");
@@ -722,6 +830,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
   const [newCheckItem, setNewCheckItem] = useState("");
   const [guestPopup, setGuestPopup] = useState(null);
   const [providerPopup, setProviderPopup] = useState(null);
+  const [expensePopup, setExpensePopup] = useState(null);
   const [saving, setSaving] = useState(false);
   const saveTimeout = useRef(null);
   const [calendarPopup, setCalendarPopup] = useState(null);
@@ -730,6 +839,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
   const [showGuestTable, setShowGuestTable] = useState(false);
   const [showBudgetTable, setShowBudgetTable] = useState(false);
   const [showVisionBoard, setShowVisionBoard] = useState(false);
+  const [showProvidersTable, setShowProvidersTable] = useState(false);
   const [meetings, setMeetings] = useState([]);
   const [showMeetingsPanel, setShowMeetingsPanel] = useState(false);
   const [expenseStatus, setExpenseStatus] = useState("unpaid");
@@ -848,6 +958,28 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     scheduleSave({ expenses: regularOnly });
   };
 
+  // Updates an existing expense (by id) with new values from the form, and saves only regular expenses to Firestore
+  const handleSaveExpense = (form) => {
+    const next = expenses.map((e) =>
+      e.id === form.id
+        ? {
+            ...e,
+            name: form.name.trim(),
+            amount: Number(form.amount),
+            paymentStatus: form.paymentStatus || "unpaid",
+            depositAmount: form.paymentStatus === "deposit" ? Number(form.depositAmount || 0) : 0,
+            comment: form.comment || "",
+          }
+        : e
+    );
+
+    setExpenses(next);
+    setExpensePopup(null);
+
+    const regularOnly = next.filter(e => !e.providerId);
+    scheduleSave({ expenses: regularOnly });
+  };
+
   // Adds a new guest or updates an existing one based on whether guestPopup.index is set.
   const handleSaveGuest = (form) => {
     const next = guestPopup?.index !== undefined
@@ -932,7 +1064,26 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
 
   // Adds an event to Google Calendar via the Calendar API
   // Also supports custom reminders (popup notifications)
-  const addToCalendar = async (title, date, description = "", time = "10:00") => {
+  const buildCalendarBody = (title, date, description = "", time = "10:00", reminder = null) => {
+    const startDate = date || event.date;
+    const startDateTime = new Date(`${startDate}T${time}:00+03:00`);
+    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+
+    return {
+      summary: title,
+      description,
+      start: { dateTime: startDateTime.toISOString(), timeZone: "Asia/Jerusalem" },
+      end: { dateTime: endDateTime.toISOString(), timeZone: "Asia/Jerusalem" },
+      reminders: reminder
+        ? {
+            useDefault: false,
+            overrides: [{ method: "popup", minutes: reminder }],
+          }
+        : { useDefault: true },
+    };
+  };
+
+  const addToCalendar = async (title, date, description = "", time = "10:00", reminder = null) => {
     if (!googleToken) {
       setCalendarStatus(tr.signInGoogle);
       setTimeout(() => setCalendarStatus(""), 3000);
@@ -940,24 +1091,23 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
     }
     try {
       const startDate = date || event.date;
-      if (!startDate) { setCalendarPopup({ title, description, time }); return; }
-      const startDateTime = new Date(`${startDate}T${time}:00+03:00`);
-      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+
+      if (!startDate) {
+        setCalendarPopup({ title, description, time, reminder });
+        return;
+      }
+
       const res = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
         method: "POST",
-        headers: { "Authorization": `Bearer ${googleToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          summary: title,
-          description,
-          start: { dateTime: startDateTime.toISOString(), timeZone: "Asia/Jerusalem" },
-          end: { dateTime: endDateTime.toISOString(), timeZone: "Asia/Jerusalem" },
-          reminders: calendarPopup?.reminder ? {
-            useDefault: false,
-            overrides: [{ method: "popup", minutes: calendarPopup.reminder }],
-          } : { useDefault: true },
-        }),
+        headers: {
+          "Authorization": `Bearer ${googleToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(buildCalendarBody(title, startDate, description, time, reminder)),
       });
+
       const responseData = await res.json();
+
       if (res.ok) {
         const newMeeting = {
           id: Date.now(),
@@ -966,18 +1116,159 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           date: startDate,
           time,
           description,
+          reminder,
+          type: calendarPopup?.type || "meeting",
+          checklistItemId: calendarPopup?.checklistItemId || null,
         };
-        const nextMeetings = [...meetings, newMeeting].sort((a, b) => 
+
+        const nextMeetings = [...meetings, newMeeting].sort((a, b) =>
           new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)
         );
+
         setMeetings(nextMeetings);
         scheduleSave({ meetings: nextMeetings });
       }
-      setCalendarStatus(res.ok ? `✅ "${title}" ${tr.calendarAdded}` : `❌ ${responseData.error?.message || "Failed"}`);
+
+      setCalendarStatus(
+        res.ok
+          ? `✅ "${title}" ${tr.calendarAdded}`
+          : `❌ ${responseData.error?.message || "Failed"}`
+      );
       setTimeout(() => setCalendarStatus(""), 4000);
     } catch (err) {
       console.error("Calendar error:", err);
       setCalendarStatus("❌ Something went wrong.");
+      setTimeout(() => setCalendarStatus(""), 3000);
+    }
+  };
+
+  // Updates an existing Google Calendar event and updates the local meetings state
+  const updateCalendarMeeting = async (meetingData) => {
+    if (!googleToken) {
+      setCalendarStatus(tr.signInGoogle);
+      setTimeout(() => setCalendarStatus(""), 3000);
+      return;
+    }
+
+    try {
+      const startDate = meetingData.date || event.date;
+
+      if (!startDate) return;
+
+      if (meetingData.googleEventId) {
+        const res = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/primary/events/${meetingData.googleEventId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Authorization": `Bearer ${googleToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(
+              buildCalendarBody(
+                meetingData.title,
+                startDate,
+                meetingData.description,
+                meetingData.time || "10:00",
+                meetingData.reminder || null
+              )
+            ),
+          }
+        );
+
+        const responseData = await res.json();
+
+        if (!res.ok) {
+          setCalendarStatus(`❌ ${responseData.error?.message || "Failed"}`);
+          setTimeout(() => setCalendarStatus(""), 4000);
+          return;
+        }
+      }
+
+      const nextMeetings = meetings
+        .map((m) =>
+          m.id === meetingData.id
+            ? {
+                ...m,
+                title: meetingData.title,
+                date: startDate,
+                time: meetingData.time || "10:00",
+                description: meetingData.description || "",
+                reminder: meetingData.reminder || null,
+                type: meetingData.type || m.type || "meeting",
+                checklistItemId: meetingData.checklistItemId || m.checklistItemId || null,
+              }
+            : m
+        )
+        .sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+
+      setMeetings(nextMeetings);
+      scheduleSave({ meetings: nextMeetings });
+
+      setCalendarStatus(`✅ "${meetingData.title}" ${tr.calendarUpdated}`);
+      setTimeout(() => setCalendarStatus(""), 4000);
+    } catch (err) {
+      console.error("Update calendar error:", err);
+      setCalendarStatus("❌ Something went wrong.");
+      setTimeout(() => setCalendarStatus(""), 3000);
+    }
+  };
+
+  // Syncs all meetings with Google Calendar, updating local state with any changes from Google
+  const syncMeetingsFromGoogle = async () => {
+    if (!googleToken || meetings.length === 0) return;
+
+    try {
+      const syncedMeetings = await Promise.all(
+        meetings.map(async (m) => {
+          if (!m.googleEventId) return m;
+
+          const res = await fetch(
+            `https://www.googleapis.com/calendar/v3/calendars/primary/events/${m.googleEventId}`,
+            {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${googleToken}`,
+              },
+            }
+          );
+
+          if (res.status === 404 || res.status === 410) {
+            return null;
+          }
+
+          if (!res.ok) return m;
+
+          const data = await res.json();
+          const start = data.start?.dateTime || data.start?.date;
+
+          if (!start) return m;
+
+          const datePart = start.includes("T") ? start.split("T")[0] : start;
+          const timePart = start.includes("T") ? start.split("T")[1].slice(0, 5) : "10:00";
+
+          return {
+            ...m,
+            title: data.summary || m.title,
+            description: data.description || "",
+            date: datePart,
+            time: timePart,
+          };
+        })
+      );
+
+      const nextMeetings = syncedMeetings
+        .filter(Boolean)
+        .sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+
+      setMeetings(nextMeetings);
+      scheduleSave({ meetings: nextMeetings });
+
+      setCalendarStatus(`✅ ${tr.calendarSynced}`);
+      setTimeout(() => setCalendarStatus(""), 3000);
+    } catch (err) {
+      console.error("Sync calendar error:", err);
+      setCalendarStatus(`❌ ${tr.calendarSyncFailed}`);
       setTimeout(() => setCalendarStatus(""), 3000);
     }
   };
@@ -1039,6 +1330,14 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           }}
         />
       )}
+      {/* ProviderTable overlay */}
+      {showProvidersTable && (
+        <ProvidersTable
+          providers={providers}
+          onClose={() => setShowProvidersTable(false)}
+          language={language}
+        />
+      )}
     {showVisionBoard && (
       <VisionBoard
         event={event}
@@ -1054,6 +1353,16 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           language={language} event={event} />
       )}
 
+      {/* ExpensePopup for adding/editing an expense */}
+      {expensePopup !== null && (
+        <ExpensePopup
+          initial={expensePopup.data}
+          onSave={handleSaveExpense}
+          onClose={() => setExpensePopup(null)}
+          language={language}
+        />
+      )}
+
       {/* ContactPopup for adding/editing a provider */}
       {providerPopup !== null && (
         <ContactPopup type="provider" initial={providerPopup?.data}
@@ -1065,7 +1374,9 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
       {calendarPopup !== null && (
         <div style={s.popupOverlay} onClick={() => setCalendarPopup(null)}>
           <div style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr" }} onClick={(e) => e.stopPropagation()}>
-            <p style={s.popupTitle}>{tr.calendarTitle}</p>
+            <p style={s.popupTitle}>
+              {calendarPopup.mode === "edit" ? tr.editMeetingTitle : tr.calendarTitle}
+            </p>
             <div style={s.popupField}>
               <label style={s.popupLabel}>{tr.titleLabel}</label>
               <input style={s.popupInput} placeholder={tr.titlePlaceholder}
@@ -1121,10 +1432,26 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
               </div>
             </div>
             <div style={s.popupActions}>
-              <button style={s.popupSave} onClick={() => {
-                addToCalendar(calendarPopup.title, calendarPopup.date, calendarPopup.description, calendarPopup.time || "10:00");
-                setCalendarPopup(null);
-              }}>{tr.addToCalendarBtn}</button>
+              <button
+                style={s.popupSave}
+                onClick={() => {
+                  if (calendarPopup.mode === "edit") {
+                    updateCalendarMeeting(calendarPopup);
+                  } else {
+                    addToCalendar(
+                      calendarPopup.title,
+                      calendarPopup.date,
+                      calendarPopup.description,
+                      calendarPopup.time || "10:00",
+                      calendarPopup.reminder || null
+                    );
+                  }
+
+                  setCalendarPopup(null);
+                }}
+              >
+                {calendarPopup.mode === "edit" ? tr.saveChanges : tr.addToCalendarBtn}
+              </button>
               <button style={s.popupCancel} onClick={() => setCalendarPopup(null)}>{tr.cancel}</button>
             </div>
           </div>
@@ -1149,7 +1476,14 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           <div style={{ position: "relative" }}>
           <button
             style={{ ...s.addBtn("rgba(56,189,248,0.2)"), fontSize: "12px", padding: "6px 14px", border: "1px solid rgba(56,189,248,0.3)", transition: "all 0.2s ease" }}
-            onClick={() => setShowMeetingsPanel(o => !o)}
+            onClick={() => {
+              const nextOpen = !showMeetingsPanel;
+              setShowMeetingsPanel(nextOpen);
+
+              if (nextOpen) {
+                syncMeetingsFromGoogle();
+              }
+            }}
             onMouseEnter={e => {
               e.currentTarget.style.background = "rgba(56,189,248,0.35)";
               e.currentTarget.style.borderColor = "rgba(56,189,248,0.6)";
@@ -1181,6 +1515,23 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                   >
                    ＋ {tr.addMeetingBtn}
                   </button>
+                  
+                  <button
+                    onClick={syncMeetingsFromGoogle}
+                    style={{
+                      flex: 1,
+                      padding: "8px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                      background: "rgba(139,92,246,0.12)",
+                      border: "1px solid rgba(139,92,246,0.25)",
+                      color: "#8B5A8B",
+                      fontSize: "13px",
+                      fontFamily: "'Heebo', sans-serif",
+                    }}
+                  >
+                    🔄 {tr.syncFromCalendar}
+                  </button>
                 </div>
 
                 {meetings.length === 0 ? (
@@ -1194,30 +1545,88 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                       const today = new Date();
                       const daysLeft = Math.ceil((meetingDate - today) / (1000 * 60 * 60 * 24));
                       const isPast = daysLeft < 0;
+
+                      const isTaskReminder =
+                        m.type === "taskReminder" ||
+                        m.description?.startsWith("משימה:") ||
+                        m.description?.startsWith("Task:");
+  
+                      const relatedChecklistItem = isTaskReminder
+                        ? checklist.find((item) =>
+                            (m.checklistItemId && item.id === m.checklistItemId) ||
+                            item.text === m.title ||
+                            m.description?.includes(item.text)
+                          )
+                        : null;
+
+                      const isTaskCompleted = Boolean(
+                        relatedChecklistItem?.done ||
+                        relatedChecklistItem?.completed ||
+                        relatedChecklistItem?.checked
+                      );
+
                       return (
                         <div key={m.id} style={{
-                          background: "#F5EDE8", borderRadius: "10px", padding: "10px 12px",
-                          borderRight: `3px solid ${isPast ? "#E8DDD5" : "#38bdf8"}`,
-                          opacity: isPast ? 0.5 : 1,
-                        }}>
+                            background: isTaskReminder ? "rgba(250, 204, 21, 0.15)" : "#F5EDE8",
+                            borderRadius: "10px",
+                            padding: "10px 12px",
+                            borderRight: `3px solid ${
+                              isPast
+                                ? "#E8DDD5"
+                                : isTaskReminder
+                                  ? "#FACC15"
+                                  : "#38bdf8"
+                            }`,
+                            border: isTaskReminder ? "1px solid rgba(250, 204, 21, 0.45)" : "none",
+                            opacity: isPast ? 0.5 : 1,
+                          }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <span style={{ fontSize: "14px", fontWeight: "600", color: "#3d2c2c" }}>{m.title}</span>
+                            <span
+                              style={{fontSize: "14px",fontWeight: "600",color: "#3d2c2c",extDecoration: isTaskReminder && isTaskCompleted ? "line-through" : "none",
+                                opacity: isTaskReminder && isTaskCompleted ? 0.55 : 1,
+                              }}
+                            >
+                              {isTaskReminder ? (isTaskCompleted ? "✅" : "🔔") : "📅"} {m.title}
+                            </span>
                             <span style={{
                               fontSize: "11px", padding: "2px 8px", borderRadius: "10px",
                               background: isPast ? "rgba(193,123,123,0.08)" : "rgba(56,189,248,0.15)",
                               color: isPast ? "#A89080" : "#38bdf8",
                             }}>
-                              {isPast
+                              {isTaskReminder && isTaskCompleted
+                                ? tr.completedTask
+                                : isPast
                                 ? tr.meetingPast
                                 : daysLeft === 0
                                 ? tr.meetingToday
-                                : `${daysLeft} ${tr.done}`}
+                                : `${tr.inDaysPrefix} ${daysLeft} ${daysLeft === 1 ? tr.daySingular : tr.daysPlural}`}
                             </span>
                           </div>
                           <div style={{ fontSize: "12px", color: "#8B7060", marginTop: "4px" }}>
                             📅 {m.date} · ⏰ {m.time}
                           </div>
                           {m.description && <div style={{ fontSize: "11px", color: "#A89080", marginTop: "2px" }}>{m.description}</div>}
+                          
+                          <button
+                            onClick={() => {
+                              setCalendarPopup({
+                                ...m,
+                                mode: "edit",
+                                reminder: m.reminder || null,
+                              });
+                              setShowMeetingsPanel(false);
+                            }}
+                            style={{
+                              background: "none",border: "none",color: "#38bdf8", cursor: "pointer",fontSize: "12px",
+                              marginTop: "4px",
+                              marginInlineEnd: "8px",
+                            }}
+                          >
+                            ✏️ {tr.editMeeting}
+                          </button>
+                          
+                          
+                          
                           <button
                             onClick={async () => {
                               if (m.googleEventId && googleToken) {
@@ -1232,7 +1641,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                             }}
                             style={{ background: "none", border: "none", color: "#C4B0A8", cursor: "pointer", fontSize: "12px", marginTop: "4px" }}
                           >
-                            {tr.deleteMeeting}
+                            {isTaskReminder ? tr.cancelReminder : tr.deleteMeeting}
                           </button>
                         </div>
                       );
@@ -1370,6 +1779,12 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                   <span style={s.expenseName}>{exp.name}</span>
                   <div style={s.expenseActions}>
                     <span style={s.expenseAmount}>₪{exp.amount.toLocaleString()}</span>
+                    <button
+                      style={{ ...s.iconBtn, fontSize: "14px" }}
+                      onClick={() => setExpensePopup({ data: exp })}
+                    >
+                      ✏️
+                    </button>
                     <button style={s.iconBtn} onClick={() => handleRemoveExpense(exp.id)}>×</button>
                   </div>
                 </div>
@@ -1378,8 +1793,8 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                     color: exp.paymentStatus === "paid" ? "#5A9E6F" : "#fb923c"
                   }}>
                     {exp.paymentStatus === "paid"
-                      ? (language === "he" ? "שולם במלואו" : "Fully paid")
-                      : (language === "he" ? `מקדמה ₪${exp.depositAmount || 0}` : `Deposit ₪${exp.depositAmount || 0}`)}
+                      ? tr.fullyPaid
+                      : `${tr.depositPaidPrefix} ₪${exp.depositAmount || 0}`}
                   </div>
                 )}
                 <input style={s.commentInput} type="text" placeholder={tr.addComment}
@@ -1397,23 +1812,93 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                 {doneCount}/{checklist.length} {tr.done}
               </span>
             </p>
-            {checklist.map((item, i) => (
-              <div key={i} style={s.checklistItem}>
-                <div style={s.checkbox(item.done)} onClick={() => toggleChecklistItem(i)}>
-                  {item.done && <span style={{ color: "#000", fontSize: "11px", fontWeight: "700" }}>✓</span>}
+            {checklist.map((item, i) => {
+              const itemId = item.id ?? i;
+
+              const taskReminder = meetings.find((m) =>
+                (m.type === "taskReminder" || m.description?.includes(item.text)) &&
+                (
+                  m.checklistItemId === itemId ||
+                  m.title === item.text ||
+                  m.description?.includes(item.text)
+                )
+              );
+
+              const taskReminderDate = taskReminder?.date
+                ? new Date(`${taskReminder.date}T${taskReminder.time || "10:00"}`)
+                : null;
+
+              const taskReminderDaysLeft = taskReminderDate
+                ? Math.ceil((taskReminderDate - new Date()) / (1000 * 60 * 60 * 24))
+                : null;
+
+              return (
+                <div key={i} style={s.checklistItem}>
+                  <div style={s.checkbox(item.done)} onClick={() => toggleChecklistItem(i)}>
+                    {item.done && (
+                      <span style={{ color: "#000", fontSize: "11px", fontWeight: "700" }}>
+                        ✓
+                      </span>
+                    )}
+                  </div>
+
+                  <span
+                    style={{...s.checkedText(item.done),display: "inline-flex", alignItems: "center",gap: "6px",
+                    }}
+                    onClick={() => toggleChecklistItem(i)}
+                  >
+                    {item.text}
+
+                    {taskReminder && !item.done && taskReminderDaysLeft !== null && (
+                      <span
+                        style={{
+                          padding: "2px 8px",
+                          borderRadius: "999px",
+                          fontSize: "11px",
+                          fontWeight: "500",
+                          background: "rgba(250,204,21,0.20)",
+                          color: "#9A6B00",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {taskReminderDaysLeft < 0
+                          ? tr.meetingPast
+                          : taskReminderDaysLeft === 0
+                          ? tr.meetingToday
+                          : `${tr.inDaysPrefix} ${taskReminderDaysLeft} ${
+                              taskReminderDaysLeft === 1 ? tr.daySingular : tr.daysPlural
+                            }`}
+                      </span>
+                    )}
+                  </span>
+
+                  <button
+                    style={{ ...s.iconBtn, fontSize: "15px", opacity: 0.75 }}
+                    title={tr.addReminder}
+                    aria-label={tr.addReminder}
+                    onClick={() =>
+                      setCalendarPopup({
+                        title: item.text,
+                        description: `${tr.taskReminderDescription}: ${item.text}`,
+                        time: "10:00",
+                        reminder: 1440,
+                        type: "taskReminder",
+                        checklistItemId: itemId,
+                      })
+                    }
+                  >
+                    🔔
+                  </button>
+
+                  <button
+                    style={{ ...s.iconBtn, fontSize: "14px", marginLeft: "4px", opacity: 0.4 }}
+                    onClick={() => handleRemoveCheckItem(i)}
+                  >
+                    ×
+                  </button>
                 </div>
-                <span style={s.checkedText(item.done)} onClick={() => toggleChecklistItem(i)}>{item.text}</span>
-                <button style={{ ...s.iconBtn, fontSize: "12px", opacity: 0.5 }}
-                  onClick={() => setCalendarPopup({ 
-                    title: item.text, 
-                    description: `משימה: ${item.text}`,
-                    time: "10:00",
-                    reminder: 1440
-                  })}>📅</button>
-                <button style={{ ...s.iconBtn, fontSize: "14px", marginLeft: "4px", opacity: 0.4 }}
-                  onClick={() => handleRemoveCheckItem(i)}>×</button>
-              </div>
-            ))}
+              );
+            })}
             <div style={s.checklistAddRow}>
               <input style={{ ...s.input, fontSize: "13px" }} placeholder={tr.addChecklistItem}
                 value={newCheckItem} onChange={(e) => setNewCheckItem(e.target.value)}
@@ -1471,14 +1956,31 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
 
           {/* PROVIDERS CARD*/}
           <div style={s.card}>
-            <p style={s.cardTitle}>
+            <p
+              style={{ ...s.cardTitle, cursor: "pointer" }}
+              onClick={() => setShowProvidersTable(true)}
+            >
               🏢 {tr.providers}
-              <span style={{ fontSize: "12px", color: "#A89080", marginLeft: "auto" }}>
+
+              <span style={{ fontSize: "13px", color: "#7A6060", marginRight: "8px" }}>
+                ← {tr.openProviderList}
+              </span>
+
+              <span style={{ fontSize: "12px", color: "#A89080", marginRight: "auto" }}>
                 {providers.length} {tr.added}
               </span>
             </p>
-            <button style={{ ...s.addBtn("rgba(56,189,248,0.3)"), width: "100%", marginBottom: "12px" }}
-              onClick={() => setProviderPopup("new")}>{tr.addProvider}</button>
+
+            <button
+              style={{
+                ...s.addBtn("rgba(56,189,248,0.3)"),
+                width: "100%",
+                marginBottom: "12px",
+              }}
+              onClick={() => setProviderPopup("new")}
+            >
+              {tr.addProvider}
+            </button>
             {providers.length === 0 ? <p style={s.emptyMsg}>{tr.noProviders}</p> : (
               <ul style={s.list}>
                 {providers.map((p, i) => (
@@ -1509,9 +2011,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                             : tr.unpaid}
                         </span>
                       )}
-                      {p.totalPrice > 0 && <span style={s.detailChip}>💰 ₪{p.totalPrice.toLocaleString()}</span>}
-                      {p.phone && <span style={s.detailChip}>📞 {p.phone}</span>}
-                      {p.email && <span style={s.detailChip}>✉️ {p.email}</span>}
+                      {p.totalPrice > 0 && <span style={s.detailChip}>💰 ₪{p.totalPrice.toLocaleString()}</span>} 
                       {p.note && <span style={{ ...s.detailChip, fontStyle: "italic" }}>{p.note}</span>}
                     </div>
                   </li>
