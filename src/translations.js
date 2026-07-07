@@ -53,7 +53,9 @@ export const translations = {
     declinedCount: "לא מגיעים",
     noAnswer: "אין מענה",
     addGuestBtn: "הוסף מוזמן",
-    openGuestList: "פתח רשימת אורחים ←",
+    openGuestList: "פתח רשימת אורחים",
+    openBudgetList: "פתח פירוט תקציב",
+    openProviderList: "פתח רשימת ספקים",
 
     // Providers
     providers: "ספקים",
@@ -68,7 +70,6 @@ export const translations = {
     fullName: "שם מלא",
     addProviderTitle: "➕ הוסף ספק",
     editProviderTitle: "✏️ ערוך ספק",
-    openProviderList: "רשימה מלאה",
     providerListTitle: "רשימת ספקים",
     firstName: "שם",
     lastName: "שם משפחה",
@@ -331,7 +332,6 @@ export const translations = {
     fullName: "Full Name",
     addProviderTitle: "➕ Add Provider",
     editProviderTitle: "✏️ Edit Provider",
-    openProviderList: "Full list",
     providerListTitle: "Providers list",
     firstName: "First name",
     lastName: "Last name",
@@ -472,7 +472,9 @@ export const translations = {
     declinedCount: "Declined",
     noAnswer: "No Answer",
     addGuestBtn: "Add Guest",
-    openGuestList: "Open guest list →",
+    openGuestList: "Open guest list",
+    openBudgetList: "Open budget list",
+    openProviderList: "Open providers list",
 
     // GuestTable
     guestListTitle: "Guest List",

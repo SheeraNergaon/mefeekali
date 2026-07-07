@@ -1688,9 +1688,13 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
 
           {/* BUDGET CARD */}
           <div style={s.card}>
-            <p style={{ ...s.cardTitle, cursor: "pointer" }} onClick={() => setShowBudgetTable(true)}>
-              💰 {tr.budget} <span style={{ fontSize: "13px", color: "#7A6060", marginInlineEnd: "8px" }}>{isRTL ? "→" : "←"} {tr.fullDetails}</span>
-            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+              <p style={{ ...s.cardTitle, margin: 0 }}>💰 {tr.budget}</p>
+              <button onClick={() => setShowBudgetTable(true)}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(139,92,246,0.15)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                style={{ fontSize: "12px", padding: "3px 10px", background: "transparent", border: "1px solid rgba(139,92,246,0.3)", borderRadius: "20px", color: "#8B5A8B", cursor: "pointer", fontFamily: "'Heebo', sans-serif", transition: "all 0.2s ease" }}>{tr.openBudgetList}</button>
+            </div>
             <div style={s.inputRow}>
               <input style={{...s.input, textAlign: isRTL ? "right" : "left"}} dir="ltr" type="number" placeholder={tr.setBudget}
                 value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)}
@@ -1913,9 +1917,13 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
 
           {/* GUESTS CARD */}
           <div style={s.card}>
-            <p style={s.cardTitle}>
-              👥 {tr.guestList}
-            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+              <p style={{ ...s.cardTitle, margin: 0 }}>👥 {tr.guestList}</p>
+              <button onClick={() => setShowGuestTable(true)}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(139,92,246,0.15)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                style={{ fontSize: "12px", padding: "3px 10px", background: "transparent", border: "1px solid rgba(139,92,246,0.3)", borderRadius: "20px", color: "#8B5A8B", cursor: "pointer", fontFamily: "'Heebo', sans-serif", transition: "all 0.2s ease" }}>{tr.openGuestList}</button>
+            </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px", marginBottom: "14px" }}>
               <div style={{ textAlign: "center", background: "#F5EDE8", border: "1px solid #E8DDD5", borderRadius: "12px", padding: "10px 4px" }}>
@@ -1949,30 +1957,20 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             >
               + {tr.addGuestBtn}
             </button>
-            <button
-              style={{ width: "100%", padding: "10px", background: "rgba(139,90,139,0.08)", border: "1px dashed #C9A8E0", borderRadius: "12px", color: "#8B5A8B", cursor: "pointer", fontSize: "13px", fontFamily: "'Heebo', sans-serif" }}
-              onClick={() => setShowGuestTable(true)}
-            >
-              {tr.openGuestList}
-            </button>
+
           </div>
 
 
           {/* PROVIDERS CARD*/}
           <div style={s.card}>
-            <p
-              style={{ ...s.cardTitle, cursor: "pointer" }}
-              onClick={() => setShowProvidersTable(true)}
-            >
-              🏢 {tr.providers}
-
-              <span style={{ fontSize: "13px", color: "#7A6060", marginInlineEnd: "8px" }}>
-                {isRTL ? "→" : "←"} {tr.openProviderList}
-              </span>
-
-              <span style={{ fontSize: "12px", color: "#A89080", marginInlineEnd: "auto" }}>
-                {providers.length} {tr.added}
-              </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+              <p style={{ ...s.cardTitle, margin: 0 }}>🏢 {tr.providers}</p>
+              <button onClick={() => setShowProvidersTable(true)}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(139,92,246,0.15)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                style={{ fontSize: "12px", padding: "3px 10px", background: "transparent", border: "1px solid rgba(139,92,246,0.3)", borderRadius: "20px", color: "#8B5A8B", cursor: "pointer", fontFamily: "'Heebo', sans-serif", transition: "all 0.2s ease" }}>{tr.openProviderList}</button>
+            </div>
+            <p style={{ display: "none" }}>
             </p>
 
             <button

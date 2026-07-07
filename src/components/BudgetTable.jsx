@@ -3,6 +3,36 @@
 import { useState } from "react";
 import { translations } from "../translations";
 
+// ── Merge Sort Implementation ─────────────────────────────────────────────────
+// Sorts budget items by a given field and direction.
+// Time complexity: O(n log n) in all cases.
+// Space complexity: O(n) — creates new arrays during merge.
+
+function mergeSort(arr, field, dir) {
+  if (arr.length <= 1) return arr;
+  const mid = Math.floor(arr.length / 2);
+  const left = mergeSort(arr.slice(0, mid), field, dir);
+  const right = mergeSort(arr.slice(mid), field, dir);
+  return merge(left, right, field, dir);
+}
+
+function merge(left, right, field, dir) {
+  const result = [];
+  let i = 0, j = 0;
+  while (i < left.length && j < right.length) {
+    let comparison = 0;
+    if (field === "agreedPrice" || field === "paidAmount") {
+      comparison = (Number(left[i][field]) || 0) - (Number(right[j][field]) || 0);
+    } else {
+      comparison = String(left[i][field] || "").localeCompare(String(right[j][field] || ""), "he");
+    }
+    if (dir === "desc") comparison *= -1;
+    if (comparison <= 0) result.push(left[i++]);
+    else result.push(right[j++]);
+  }
+  return [...result, ...left.slice(i), ...right.slice(j)];
+}
+
 export default function BudgetTable({ expenses, providers, budget, onClose, onUpdateProvider, onUpdateExpense, language }) {
   const [sortBy, setSortBy] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
@@ -46,16 +76,8 @@ export default function BudgetTable({ expenses, providers, budget, onClose, onUp
     return true;
   });
 
-  const sorted = [...filtered].sort((a, b) => {
-    let valA = a[sortBy] || "";
-    let valB = b[sortBy] || "";
-    if (sortBy === "agreedPrice" || sortBy === "paidAmount") {
-      valA = Number(valA); valB = Number(valB);
-      return sortDir === "asc" ? valA - valB : valB - valA;
-    }
-    const result = String(valA).localeCompare(String(valB), "he");
-    return sortDir === "asc" ? result : -result;
-  });
+  // Apply Merge Sort to the filtered budget items
+  const sorted = mergeSort([...filtered], sortBy, sortDir);
 
   const handleSort = (field) => {
     if (sortBy === field) setSortDir(d => d === "asc" ? "desc" : "asc");
