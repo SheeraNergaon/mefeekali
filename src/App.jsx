@@ -137,6 +137,7 @@ function App() {
   const [editingEvent, setEditingEvent] = useState(null);
 
   const tr = translations[language];
+  const isRTL = language === "he";
 
   // Load events from Firestore whenever user logs in
   useEffect(() => {
@@ -338,7 +339,8 @@ function App() {
           <div style={{
             background: "#FDF9F5", borderRadius: "24px", padding: "32px",
             width: "100%", maxWidth: "420px", fontFamily: "'Heebo', sans-serif",
-            direction: "rtl",
+            direction: isRTL ? "rtl" : "ltr",
+            textAlign: isRTL ? "right" : "left", // תוקן יישור המיכל בהתאם לשפה
           }} onClick={e => e.stopPropagation()}>
             <h2 style={{ margin: "0 0 24px", fontSize: "18px", fontWeight: "700", color: "#3d2c2c" }}>
               {tr.editEventTitle}
@@ -346,7 +348,7 @@ function App() {
 
             <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{tr.eventNameLabel}</label>
             <input
-              style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px" }}
+              style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px", textAlign: isRTL ? "right" : "left" }}
               value={editingEvent.title || ""}
               onChange={e => setEditingEvent(ev => ({ ...ev, title: e.target.value }))}
             />
@@ -354,6 +356,7 @@ function App() {
             <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{tr.dateLabel2}</label>
             <input
               type="date"
+              dir={isRTL ? "rtl" : "ltr"} // תוקן כיווניות שדה התאריך
               style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px" }}
               value={editingEvent.date || ""}
               onChange={e => setEditingEvent(ev => ({ ...ev, date: e.target.value }))}
@@ -362,7 +365,8 @@ function App() {
             <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{tr.guestCountLabel}</label>
             <input
               type="number"
-              style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px" }}
+              dir="ltr" // שומר על כתיבת מספרים משמאל לימין כדי למנוע קפיצות
+              style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px", textAlign: isRTL ? "right" : "left" }}
               value={editingEvent.guestCount || ""}
               onChange={e => setEditingEvent(ev => ({ ...ev, guestCount: Number(e.target.value) }))}
             />

@@ -50,11 +50,12 @@ const s = {
     display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px",
     maxWidth: "680px", width: "100%", position: "relative", zIndex: 1,
   },
-  card: (color, glow, hovered) => ({
+  // הוספנו את isRTL לסטייל של הכרטיסייה כדי שיישור הטקסט יהיה דינמי
+  card: (color, glow, hovered, isRTL) => ({
     background: hovered ? "#E8DDD5" : "#FDF9F5",
     border: `1px solid ${hovered ? color : "#E8DDD5"}`,
     borderRadius: "20px", padding: "32px 24px", cursor: "pointer",
-    transition: "all 0.25s ease", textAlign: "left",
+    transition: "all 0.25s ease", textAlign: isRTL ? "right" : "left",
     boxShadow: hovered ? `0 0 40px ${glow}` : "none",
     transform: hovered ? "translateY(-3px)" : "translateY(0)",
   }),
@@ -76,6 +77,7 @@ const s = {
     background: "#FDF9F5", border: "1px solid rgba(193,123,123,0.12)",
     borderRadius: "24px", padding: "40px 36px", width: "100%", maxWidth: "460px",
     fontFamily: "'Heebo', sans-serif", maxHeight: "90vh", overflowY: "auto",
+    textAlign: "start", // דואג שכל הטקסטים בפופאפ יתיישרו בהתאם ל-direction
   },
   popupEmoji: { fontSize: "44px", display: "block", marginBottom: "12px" },
   popupTitle: { fontSize: "22px", fontWeight: "700", color: "#3d2c2c", margin: "0 0 6px" },
@@ -196,7 +198,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
       {/* Top bar - shows Cancel and Sign Out buttons */}
       <div style={s.logoutBar}>
         {onCancel && (
-          <button style={{ ...s.logoutBtn, marginLeft: "8px" }} onClick={onCancel}>
+          <button style={{ ...s.logoutBtn, marginLeft: isRTL ? "0" : "8px", marginRight: isRTL ? "8px" : "0" }} onClick={onCancel}>
             {tr.cancel}
           </button>
         )}
@@ -223,12 +225,12 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.eventName}</label>
               <input
-                style={s.input}
+                style={{ ...s.input, textAlign: isRTL ? "right" : "left", direction: isRTL ? "rtl" : "ltr" }}
                 placeholder={
-                  selectedType.id === "wedding" ? (language === "he" ? 'למשל: "החתונה של שרה ותום"' : 'e.g. "Sarah & Tom\'s Wedding"') :
-                  selectedType.id === "birthday" ? (language === "he" ? 'למשל: "יום הולדת 30 של דנה"' : 'e.g. "Dana\'s 30th Birthday"') :
-                  selectedType.id === "corporate" ? (language === "he" ? 'למשל: "כנס שנתי 2026"' : 'e.g. "Annual Conference 2026"') :
-                  language === "he" ? 'למשל: "בר מצווה של יוסי"' : 'e.g. "Yossi\'s Bar Mitzvah"'
+                  selectedType.id === "wedding" ? (isRTL ? 'למשל: "החתונה של שרה ותום"' : 'e.g. "Sarah & Tom\'s Wedding"') :
+                  selectedType.id === "birthday" ? (isRTL ? 'למשל: "יום הולדת 30 של דנה"' : 'e.g. "Dana\'s 30th Birthday"') :
+                  selectedType.id === "corporate" ? (isRTL ? 'למשל: "כנס שנתי 2026"' : 'e.g. "Annual Conference 2026"') :
+                  isRTL ? 'למשל: "בר מצווה של יוסי"' : 'e.g. "Yossi\'s Bar Mitzvah"'
                 }
                 value={eventName}
                 onChange={(e) => setEventName(e.target.value)}
@@ -239,18 +241,22 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
             {/* Date input*/}
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.eventDate}</label>
-              <input style={s.input} type="date" dir="ltr"
+              <input 
+                style={s.input} 
+                type="date" 
+                dir={isRTL ? "rtl" : "ltr"} // כיווניות דינמית לתאריך
                 value={eventDate}
-                onChange={(e) => setEventDate(e.target.value)} />
+                onChange={(e) => setEventDate(e.target.value)} 
+              />
             </div>
 
             {/* Guest count input*/}
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.guestCount}</label>
               <input
-                style={s.input}
+                style={{ ...s.input, textAlign: isRTL ? "right" : "left", direction: isRTL ? "rtl" : "ltr" }}
                 type="number"
-                placeholder="e.g. 150"
+                placeholder={isRTL ? "למשל: 150" : "e.g. 150"}
                 value={guestCount}
                 onChange={(e) => setGuestCount(e.target.value)}
               />
@@ -307,7 +313,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
           {eventTypes.map((et) => (
             <div
               key={et.id}
-              style={s.card(et.color, et.glow, hoveredId === et.id)}
+              style={s.card(et.color, et.glow, hoveredId === et.id, isRTL)} // מעביר את isRTL לפונקציה
               onClick={() => handleCardClick(et)}
               onMouseEnter={() => setHoveredId(et.id)}
               onMouseLeave={() => setHoveredId(null)}

@@ -211,10 +211,9 @@ const s = {
   },
   msgAIBubble: {
     background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.2)",
-    borderRadius: "16px 16px 16px 4px", padding: "12px 16px",
+    padding: "12px 16px",
     fontSize: "14px", color: "#3d2c2c", lineHeight: "1.6",
-    maxWidth: "80%", direction: "ltr", textAlign: "left",
-
+    maxWidth: "80%", direction: "ltr",
   },
   msgAIAvatar: {
     width: "28px", height: "28px", borderRadius: "8px",
@@ -227,7 +226,7 @@ const s = {
   },
   msgUserBubble: {
     background: "rgba(255,255,255,0.07)", border: "1px solid #E8DDD5",
-    borderRadius: "16px 16px 4px 16px", padding: "12px 16px",
+    padding: "12px 16px",
     fontSize: "14px", color: "#3d2c2c", lineHeight: "1.6",
     maxWidth: "80%",
   },
@@ -295,7 +294,7 @@ const s = {
 
   return (
     <div style={s.popupOverlay} onClick={onClose}>
-      <div style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr" }} onClick={(e) => e.stopPropagation()}>
+      <div style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr", textAlign: isRTL ? "right" : "left" }} onClick={(e) => e.stopPropagation()}>
         <p style={s.popupTitle}>
           {type === "provider"
             ? (initial ? tr.editProviderTitle : tr.addProviderTitle)
@@ -305,9 +304,10 @@ const s = {
         {fields.map(({ key, label, placeholder }) => (
           <div key={key} style={s.popupField}>
             <label style={s.popupLabel}>{label}</label>
-            <input style={s.popupInput} placeholder={placeholder}
-              value={form[key] || ""} onChange={(e) => set(key, e.target.value)}
-              dir={key === "phone" ? "ltr" : undefined} />
+            <input style={{ ...s.popupInput, textAlign: isRTL && key !== "phone" && key !== "email" ? "right" : "left" }}
+            placeholder={placeholder}
+            value={form[key] || ""} onChange={(e) => set(key, e.target.value)}
+            dir={key === "phone" || key === "email" ? "ltr" : isRTL ? "rtl" : "ltr"} />
           </div>
         ))}
 
@@ -395,8 +395,9 @@ const s = {
               <div style={s.popupField}>
                 <label style={s.popupLabel}>{tr.depositAmountLabel}</label>
                 <input
-                  style={s.popupInput}
+                  style={{...s.popupInput, textAlign: isRTL ? "right" : "left"}}
                   type="number"
+                  dir="ltr"
                   placeholder="0"
                   value={form.depositAmount || ""}
                   onChange={(e) => set("depositAmount", Number(e.target.value))}
@@ -407,8 +408,9 @@ const s = {
             <div style={s.popupField}>
               <label style={s.popupLabel}>{tr.totalPriceLabel}</label>
               <input
-                style={s.popupInput}
+                style={{...s.popupInput, textAlign: isRTL ? "right" : "left"}}
                 type="number"
+                dir="ltr"
                 placeholder="0"
                 value={form.totalPrice || ""}
                 onChange={(e) => set("totalPrice", Number(e.target.value))}
@@ -459,7 +461,7 @@ function ExpensePopup({ initial, onSave, onClose, language = "he" }) {
   return (
     <div style={s.popupOverlay} onClick={onClose}>
       <div
-        style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr" }}
+        style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr", textAlign: isRTL ? "right" : "left" }}
         onClick={(e) => e.stopPropagation()}
       >
         <p style={s.popupTitle}>{tr.editExpenseTitle}</p>
@@ -476,8 +478,9 @@ function ExpensePopup({ initial, onSave, onClose, language = "he" }) {
         <div style={s.popupField}>
           <label style={s.popupLabel}>{tr.amount}</label>
           <input
-            style={s.popupInput}
+            style={{...s.popupInput, textAlign: isRTL ? "right" : "left"}}
             type="number"
+            dir="ltr"
             value={form.amount}
             onChange={(e) => set("amount", e.target.value)}
           />
@@ -516,8 +519,9 @@ function ExpensePopup({ initial, onSave, onClose, language = "he" }) {
           <div style={s.popupField}>
             <label style={s.popupLabel}>{tr.depositAmountLabel}</label>
             <input
-              style={s.popupInput}
+              style={{...s.popupInput, textAlign: isRTL ? "right" : "left"}}
               type="number"
+              dir="ltr"
               value={form.depositAmount || ""}
               onChange={(e) => set("depositAmount", e.target.value)}
             />
@@ -546,6 +550,7 @@ function ExpensePopup({ initial, onSave, onClose, language = "he" }) {
 // ── AI Producer Panel ─────────────────────────────────────────────────────────
 function AIProducer({ event, budget, expenses, guests, providers, checklist, language = "he" }) {
   const tr = translations[language];
+  const isRTL = language === "he";
   const [open, setOpen] = useState(true);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -746,17 +751,16 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
                       <div style={s.msgAIAvatar}>🎬</div>
                         <div style={{
                           ...s.msgAIBubble,
+                          borderRadius: isRTL ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
                           direction: /[\u0590-\u05FF]/.test(m.text) ? "rtl" : "ltr",
                           textAlign: /[\u0590-\u05FF]/.test(m.text) ? "right" : "left",
-                          paddingRight: /[\u0590-\u05FF]/.test(m.text) ? "16px" : "16px",
-                          paddingLeft: /[\u0590-\u05FF]/.test(m.text) ? "16px" : "16px",
                         }} className="ai-bubble">
                           <ReactMarkdown>{m.text}</ReactMarkdown>
                         </div>
                     </div>
                   ) : (
                     <div key={i} style={s.msgUser}>
-                      <div style={s.msgUserBubble}>{m.text}</div>
+                      <div style={{...s.msgUserBubble, borderRadius: isRTL ? "16px 16px 16px 4px" : "16px 16px 4px 16px"}}>{m.text}</div>
                     </div>
                   )
                 )}
@@ -765,7 +769,7 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
                 {loading && (
                   <div style={s.msgAI}>
                     <div style={s.msgAIAvatar}>🎬</div>
-                    <div style={s.msgAIBubble}>
+                    <div style={{...s.msgAIBubble, borderRadius: isRTL ? "16px 16px 4px 16px" : "16px 16px 16px 4px"}}>
                       <div style={s.typingDots}>
                         <div style={s.dot(0)} />
                         <div style={s.dot(0.2)} />
@@ -1373,7 +1377,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
       {/* Calendar popup*/}
       {calendarPopup !== null && (
         <div style={s.popupOverlay} onClick={() => setCalendarPopup(null)}>
-          <div style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr" }} onClick={(e) => e.stopPropagation()}>
+          <div style={{ ...s.popup, direction: isRTL ? "rtl" : "ltr", textAlign: isRTL ? "right" : "left" }} onClick={(e) => e.stopPropagation()}>
             <p style={s.popupTitle}>
               {calendarPopup.mode === "edit" ? tr.editMeetingTitle : tr.calendarTitle}
             </p>
@@ -1385,13 +1389,13 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             </div>
             <div style={s.popupField}>
               <label style={s.popupLabel}>{tr.dateLabel}</label>
-              <input style={s.popupInput} type="date"
+              <input style={s.popupInput} type="date" dir={isRTL ? "rtl" : "ltr"}
                 value={calendarPopup.date || ""}
                 onChange={(e) => setCalendarPopup(p => ({ ...p, date: e.target.value }))} />
             </div>
             <div style={s.popupField}>
               <label style={s.popupLabel}>{tr.timeLabel}</label>
-              <input style={s.popupInput} type="time"
+              <input style={{...s.popupInput, textAlign: isRTL ? "right" : "left"}} type="time"
                 value={calendarPopup.time || "10:00"}
                 dir="ltr"
                 onChange={(e) => setCalendarPopup(p => ({ ...p, time: e.target.value }))} />
@@ -1513,7 +1517,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                       color: "#38bdf8", fontSize: "13px", fontFamily: "'Heebo', sans-serif",
                     }}
                   >
-                   ＋ {tr.addMeetingBtn}
+                    ＋ {tr.addMeetingBtn}
                   </button>
                   
                   <button
@@ -1550,7 +1554,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                         m.type === "taskReminder" ||
                         m.description?.startsWith("משימה:") ||
                         m.description?.startsWith("Task:");
-  
+ 
                       const relatedChecklistItem = isTaskReminder
                         ? checklist.find((item) =>
                             (m.checklistItemId && item.id === m.checklistItemId) ||
@@ -1570,7 +1574,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                             background: isTaskReminder ? "rgba(250, 204, 21, 0.15)" : "#F5EDE8",
                             borderRadius: "10px",
                             padding: "10px 12px",
-                            borderRight: `3px solid ${
+                            borderInlineStart: `3px solid ${
                               isPast
                                 ? "#E8DDD5"
                                 : isTaskReminder
@@ -1582,7 +1586,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                           }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <span
-                              style={{fontSize: "14px",fontWeight: "600",color: "#3d2c2c",extDecoration: isTaskReminder && isTaskCompleted ? "line-through" : "none",
+                              style={{fontSize: "14px",fontWeight: "600",color: "#3d2c2c",textDecoration: isTaskReminder && isTaskCompleted ? "line-through" : "none",
                                 opacity: isTaskReminder && isTaskCompleted ? 0.55 : 1,
                               }}
                             >
@@ -1685,10 +1689,10 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           {/* BUDGET CARD */}
           <div style={s.card}>
             <p style={{ ...s.cardTitle, cursor: "pointer" }} onClick={() => setShowBudgetTable(true)}>
-              💰 {tr.budget} <span style={{ fontSize: "13px", color: "#7A6060", marginRight: "8px" }}>← {tr.fullDetails}</span>
+              💰 {tr.budget} <span style={{ fontSize: "13px", color: "#7A6060", marginInlineEnd: "8px" }}>{isRTL ? "→" : "←"} {tr.fullDetails}</span>
             </p>
             <div style={s.inputRow}>
-              <input style={s.input} type="number" placeholder={tr.setBudget}
+              <input style={{...s.input, textAlign: isRTL ? "right" : "left"}} dir="ltr" type="number" placeholder={tr.setBudget}
                 value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSetBudget()} />
               <button style={s.addBtn("rgba(139,92,246,0.4)")} onClick={handleSetBudget}>{tr.set}</button>
@@ -1737,7 +1741,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             </div>
             {expenseStatus === "deposit" && (
               <div style={{ ...s.inputRow }}>
-                <input style={s.input} type="number"
+                <input style={{...s.input, textAlign: isRTL ? "right" : "left"}} dir="ltr" type="number"
                   placeholder={tr.depositAmountPlaceholder}
                   value={expenseDeposit}
                   onChange={(e) => setExpenseDeposit(e.target.value)} />
@@ -1746,7 +1750,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             <div style={s.inputRow}>
               <input style={s.input} type="text" placeholder={tr.expenseName}
                 value={expenseName} onChange={(e) => setExpenseName(e.target.value)} />
-              <input style={{ ...s.input, maxWidth: "110px" }} type="number" placeholder={tr.amount}
+              <input style={{ ...s.input, maxWidth: "110px", textAlign: isRTL ? "right" : "left" }} dir="ltr" type="number" placeholder={tr.amount}
                 value={expenseAmount} onChange={(e) => setExpenseAmount(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAddExpense()} />
               <button style={s.addBtn("rgba(248,113,113,0.4)")} onClick={handleAddExpense}>{tr.add}</button>
@@ -1757,7 +1761,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
 
             {/* Provider Expenses */}
             {providers.filter(p => p.totalPrice > 0).map((p, i) => (
-              <div key={p.id || i} style={{ ...s.expenseItem, borderLeft: "2px solid #38bdf8" }}>
+              <div key={p.id || i} style={{ ...s.expenseItem, borderInlineStart: "2px solid #38bdf8" }}>
                 <div style={s.expenseTop}>
                   <span style={s.expenseName}>{p.name} {p.serviceType ? `· ${p.serviceType}` : ""}</span>
                   <span style={s.expenseAmount}>₪{p.totalPrice.toLocaleString()}</span>
@@ -1808,7 +1812,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           <div style={s.card}>
             <p style={s.cardTitle}>
               ✅ {tr.checklist}
-              <span style={{ fontSize: "12px", color: "#A89080", marginLeft: "auto" }}>
+              <span style={{ fontSize: "12px", color: "#A89080", marginInlineStart: "auto" }}>
                 {doneCount}/{checklist.length} {tr.done}
               </span>
             </p>
@@ -1891,7 +1895,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                   </button>
 
                   <button
-                    style={{ ...s.iconBtn, fontSize: "14px", marginLeft: "4px", opacity: 0.4 }}
+                    style={{ ...s.iconBtn, fontSize: "14px", marginInlineStart: "4px", opacity: 0.4 }}
                     onClick={() => handleRemoveCheckItem(i)}
                   >
                     ×
@@ -1962,11 +1966,11 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             >
               🏢 {tr.providers}
 
-              <span style={{ fontSize: "13px", color: "#7A6060", marginRight: "8px" }}>
-                ← {tr.openProviderList}
+              <span style={{ fontSize: "13px", color: "#7A6060", marginInlineEnd: "8px" }}>
+                {isRTL ? "→" : "←"} {tr.openProviderList}
               </span>
 
-              <span style={{ fontSize: "12px", color: "#A89080", marginRight: "auto" }}>
+              <span style={{ fontSize: "12px", color: "#A89080", marginInlineEnd: "auto" }}>
                 {providers.length} {tr.added}
               </span>
             </p>
@@ -1996,7 +2000,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                         <button style={s.iconBtn} onClick={() => handleRemoveProvider(i)}>×</button>
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", paddingRight: "28px" }}>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", paddingInlineEnd: "28px" }}>
                       {p.serviceType && <span style={{ ...s.detailChip, color: "#38bdf8" }}>{p.serviceType}</span>}
                       {p.paymentStatus && (
                         <span style={{
