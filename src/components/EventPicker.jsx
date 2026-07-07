@@ -134,6 +134,19 @@ const s = {
 function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel }) {
   const tr = translations[language];
   const isRTL = language === "he";
+  
+  const textInputStyle = {
+    ...s.input,
+    direction: isRTL ? "rtl" : "ltr",
+    textAlign: isRTL ? "right" : "left",
+  };
+
+  const ltrInputStyle = {
+    ...s.input,
+    direction: "ltr",
+    textAlign: isRTL ? "right" : "left",
+    unicodeBidi: "plaintext",
+  };
   const eventTypes = getEventTypes(tr);
   const regions = getRegions(tr);
   const [hoveredId, setHoveredId] = useState(null);
@@ -241,12 +254,12 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
             {/* Date input*/}
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.eventDate}</label>
-              <input 
-                style={s.input} 
-                type="date" 
-                dir={isRTL ? "rtl" : "ltr"} // כיווניות דינמית לתאריך
+              <input
+                style={ltrInputStyle}
+                type="date"
+                dir="ltr"
                 value={eventDate}
-                onChange={(e) => setEventDate(e.target.value)} 
+                onChange={(e) => setEventDate(e.target.value)}
               />
             </div>
 
@@ -254,7 +267,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
             <div style={s.fieldGroup}>
               <label style={s.label}>{tr.guestCount}</label>
               <input
-                style={{ ...s.input, textAlign: isRTL ? "right" : "left", direction: isRTL ? "rtl" : "ltr" }}
+                style={ltrInputStyle}
                 type="number"
                 placeholder={isRTL ? "למשל: 150" : "e.g. 150"}
                 value={guestCount}
@@ -298,7 +311,11 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
       )}
 
       {/* Main page — greeting header + 4 event type cards grid */}
-      <div style={s.page}>
+      <div style={{
+        ...s.page,
+        direction: isRTL ? "rtl" : "ltr",
+        textAlign: isRTL ? "right" : "left",
+      }}>
         <div style={s.bgCircle1} />
         <div style={s.bgCircle2} />
 
@@ -308,7 +325,7 @@ function EventPicker({ user, onEventCreated, onLogout, language = "he", onCancel
           <p style={s.subtitle}>{tr.chooseEvent}</p>
         </div>
 
-        <div style={s.grid}>
+        <div style={{ ...s.grid, direction: isRTL ? "rtl" : "ltr" }}>
           {/* Maps over eventTypes array to render each card */}
           {eventTypes.map((et) => (
             <div

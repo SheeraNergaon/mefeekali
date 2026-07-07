@@ -356,8 +356,23 @@ function App() {
             <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{tr.dateLabel2}</label>
             <input
               type="date"
-              dir={isRTL ? "rtl" : "ltr"} // תוקן כיווניות שדה התאריך
-              style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px" }}
+              dir="ltr"
+              style={{
+                width: "100%",
+                padding: "10px 14px",
+                background: "#F2EBE1",
+                border: "1px solid #E0D5CC",
+                borderRadius: "10px",
+                color: "#3d2c2c",
+                fontSize: "14px",
+                fontFamily: "'Heebo', sans-serif",
+                outline: "none",
+                boxSizing: "border-box",
+                marginBottom: "14px",
+                direction: "ltr",
+                textAlign: isRTL ? "right" : "left",
+                unicodeBidi: "plaintext",
+              }}
               value={editingEvent.date || ""}
               onChange={e => setEditingEvent(ev => ({ ...ev, date: e.target.value }))}
             />

@@ -851,6 +851,22 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
   const tr = translations[language];
   const isRTL = language === "he";
 
+  const popupTextInputStyle = {
+    ...s.popupInput,
+    direction: isRTL ? "rtl" : "ltr",
+    textAlign: isRTL ? "right" : "left",
+  };
+
+const popupDateTimeInputStyle = {
+  ...s.popupInput,
+  direction: "ltr",
+  textAlign: isRTL ? "right" : "left",
+  unicodeBidi: "plaintext",
+};
+
+const displayDate = (date) =>
+  date ? date.split("-").reverse().join(".") : "";
+
   // Loads all event data from Firestore when the selected event changes.
   // Resets all state first to prevent showing stale data from a previous event.
   useEffect(() => {
@@ -1244,6 +1260,11 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
           if (!res.ok) return m;
 
           const data = await res.json();
+
+          if (data.status === "cancelled") {
+            return null;
+          }
+
           const start = data.start?.dateTime || data.start?.date;
 
           if (!start) return m;
@@ -1383,26 +1404,38 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
             </p>
             <div style={s.popupField}>
               <label style={s.popupLabel}>{tr.titleLabel}</label>
-              <input style={s.popupInput} placeholder={tr.titlePlaceholder}
+              <input
+                style={popupTextInputStyle}
+                dir={isRTL ? "rtl" : "ltr"}
+                placeholder={tr.titlePlaceholder}
                 value={calendarPopup.title}
                 onChange={(e) => setCalendarPopup(p => ({ ...p, title: e.target.value }))} />
             </div>
             <div style={s.popupField}>
               <label style={s.popupLabel}>{tr.dateLabel}</label>
-              <input style={s.popupInput} type="date" dir={isRTL ? "rtl" : "ltr"}
+              <input
+                style={popupDateTimeInputStyle}
+                type="date"
+                dir="ltr"
                 value={calendarPopup.date || ""}
                 onChange={(e) => setCalendarPopup(p => ({ ...p, date: e.target.value }))} />
             </div>
             <div style={s.popupField}>
               <label style={s.popupLabel}>{tr.timeLabel}</label>
-              <input style={{...s.popupInput, textAlign: isRTL ? "right" : "left"}} type="time"
+              <input
+                style={popupDateTimeInputStyle}
+                type="time"
+                dir="ltr"
                 value={calendarPopup.time || "10:00"}
                 dir="ltr"
                 onChange={(e) => setCalendarPopup(p => ({ ...p, time: e.target.value }))} />
             </div>
             <div style={s.popupField}>
               <label style={s.popupLabel}>{tr.descriptionLabel}</label>
-              <input style={s.popupInput} placeholder={tr.descriptionPlaceholder}
+              <input
+                style={popupTextInputStyle}
+                dir={isRTL ? "rtl" : "ltr"}
+                placeholder={tr.descriptionPlaceholder}
                 value={calendarPopup.description}
                 onChange={(e) => setCalendarPopup(p => ({ ...p, description: e.target.value }))} />
             </div>
@@ -1502,11 +1535,20 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
 
             {showMeetingsPanel && (
               <div style={{
-                position: "absolute", top: "36px", left: 0,
-                background: "#FDF9F5", border: "1px solid rgba(255,255,255,0.12)",
-                borderRadius: "16px", padding: "16px", width: "320px",
-                zIndex: 500, boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                position: "absolute",
+                top: "42px",
+                ...(isRTL ? { right: 0, left: "auto" } : { left: 0, right: "auto" }),
+                background: "#FDF9F5",
+                border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "16px",
+                padding: "16px",
+                width: "320px",
+                maxWidth: "calc(100vw - 24px)",
+                boxSizing: "border-box",
+                zIndex: 9999,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
                 direction: isRTL ? "rtl" : "ltr",
+                textAlign: isRTL ? "right" : "left",
               }}>
                 <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
                   <button
@@ -1607,7 +1649,7 @@ function Dashboard({ user, event, googleToken, language = "he" }) {
                             </span>
                           </div>
                           <div style={{ fontSize: "12px", color: "#8B7060", marginTop: "4px" }}>
-                            📅 {m.date} · ⏰ {m.time}
+                            📅 <bdi dir="ltr">{displayDate(m.date)}</bdi> · ⏰ <bdi dir="ltr">{m.time}</bdi>
                           </div>
                           {m.description && <div style={{ fontSize: "11px", color: "#A89080", marginTop: "2px" }}>{m.description}</div>}
                           
