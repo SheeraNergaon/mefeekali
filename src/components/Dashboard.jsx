@@ -559,7 +559,10 @@ function AIProducer({ event, budget, expenses, guests, providers, checklist, lan
   const messagesEndRef = useRef(null);
 
   // Summary stats passed into the AI context so it knows the current planning state
-  const totalSpent = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+  // Use the same budget calculation as the dashboard so the AI context matches the UI totals.
+  const totalSpent =
+  expenses.filter(e => !e.providerId).reduce((sum, e) => sum + (e.amount || 0), 0)
+  + providers.reduce((sum, p) => sum + (p.totalPrice || 0), 0);
   
   const remaining = budget.total - totalSpent;
   const spentPct = budget.total > 0 ? Math.round((totalSpent / budget.total) * 100) : 0;
@@ -915,7 +918,7 @@ const displayDate = (date) =>
       });
   }, [event.id]);
 
-  
+  // Schedules a save to Firestore after a short delay, merging the provided patch into the existing document.
   const scheduleSave = (patch) => {
     setSaving(true);
     clearTimeout(saveTimeout.current);
@@ -1057,10 +1060,22 @@ const displayDate = (date) =>
     }
   };
 
-  // Removes a provider by index
+  // Removes the provider and also clears any linked provider expense to avoid orphan budget records.
   const handleRemoveProvider = (i) => {
-    const next = providers.filter((_, j) => j !== i);
-    setProviders(next); scheduleSave({ providers: next });
+    const providerToRemove = providers[i];
+
+    const nextProviders = providers.filter((_, j) => j !== i);
+    const nextExpenses = expenses.filter(
+      e => e.providerId !== providerToRemove?.id
+    );
+
+    setProviders(nextProviders);
+    setExpenses(nextExpenses);
+
+    scheduleSave({
+      providers: nextProviders,
+      expenses: nextExpenses,
+    });
   };
 
   // Toggles a checklist item between done and not done

@@ -33,20 +33,30 @@ export default function VisionBoard({ event, onClose, language }) {
   }, [event.id, language]);
 
   // Search Unsplash for images
-  const handleSearch = async () => {
-    if (!query.trim()) return;
+  // Accepts an optional search term because React state updates are asynchronous
+  const handleSearch = async (searchTerm = query) => {
+    if (!searchTerm.trim()) return;
+
     setLoading(true);
+
     try {
       const res = await fetch(
-        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=30`,
+        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchTerm)}&per_page=30`,
         { headers: { Authorization: `Client-ID ${UNSPLASH_KEY}` } }
       );
+
+      if (!res.ok) {
+        throw new Error("Unsplash request failed");
+      }
+
       const data = await res.json();
       setResults(data.results || []);
     } catch (err) {
       console.error("Unsplash error:", err);
+      setResults([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // Save or remove image from board (toggle)
@@ -196,7 +206,8 @@ export default function VisionBoard({ event, onClose, language }) {
                 : ["conference room", "corporate dinner", "event stage", "business meeting", "office party"]
               ).map(tag => (
                 <button key={tag}
-                  onClick={() => { setQuery(tag); setTimeout(handleSearch, 100); }}
+                // Search directly with the selected tag instead of waiting for query state to update
+                  onClick={() => { setQuery(tag); handleSearch(tag); }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background = "#DFC5EE";
                     e.currentTarget.style.borderColor = "#B890D0";

@@ -3,7 +3,6 @@
 // and decides which screen to render based on the current state.
 
 import { useState, useEffect } from "react";
-import { signOut } from "firebase/auth";
 import { auth } from "./firebase/config";
 import { db } from "./firebase/config";
 import { collection, query, where, getDocs, orderBy, deleteDoc, doc, updateDoc } from "firebase/firestore";
@@ -11,8 +10,9 @@ import Auth from "./components/Auth";
 import EventPicker from "./components/EventPicker";
 import Dashboard from "./components/Dashboard";
 import { translations } from "./translations";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 
-// All inline styles for the main layout — sidebar, main area, buttons
+// All inline styles for the main layout - sidebar, main area, buttons
 const styles = {
   layout: {
     display: "flex",
@@ -161,6 +161,16 @@ function App() {
       setLoadingEvents(false);
     });
   }, [user]);
+
+  // Firebase restores the signed-in user asynchronously after a page refresh.
+  // authLoading prevents showing the login screen before Firebase finishes checking the session.
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
 
   const handleLogout = async () => {
@@ -340,7 +350,7 @@ function App() {
             background: "#FDF9F5", borderRadius: "24px", padding: "32px",
             width: "100%", maxWidth: "420px", fontFamily: "'Heebo', sans-serif",
             direction: isRTL ? "rtl" : "ltr",
-            textAlign: isRTL ? "right" : "left", // תוקן יישור המיכל בהתאם לשפה
+            textAlign: isRTL ? "right" : "left", // Align the edit popup content according to the selected language
           }} onClick={e => e.stopPropagation()}>
             <h2 style={{ margin: "0 0 24px", fontSize: "18px", fontWeight: "700", color: "#3d2c2c" }}>
               {tr.editEventTitle}
@@ -380,7 +390,7 @@ function App() {
             <label style={{ display: "block", fontSize: "11px", color: "#8B7060", letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: "6px" }}>{tr.guestCountLabel}</label>
             <input
               type="number"
-              dir="ltr" // שומר על כתיבת מספרים משמאל לימין כדי למנוע קפיצות
+              dir="ltr" // Keep numeric input left-to-right to avoid cursor jumps in RTL mode
               style={{ width: "100%", padding: "10px 14px", background: "#F2EBE1", border: "1px solid #E0D5CC", borderRadius: "10px", color: "#3d2c2c", fontSize: "14px", fontFamily: "'Heebo', sans-serif", outline: "none", boxSizing: "border-box", marginBottom: "14px", textAlign: isRTL ? "right" : "left" }}
               value={editingEvent.guestCount || ""}
               onChange={e => setEditingEvent(ev => ({ ...ev, guestCount: Number(e.target.value) }))}
