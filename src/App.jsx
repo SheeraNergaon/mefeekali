@@ -10,7 +10,7 @@ import Auth from "./components/Auth";
 import EventPicker from "./components/EventPicker";
 import Dashboard from "./components/Dashboard";
 import { translations } from "./translations";
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { signOut } from "firebase/auth";
 
 // All inline styles for the main layout - sidebar, main area, buttons
 const styles = {
@@ -161,17 +161,6 @@ function App() {
       setLoadingEvents(false);
     });
   }, [user]);
-
-  // Firebase restores the signed-in user asynchronously after a page refresh.
-  // authLoading prevents showing the login screen before Firebase finishes checking the session.
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
 
   const handleLogout = async () => {
     await signOut(auth);
