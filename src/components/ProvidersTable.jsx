@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { translations } from "../translations";
 
-export default function ProvidersTable({ providers, onClose, language }) {
+export default function ProvidersTable({ providers, onClose, onEditProvider, language }) {
   const tr = translations[language];
   const [sortBy, setSortBy] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
@@ -162,13 +162,15 @@ export default function ProvidersTable({ providers, onClose, language }) {
               <th style={thStyle("email")} onClick={() => handleSort("email")}>
                 <SortArrow field="email" /> {tr.email}
               </th>
+
+              <th style={{ ...thStyle(""), cursor: "default" }}></th>
             </tr>
           </thead>
 
           <tbody>
             {sorted.length === 0 ? (
               <tr>
-                <td colSpan="5" style={{ ...tdStyle, textAlign: "center", color: "#A89080", padding: "32px" }}>
+                <td colSpan="6" style={{ ...tdStyle, textAlign: "center", color: "#A89080", padding: "32px" }}>
                   {tr.noProvidersDisplay}
                 </td>
               </tr>
@@ -212,6 +214,20 @@ export default function ProvidersTable({ providers, onClose, language }) {
 
                     <td style={tdStyle}>
                       <span style={{ wordBreak: "break-word" }}>{p.email || "—"}</span>
+                    </td>
+
+                    <td style={{ ...tdStyle, textAlign: "center" }}>
+                      <button
+                        onClick={() => onEditProvider(p)}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                        }}
+                      >
+                        ✏️
+                      </button>
                     </td>
                   </tr>
                 );

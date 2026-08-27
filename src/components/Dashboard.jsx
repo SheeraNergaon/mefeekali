@@ -1392,6 +1392,18 @@ const displayDate = (date) =>
         <ProvidersTable
           providers={providers}
           onClose={() => setShowProvidersTable(false)}
+          onEditProvider={(provider) => {
+            const index = providers.findIndex(
+              (p) => p === provider || (provider.id && p.id === provider.id)
+            );
+
+            setShowProvidersTable(false);
+
+            setProviderPopup({
+              index,
+              data: provider,
+            });
+          }}
           language={language}
         />
       )}
