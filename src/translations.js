@@ -74,6 +74,8 @@ export const translations = {
     firstName: "שם",
     lastName: "שם משפחה",
     noProvidersDisplay: "אין ספקים להצגה",
+    providersPreviewNote: 'מוצגים רק הספקים האחרונים. לרשימה המלאה לחצי על "פתח רשימת ספקים".',
+    expensesPreviewNote: 'מוצגות רק ההוצאות האחרונות. לפירוט המלא לחצי על "פתח פירוט תקציב".',
 
     // ContactPopup — provider
     paymentStatusLabel: "סטטוס תשלום",
@@ -336,6 +338,8 @@ export const translations = {
     firstName: "First name",
     lastName: "Last name",
     noProvidersDisplay: "No providers to display",
+    providersPreviewNote: 'Only the latest providers are shown. Click "Open providers list" to view the full list.',
+    expensesPreviewNote: 'Only the latest expenses are shown. Click "Open budget list" to view the full list.',
 
     // Calendar
     addMeeting: "📅 Add Meeting",

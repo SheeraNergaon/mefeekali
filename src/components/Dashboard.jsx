@@ -932,13 +932,30 @@ const displayDate = (date) =>
   // Calculates total amount spent: regular expenses + all provider prices.
   // Provider expenses are read from the providers array (not from expenses)
   // to avoid double-counting
-  const totalSpent = expenses.filter(e => !e.providerId).reduce((sum, e) => sum + (e.amount || 0), 0)
+  const totalCommitted = expenses.filter(e => !e.providerId).reduce((sum, e) => sum + (e.amount || 0), 0)
   + providers.reduce((sum, p) => sum + (p.totalPrice || 0), 0);
 
-  const remaining = budget.total - totalSpent;
-  const spentPct = budget.total > 0 ? (totalSpent / budget.total) * 100 : 0;
+  const remaining = budget.total - totalCommitted;
+  const spentPct = budget.total > 0 ? (totalCommitted / budget.total) * 100 : 0;
   const doneCount = (checklist || []).filter((i) => i.done).length;
 
+  const previewCount = 3;
+
+  // Providers displayed in the providers card preview
+  const previewProviders = providers
+    .map((p, index) => ({ ...p, _originalIndex: index }))
+    .slice(-previewCount);
+
+  // Regular expenses only, excluding expenses linked to providers
+  const regularExpenses = expenses.filter((e) => !e.providerId);
+
+  // Regular expenses displayed in the budget card preview
+  const previewRegularExpenses = regularExpenses.slice(-previewCount+1);
+
+  // Provider expenses displayed in the budget card preview
+  const previewProviderExpenses = providers.filter((p) => p.totalPrice > 0)
+    .slice(-previewCount);
+    
   // Sets a new total budget and saves to Firestore
   const handleSetBudget = () => {
     if (!budgetInput) return;
@@ -1442,7 +1459,6 @@ const displayDate = (date) =>
                 type="time"
                 dir="ltr"
                 value={calendarPopup.time || "10:00"}
-                dir="ltr"
                 onChange={(e) => setCalendarPopup(p => ({ ...p, time: e.target.value }))} />
             </div>
             <div style={s.popupField}>
@@ -1768,7 +1784,7 @@ const displayDate = (date) =>
                 <span style={{ ...s.budgetLabel, color: "#4ade80" }}>{tr.remaining}</span>
               </div>
               <div style={s.budgetItem}>
-                <span style={s.budgetValue("#f87171")}>₪{totalSpent.toLocaleString()}</span>
+                <span style={s.budgetValue("#f87171")}>₪{totalCommitted.toLocaleString()}</span>
                 <span style={{ ...s.budgetLabel, color: "#f87171" }}>{tr.spent}</span>
               </div>
             </div>
@@ -1821,7 +1837,7 @@ const displayDate = (date) =>
               : null}
 
             {/* Provider Expenses */}
-            {providers.filter(p => p.totalPrice > 0).map((p, i) => (
+            {previewProviderExpenses.map((p, i) => (
               <div key={p.id || i} style={{ ...s.expenseItem, borderInlineStart: "2px solid #38bdf8" }}>
                 <div style={s.expenseTop}>
                   <span style={s.expenseName}>{p.name} {p.serviceType ? `· ${p.serviceType}` : ""}</span>
@@ -1838,7 +1854,7 @@ const displayDate = (date) =>
             ))}
 
             {/* Regular Expenses */}
-            {expenses.filter(e => !e.providerId).map((exp) => (
+            {previewRegularExpenses.map((exp) => (
               <div key={exp.id} style={s.expenseItem}>
                 <div style={s.expenseTop}>
                   <span style={s.expenseName}>{exp.name}</span>
@@ -1867,6 +1883,19 @@ const displayDate = (date) =>
                   onChange={(e) => handleExpenseComment(exp.id, e.target.value)} />
               </div>
             ))}
+
+            {(
+              regularExpenses.length > previewRegularExpenses.length ||
+              providers.filter((p) => p.totalPrice > 0).length > previewProviderExpenses.length
+            ) && (
+              <p
+                style={{
+                  fontSize: "12px",color: "#A89080",marginTop: "8px",marginBottom: 0,width: "100%",textAlign: isRTL ? "right" : "left",
+                }}
+              >
+                {tr.expensesPreviewNote}
+              </p>
+            )}
           </div>
 
           {/* CHECKLIST CARD*/}
@@ -2042,7 +2071,7 @@ const displayDate = (date) =>
             </button>
             {providers.length === 0 ? <p style={s.emptyMsg}>{tr.noProviders}</p> : (
               <ul style={s.list}>
-                {providers.map((p, i) => (
+                {previewProviders.map((p) => (
                   <li key={p.id || i} style={{ ...s.listItem, flexDirection: "column", alignItems: "flex-start", gap: "8px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -2051,8 +2080,8 @@ const displayDate = (date) =>
                       </div>
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button style={{ ...s.iconBtn, fontSize: "14px" }}
-                          onClick={() => setProviderPopup({ index: i, data: p })}>✏️</button>
-                        <button style={s.iconBtn} onClick={() => handleRemoveProvider(i)}>×</button>
+                          onClick={() => setProviderPopup({ index: p._originalIndex, data: p })}>✏️</button>
+                        <button style={s.iconBtn} onClick={() => handleRemoveProvider(p._originalIndex)}>×</button>
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", paddingInlineEnd: "28px" }}>
@@ -2076,6 +2105,15 @@ const displayDate = (date) =>
                   </li>
                 ))}
               </ul>
+            )}
+            {providers.length > previewProviders.length && (
+              <p
+                style={{
+                  fontSize: "12px",color: "#A89080",marginTop: "8px", marginBottom: 0,width: "100%",textAlign: isRTL ? "right" : "left",
+                }}
+              >
+                {tr.providersPreviewNote}
+              </p>
             )}
           </div>
 
