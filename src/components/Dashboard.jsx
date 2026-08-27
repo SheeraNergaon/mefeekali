@@ -2069,29 +2069,81 @@ const displayDate = (date) =>
             >
               {tr.addProvider}
             </button>
-            {providers.length === 0 ? <p style={s.emptyMsg}>{tr.noProviders}</p> : (
-              <ul style={s.list}>
+            {providers.length === 0 ? (
+              <p style={s.emptyMsg}>{tr.noProviders}</p>
+            ) : (
+              <div style={s.list}>
                 {previewProviders.map((p) => (
-                  <li key={p.id || i} style={{ ...s.listItem, flexDirection: "column", alignItems: "flex-start", gap: "8px" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <div
+                    key={p.id || p._originalIndex}
+                    style={{
+                      ...s.listItem,
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      gap: "8px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <span>🏢</span>
                         <div style={{ fontWeight: "500" }}>{p.name}</div>
                       </div>
+
                       <div style={{ display: "flex", gap: "6px" }}>
-                        <button style={{ ...s.iconBtn, fontSize: "14px" }}
-                          onClick={() => setProviderPopup({ index: p._originalIndex, data: p })}>✏️</button>
-                        <button style={s.iconBtn} onClick={() => handleRemoveProvider(p._originalIndex)}>×</button>
+                        <button
+                          style={{ ...s.iconBtn, fontSize: "14px" }}
+                          onClick={() =>
+                            setProviderPopup({
+                              index: p._originalIndex,
+                              data: p,
+                            })
+                          }
+                        >
+                          ✏️
+                        </button>
+
+                        <button
+                          style={s.iconBtn}
+                          onClick={() => handleRemoveProvider(p._originalIndex)}
+                        >
+                          ×
+                        </button>
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", paddingInlineEnd: "28px" }}>
-                      {p.serviceType && <span style={{ ...s.detailChip, color: "#38bdf8" }}>{p.serviceType}</span>}
+
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "8px",
+                        flexWrap: "wrap",
+                        paddingInlineEnd: "28px",
+                      }}
+                    >
+                      {p.serviceType && (
+                        <span style={{ ...s.detailChip, color: "#38bdf8" }}>
+                          {p.serviceType}
+                        </span>
+                      )}
+
                       {p.paymentStatus && (
-                        <span style={{
-                          ...s.detailChip,
-                          color: p.paymentStatus === "paid" ? "#4ade80" : p.paymentStatus === "deposit" ? "#fb923c" : "#f87171",
-                        }}>
-                          {p.paymentStatus === "paid" ? " " : p.paymentStatus === "deposit" ? " " : " "}
+                        <span
+                          style={{
+                            ...s.detailChip,
+                            color:
+                              p.paymentStatus === "paid"
+                                ? "#4ade80"
+                                : p.paymentStatus === "deposit"
+                                ? "#fb923c"
+                                : "#f87171",
+                          }}
+                        >
                           {p.paymentStatus === "paid"
                             ? tr.paid
                             : p.paymentStatus === "deposit"
@@ -2099,12 +2151,22 @@ const displayDate = (date) =>
                             : tr.unpaid}
                         </span>
                       )}
-                      {p.totalPrice > 0 && <span style={s.detailChip}>💰 ₪{p.totalPrice.toLocaleString()}</span>} 
-                      {p.note && <span style={{ ...s.detailChip, fontStyle: "italic" }}>{p.note}</span>}
+
+                      {p.totalPrice > 0 && (
+                        <span style={s.detailChip}>
+                          💰 ₪{p.totalPrice.toLocaleString()}
+                        </span>
+                      )}
+
+                      {p.note && (
+                        <span style={{ ...s.detailChip, fontStyle: "italic" }}>
+                          {p.note}
+                        </span>
+                      )}
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
             {providers.length > previewProviders.length && (
               <p
